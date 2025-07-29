@@ -80,7 +80,7 @@ const onLogin = async (values: LoginInterface) => {
               <Title order={2} className="text-gray-800 dark:text-white font-bold tracking-tight">
                 Connectez-vous à votre compte
               </Title>
-              <Text size="sm" className="text-gray-600 dark:text-gray-400 mt-2">
+              {/* <Text size="sm" className="text-gray-600 dark:text-gray-400 mt-2">
                 Ou{" "}
                 <Link
                   to="/auth/signup"
@@ -88,7 +88,7 @@ const onLogin = async (values: LoginInterface) => {
                 >
                   créez un nouveau compte
                 </Link>
-              </Text>
+              </Text> */}
             </div>
 
             <Divider className="my-6" />

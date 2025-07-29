@@ -3,7 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
-import SignUp from './pages/Authentication/SignUp';
+// import SignUp from './pages/Authentication/SignUp';
 import ForgotPassword from './pages/Authentication/ForgotPassword';
 import ResetPassword from './pages/Authentication/ResetPassword';
 import VerifyEmail from './pages/Authentication/VerifyEmail';
@@ -70,7 +70,7 @@ function App() {
           }
         />
 
-        <Route
+        {/* <Route
           path="/auth/signup"
           element={
             <>
@@ -78,7 +78,7 @@ function App() {
               <SignUp />
             </>
           }
-        />
+        /> */}
         
         <Route
           path="/auth/forgot-password"
