@@ -30,8 +30,6 @@ const Subscription: React.FC = () => {
     enabled: !!session?.user.id,
   });
 
-  console.log(subscriptionData);
-
 
   useEffect(() => {
     if (subscriptionData?.subscription) {

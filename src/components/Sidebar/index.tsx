@@ -115,6 +115,56 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink>
               </li>
               <li 
+                onMouseEnter={() => setHoveredItem('clients')} 
+                onMouseLeave={() => setHoveredItem(null)}
+              >
+                <NavLink
+                  to="clients"
+                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('clients') 
+                    ? 'bg-white/20 shadow-md' 
+                    : 'hover:bg-white/10'}`}
+                >
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('clients') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
+                    <FaUsers className="text-xl" />
+                  </div>
+                  <span>Clients</span>
+                  {hoveredItem === 'clients' && (
+                    <motion.div 
+                      initial={{ opacity: 0, x: -5 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="absolute right-2"
+                    >
+                      <FaChevronRight className="text-white/60 text-xs" />
+                    </motion.div>
+                  )}
+                </NavLink>
+              </li>
+              <li 
+                onMouseEnter={() => setHoveredItem('fournisseurs')} 
+                onMouseLeave={() => setHoveredItem(null)}
+              >
+                <NavLink
+                  to="fournisseurs"
+                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('fournisseurs') 
+                    ? 'bg-white/20 shadow-md' 
+                    : 'hover:bg-white/10'}`}
+                >
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('fournisseurs') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
+                    <FaUsers className="text-xl" />
+                  </div>
+                  <span>Fournisseurs</span>
+                  {hoveredItem === 'fournisseurs' && (
+                    <motion.div 
+                      initial={{ opacity: 0, x: -5 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="absolute right-2"
+                    >
+                      <FaChevronRight className="text-white/60 text-xs" />
+                    </motion.div>
+                  )}
+                </NavLink>
+              </li>
+              <li 
                 onMouseEnter={() => setHoveredItem('ventes')} 
                 onMouseLeave={() => setHoveredItem(null)}
               >
@@ -129,31 +179,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   </div>
                   <span>Ventes</span>
                   {hoveredItem === 'ventes' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-              <li 
-                onMouseEnter={() => setHoveredItem('inventaire-ventes')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="inventaire-ventes"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('inventaire-ventes') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('inventaire-ventes') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <FaClipboardList className="text-xl" />
-                  </div>
-                  <span>Inventaire Ventes</span>
-                  {hoveredItem === 'inventaire-ventes' && (
                     <motion.div 
                       initial={{ opacity: 0, x: -5 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -239,46 +264,22 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   )}
                 </NavLink>
               </li>
+
               <li 
-                onMouseEnter={() => setHoveredItem('clients')} 
+                onMouseEnter={() => setHoveredItem('inventaire-ventes')} 
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 <NavLink
-                  to="clients"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('clients') 
+                  to="inventaire-ventes"
+                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('inventaire-ventes') 
                     ? 'bg-white/20 shadow-md' 
                     : 'hover:bg-white/10'}`}
                 >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('clients') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <FaUsers className="text-xl" />
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('inventaire-ventes') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
+                    <FaClipboardList className="text-xl" />
                   </div>
-                  <span>Clients</span>
-                  {hoveredItem === 'clients' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-              <li 
-                onMouseEnter={() => setHoveredItem('fournisseurs')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="fournisseurs"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('fournisseurs') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('fournisseurs') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <FaUsers className="text-xl" />
-                  </div>
-                  <span>Fournisseurs</span>
-                  {hoveredItem === 'fournisseurs' && (
+                  <span>Inventaire Ventes</span>
+                  {hoveredItem === 'inventaire-ventes' && (
                     <motion.div 
                       initial={{ opacity: 0, x: -5 }}
                       animate={{ opacity: 1, x: 0 }}

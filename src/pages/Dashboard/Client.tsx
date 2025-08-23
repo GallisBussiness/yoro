@@ -55,7 +55,7 @@ function Client() {
   });
 
   // Récupérer toutes les dettes du client
-  const { data: ventes, isLoading: isLoadingVentes } = useQuery({
+  const { data: dettes, isLoading: isLoadingDettes } = useQuery({
     queryKey: ['get_ventes_client', id],
     queryFn: () => detteService.findByClient(id!)
   });
@@ -76,8 +76,8 @@ function Client() {
   useEffect(() => {
     const from = (page - 1) * PAGE_SIZE;
     const to = from + PAGE_SIZE;
-    setRecords(filtered(ventes)?.slice(from, to) ?? []);
-  }, [ventes, debouncedQuery, page]);
+    setRecords(filtered(dettes)?.slice(from, to) ?? []);
+  }, [dettes, debouncedQuery, page]);
 
   // Fonction pour ouvrir le modal de paiements
   const addPaiement = async (vente: any) => {
@@ -324,11 +324,17 @@ function Client() {
               <Text className="text-gray-600 dark:text-gray-400">Historique des dettes et paiements</Text>
             </div>
             <div className="flex items-center gap-3">
-            <Badge size="lg" radius="md" className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2">
-               total: {formatN(filtered(ventes)?.reduce((total: number, vente: any) => total + vente.montant, 0) || 0)} FCFA
+            <Badge size="lg" radius="md" className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2">
+               total: {formatN(filtered(dettes)?.reduce((total: number, dette: any) => total + dette.montant, 0) || 0)} FCFA
+              </Badge>
+              <Badge size="lg" radius="md" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2">
+               PAYE: {formatN(filtered(dettes)?.reduce((total: number, dette: any) => total + dette.paiements.reduce((totalPaiements: number, paiement: any) => totalPaiements + paiement.montant, 0), 0) || 0)} FCFA
               </Badge>
               <Badge size="lg" radius="md" className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2">
-                {filtered(ventes)?.length || 0} dettes
+               RESTANT: {formatN(filtered(dettes)?.reduce((total: number, dette: any) => total + dette.montant, 0) - filtered(dettes)?.reduce((total: number, dette: any) => total + dette.paiements.reduce((totalPaiements: number, paiement: any) => totalPaiements + paiement.montant, 0), 0) || 0)} FCFA
+              </Badge>
+              <Badge size="lg" radius="md" className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2">
+                {filtered(dettes)?.length || 0} dettes
               </Badge>
               <Button
                 onClick={openAddDetteModal}
@@ -391,7 +397,7 @@ function Client() {
                 accessor: 'montant', 
                 title: (
                   <Group>
-                    <FaMoneyBillWave className="text-indigo-500" />
+                    <FaMoneyBillWave className="text-red-500" />
                     <Text fw={600}>Montant Total</Text>
                   </Group>
                 ),
@@ -399,6 +405,36 @@ function Client() {
                 render: (row) => (
                   <Text fw={500} className="text-gray-800 dark:text-gray-200">
                     {formatN(row.montant)} FCFA
+                  </Text>
+                )
+              },
+              { 
+                accessor: '',
+                title: (
+                  <Group>
+                    <FaMoneyBillWave className="text-green-500" />
+                    <Text fw={600}>Payé</Text>
+                  </Group>
+                ),
+                textAlign: 'center',
+                render: (row) => (
+                  <Text fw={500} className="text-gray-800 dark:text-gray-200">
+                    {formatN(row.paiements.reduce((total: number, paiement: any) => total + paiement.montant, 0))} FCFA
+                  </Text>
+                )
+              },
+              { 
+                accessor: '',
+                title: (
+                  <Group>
+                    <FaMoneyBillWave className="text-amber-500" />
+                    <Text fw={600}>Restant</Text>
+                  </Group>
+                ),
+                textAlign: 'center',
+                render: (row) => (
+                  <Text fw={500} className="text-gray-800 dark:text-gray-200">
+                    {formatN(row.montant - row.paiements.reduce((total: number, paiement: any) => total + paiement.montant, 0))} FCFA
                   </Text>
                 )
               },
@@ -451,7 +487,7 @@ function Client() {
             idAccessor="_id"
             striped={true}
             stripedColor="rgba(255, 93, 20, 0.1)"
-            fetching={isLoadingVentes}
+            fetching={isLoadingDettes}
             emptyState={
               <div className="flex flex-col items-center justify-center py-10">
                 <img src="/img/empty.png" alt="Aucune facture" className="w-32 h-32 mb-4" />
@@ -463,7 +499,7 @@ function Client() {
                 </Text>
               </div>
             }
-            totalRecords={filtered(ventes)?.length}
+            totalRecords={filtered(dettes)?.length}
             recordsPerPage={PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}
