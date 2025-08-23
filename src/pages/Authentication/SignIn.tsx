@@ -11,13 +11,13 @@ const SignIn: React.FC = () => {
   const [isPending, setIsPending] = useState(false);
   const navigate = useNavigate();
 
-  const token = sessionStorage.getItem("ges_com_token");
+  const {data: session} = authclient.useSession();
 
   useEffect(() => {
-if (Boolean(token) === true && token !== 'null') {
+if (session) {
       navigate('/dashboard', { replace: true });
     }
-  }, [token]);
+  }, [session]);
   
   // Nous n'utilisons plus Mantine Form car il y a un conflit avec Ant Design Form
 
@@ -28,14 +28,9 @@ const onLogin = async (values: LoginInterface) => {
         email: values.email,
         password: values.password,
         callbackURL: '/dashboard',
-       
-      },{
-        onSuccess: (ctx)=>{
-          const authToken = ctx.response.headers.get("set-auth-token") // get the token from the response headers
-          // Store the token securely (e.g., in localStorage)
-          sessionStorage.setItem("ges_com_token", authToken!);
-        }
       });
+
+      console.log(res);
       
       if(res?.error) {
         // Vérifier si l'erreur est due à un email non vérifié

@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Text, Paper, Title, Center, Group, Divider } from '@mantine/core';
 import { FaCheckCircle, FaArrowRight, FaHome } from 'react-icons/fa';
@@ -10,12 +9,6 @@ const Success: React.FC = () => {
   const paymentId = searchParams.get('payment_id');
   const packName = searchParams.get('pack_name');
   const amount = searchParams.get('amount');
-
-  useEffect(() => {
-    // Ici, vous pourriez vérifier le statut du paiement avec votre backend
-    // Par exemple, faire une requête API pour confirmer que le paiement est bien validé
-    console.log('Payment ID:', paymentId);
-  }, [paymentId]);
 
   const handleGoToDashboard = () => {
     navigate('/dashboard');

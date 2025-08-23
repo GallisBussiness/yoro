@@ -1,7 +1,6 @@
 export interface Payment {
   _id?: string;
   pack: string;
-  user: string;
   montant?: number;
   date_debut?: Date;
   date_fin?: Date;

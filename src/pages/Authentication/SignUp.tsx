@@ -13,13 +13,13 @@ const SignUp: React.FC = () => {
   const [isPending, setIsPending] = useState(false);
   const navigate = useNavigate();
 
-  const token  = sessionStorage.getItem("ges_com_token");
+  const {data: session} = authclient.useSession();
   
   useEffect(() => {
-  if (Boolean(token) === true && token !== 'null') {
+  if (session) {
       navigate('/dashboard', { replace: true });
     }
-  }, [token]);
+  }, [session]);
 
   const onRegister = async (values: RegisterInterface) => {
     setIsPending(true);
@@ -28,12 +28,6 @@ const SignUp: React.FC = () => {
         email: values.email,
         password: values.password,
         name: values.name,
-      },{
-        onSuccess: (ctx)=>{
-          const authToken = ctx.response.headers.get("set-auth-token") // get the token from the response headers
-          // Store the token securely (e.g., in localStorage)
-          localStorage.setItem("ges_com_token", authToken!);
-        }
       });
       if (res?.error) {
         message.error(res.error.message);

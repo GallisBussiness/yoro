@@ -24,8 +24,8 @@ export class PaymentService extends Service {
    * @param userId User ID
    * @returns Promise with the user's payments
    */
-  async getByUser(userId: string) {
-    return this.api.get(`/${this.ressource}/subscription/active/${userId}`).then(res => res.data);
+  async getByUser() {
+    return this.api.get(`/${this.ressource}/subscription/active`).then(res => res.data);
   }
 }
 

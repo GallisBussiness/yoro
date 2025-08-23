@@ -15,18 +15,17 @@ const GesCom: React.FC = () => {
     isPending,
   } = authclient.useSession()
 
-  const token  = sessionStorage.getItem("ges_com_token");
 
 
   useLayoutEffect(() => {
-    if (Boolean(token) === false || token === 'null') {
+    if (!session) {
       navigate('/auth/signin', { replace: true });
     }
-  }, [token]);
+  }, [session]);
 
   const { data: subscriptionData, isLoading: checkingSubscription  } = useQuery({
     queryKey: ['subscription', session?.user.id],
-    queryFn: () => checkSubscription(session?.user?.id!),
+    queryFn: () => checkSubscription(),
     enabled: !!session,
   });
 
@@ -34,7 +33,7 @@ const GesCom: React.FC = () => {
 
   useEffect(() => {
     if (session && subscriptionData?.subscription == null && !subscriptionData?.hasActiveSubscription) {
-      navigate('/subscription/' + session?.user.id, { replace: true });
+      navigate('/subscription', { replace: true });
     }
     return () => {}
   },[subscriptionData]);

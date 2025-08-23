@@ -1,5 +1,5 @@
 import { useLayoutEffect, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { App } from 'antd';
 import { Button, Text, Card, Group, Badge, Loader, Center, Paper, Title, Divider } from '@mantine/core';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -9,26 +9,28 @@ import { PaymentService } from '../../services/payment.service';
 import { Pack } from '../../interfaces/pack.interface';
 import { Payment } from '../../interfaces/payment.interface';
 import { checkSubscription } from '../../services/authservice';
+import { authclient } from '../../../lib/auth-client';
 
 const Subscription: React.FC = () => {
-  const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
      
-      const token  = sessionStorage.getItem("ges_com_token");
+      const {data:session} = authclient.useSession()
       useLayoutEffect(() => {
-        if (Boolean(token) === false || token === 'null') {
+        if (!session) {
           navigate('/auth/signin', { replace: true });
-        }
-      }, [token]);
+        } 
+      }, [session]);
   const { message } = App.useApp();
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 
   // Check if user already has an active subscription
   const { data: subscriptionData, isLoading: checkingSubscription } = useQuery({
-    queryKey: ['subscription', userId],
-    queryFn: () => userId ? checkSubscription(userId) : null,
-    enabled: !!userId,
+    queryKey: ['subscription', session?.user.id],
+    queryFn: () => checkSubscription(),
+    enabled: !!session?.user.id,
   });
+
+  console.log(subscriptionData);
 
 
   useEffect(() => {
@@ -55,9 +57,7 @@ const Subscription: React.FC = () => {
   // Create payment mutation
   const { mutate: createPayment, isPending: processingPayment } = useMutation({
     mutationFn: async ({ pack }: { pack: Pack}) => {
-      if (!userId) throw new Error("ID utilisateur non trouvé");
       const paymentData: Omit<Payment, '_id'> = {
-        user: userId,
         pack: pack._id,
       };
       
@@ -74,7 +74,7 @@ const Subscription: React.FC = () => {
         presentationMode: global.PayTech.OPEN_IN_POPUP,
         onClose: () => {
           console.log('Paiement fermé par l\'utilisateur');
-          navigate('/cancel?payment_id=' + userId + '&pack_name=' + selectedPack?.nom);
+          navigate('/cancel?payment_id=' + session?.user.id + '&pack_name=' + selectedPack?.nom);
         },
       }).send();
       // if (data && data._id && selectedPack) {
