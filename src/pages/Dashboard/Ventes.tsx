@@ -29,6 +29,8 @@ import { formatN } from "../../lib/helpers";
 import { authclient } from '../../../lib/auth-client';
 import { validate } from "uuid";
 import { printInvoice } from "./invoice";
+import { FamilleService } from "../../services/famille.service";
+import { UniteService } from "../../services/unite.service";
 
 const schemaC = yup.object().shape({
   nom: yup.string().required('Invalide Nom'),
@@ -45,6 +47,16 @@ const schema = yup.object().shape({
     client: yup.string().required(""),
     userId: yup.string().required("user not valid!")
   });
+
+  const schemaArticle = yup.object().shape({
+    ref: yup.string().required('Invalid Ref'),
+    nom: yup.string().required('Invalide Nom'),
+    stock_seuil: yup.number(),
+    famille: yup.string().required("famille is not valid !"),
+    unite: yup.string().required("unite is not valid !"),
+    prix:yup.number().required("user not valid!"),
+    userId: yup.string().required('Invalid User'),
+  });
   
   const PAGE_SIZE = 10;
 
@@ -54,6 +66,8 @@ function Ventes() {
   const { data: session } = authclient.useSession() 
   const [opened, { open, close }] = useDisclosure(false);
   const [openedA, { open:openA, close:closeA }] = useDisclosure(false);
+  const [openedArticle, { open:openArticle, close:closeArticle }] = useDisclosure(false);
+  const keyArticle = ['article'];
   const [query, setQuery] = useState('');
   const [remise,setRemise] = useState<number>(0);
   const [debouncedQuery] = useDebouncedValue(query, 200);
@@ -106,7 +120,15 @@ function Ventes() {
     mutationFn: (qr:string) => articleService.byref(qr),
  });
 
- const keyar = ['get_article', session!.user.id];
+ const familleService = new FamilleService();
+ const keyf = ['famille', session!.user.id];
+ const {data:familles} = useQuery({ queryKey: keyf, queryFn:() => familleService.getByUser(session!.user.id), enabled: !!session })
+
+ const uniteService = new UniteService();
+ const keyu = ['unite', session!.user.id];
+ const {data:unites} = useQuery({ queryKey: keyu, queryFn:() => uniteService.getByUser(session!.user.id), enabled: !!session })
+
+ const keyar = ['article', session!.user.id];
 
  const {data:articles,isLoading:isLoadingA} = useQuery({ 
    queryKey: keyar, 
@@ -139,6 +161,19 @@ function Ventes() {
     onValuesChange(values) {
       setTotal(values.produits.reduce((acc: number,cur: { pu: number; qte: number; }) => acc + (cur.pu * cur.qte) ,0))
     },
+  });
+
+  const formArticle = useForm({
+    initialValues: {
+      ref: '',
+      nom: '',
+      stock_seuil: 0,
+      famille: '',
+      unite: '',
+      prix: 0,
+      userId: session!.user.id
+    },
+    validate: yupResolver(schemaArticle),
   });
 
 
@@ -301,6 +336,17 @@ const {mutate:deleteVente,isPending:loadingDelete} = useMutation({
     }
   });
 
+  const {mutate:createArticle,isPending:loadingCreateArticle} = useMutation({
+    mutationFn: (data) => articleService.create(data),
+    onSuccess: () => {
+     closeArticle();
+     qc.invalidateQueries({queryKey:keyArticle});
+     formArticle.reset()
+    }
+ });
+ const onCreateArticle = (values:any) => {
+  createArticle(values);
+}
 
   const onCreateC = (values:any) => {
     createClient(values);
@@ -1173,6 +1219,16 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
                <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-300">
                  Ajouter un produit
                </Text>
+               <Button 
+            variant="light" 
+            color="orange" 
+            leftSection={<FaPlus className="h-4 w-4"/>} 
+            onClick={openArticle}
+            size="xs"
+            className="shadow-sm hover:shadow-md transition-all duration-200"
+          >
+            Nouvel article
+          </Button>
              </div>
              <Select 
                showSearch  
@@ -1604,6 +1660,108 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
        </div>
      </div>
    </Modal>
+   <Drawer 
+        opened={openedArticle} 
+        onClose={closeArticle} 
+        title={
+          <Text size="lg" fw={700} className="text-slate-800 dark:text-white">
+            Nouvel Article
+          </Text>
+        }
+        padding="lg"
+        position="right"
+        size="md"
+        overlayProps={{
+          blur: 3,
+          opacity: 0.55,
+        }}
+      >
+        <LoadingOverlay
+          visible={loadingCreateArticle}
+          zIndex={1000}
+          overlayProps={{ radius: 'sm', blur: 2 }}
+          loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+        />
+        <form onSubmit={formArticle.onSubmit(onCreateArticle)} className="space-y-4">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+            <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
+              <FaShoppingBag size={14} className="text-orange-500" />
+              Informations de l'article
+            </Text>
+            
+            <TextInput
+              label="Référence"
+              placeholder="Référence de l'article"
+              required
+              {...formArticle.getInputProps('ref')}
+              classNames={{
+                input: "rounded-md border-slate-200 dark:border-slate-700",
+                wrapper: "shadow-sm mb-3"
+              }}
+            />
+            
+            <TextInput
+              label="Nom"
+              placeholder="Nom de l'article"
+              required
+              {...formArticle.getInputProps('nom')}
+              classNames={{
+                input: "rounded-md border-slate-200 dark:border-slate-700",
+                wrapper: "shadow-sm mb-3"
+              }}
+            />
+            
+            <NumberInput
+              label="Prix"
+              placeholder="Prix de l'article"
+              required
+              {...formArticle.getInputProps('prix')}
+              classNames={{
+                input: "rounded-md border-slate-200 dark:border-slate-700",
+                wrapper: "shadow-sm mb-3"
+              }}
+              rightSection={<Text size="xs" color="dimmed">FCFA</Text>}
+            />
+            
+            <NumberInput
+              label="Stock Seuil"
+              placeholder="Seuil d'alerte de stock"
+              required
+              {...formArticle.getInputProps('stock_seuil')}
+              classNames={{
+                input: "rounded-md border-slate-200 dark:border-slate-700",
+                wrapper: "shadow-sm mb-3"
+              }}
+            />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+              <Select
+                placeholder="Sélectionner une famille"
+                options={familles?.map((f: any) => ({ label: f.nom, value: f._id }))}
+                {...formArticle.getInputProps('famille')}
+                className="shadow-sm"
+              />
+              
+              <Select
+                placeholder="Sélectionner une unité"
+                options={unites?.map((f: any) => ({ label: f.nom, value: f._id }))}
+                {...formArticle.getInputProps('unite')}
+                className="shadow-sm"
+              />
+            </div>
+
+            <Button 
+              type="submit" 
+              bg="#8A2BE2" 
+              loading={loadingCreateArticle}
+              className="shadow-md hover:shadow-lg transition-all duration-200 mt-4 w-full"
+              leftSection={<FaRegCircleCheck size={16} />}
+            >
+              Enregistrer l'article
+            </Button>
+          </div>
+        </form>
+      </Drawer>
     </div>
   )
 }

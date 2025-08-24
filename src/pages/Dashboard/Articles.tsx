@@ -38,15 +38,15 @@ function Articles() {
   const [records, setRecords] = useState([]);
   const qc = useQueryClient();
   const articleService = new ArticleService();
-  const key = ['article'];
+  const key = ['article', session!.user.id];
   const {data:articles,isLoading} = useQuery({ queryKey: key, queryFn:() => articleService.getByUser(session!.user.id), enabled: !!session })
 
   const familleService = new FamilleService();
-  const keyf = ['famille'];
+  const keyf = ['famille', session!.user.id];
   const {data:familles} = useQuery({ queryKey: keyf, queryFn:() => familleService.getByUser(session!.user.id), enabled: !!session })
 
   const uniteService = new UniteService();
-  const keyu = ['unite'];
+  const keyu = ['unite', session!.user.id];
   const {data:unites} = useQuery({ queryKey: keyu, queryFn:() => uniteService.getByUser(session!.user.id), enabled: !!session })
 
   const form = useForm({
