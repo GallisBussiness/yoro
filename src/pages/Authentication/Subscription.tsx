@@ -16,9 +16,9 @@ const Subscription: React.FC = () => {
      
       const {data:session,isPending} = authclient.useSession()
       console.log(session)
-      if(session && !session.user) {
-        navigate('/auth/signin', { replace: true });
-      }
+      // if(session && !session.user) {
+      //   navigate('/auth/signin', { replace: true });
+      // }
   const { message } = App.useApp();
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 
