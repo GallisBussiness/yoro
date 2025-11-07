@@ -1,4 +1,3 @@
-import { useLayoutEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Title, Text, Paper, Button, Group, Box } from '@mantine/core';
 import { FaHourglassHalf, FaCheckCircle, FaHome } from 'react-icons/fa';
@@ -8,12 +7,13 @@ const PendingSubscription: React.FC = () => {
 
 
    const navigate = useNavigate();
-   const {data: session,isPending} = authclient.useSession();
-    useLayoutEffect(() => {
-      if (isPending==false && !session) {
-        navigate('/auth/signin', { replace: true });
-      }
-    }, [session,isPending]);
+   const {data: session} = authclient.useSession();
+   console.log(session)
+    // useLayoutEffect(() => {
+    //   if (isPending==false && !session) {
+    //     navigate('/auth/signin', { replace: true });
+    //   }
+    // }, [session,isPending]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
