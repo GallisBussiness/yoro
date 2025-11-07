@@ -29,8 +29,6 @@ const onLogin = async (values: LoginInterface) => {
         password: values.password,
         callbackURL: '/dashboard',
       });
-
-      console.log(res);
       
       if(res?.error) {
         // Vérifier si l'erreur est due à un email non vérifié

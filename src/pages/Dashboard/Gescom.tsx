@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useEffect} from 'react';
 import DefaultLayout from '../../layout/DefaultLayout';
 import { Outlet} from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -15,13 +15,9 @@ const GesCom: React.FC = () => {
     isPending,
   } = authclient.useSession()
 
-
-
-  useLayoutEffect(() => {
-    if (isPending==false && !session) {
-      navigate('/auth/signin', { replace: true });
-    }
-  }, [session,isPending]);
+if(session && !session.user) {
+  navigate('/auth/signin', { replace: true });
+}
 
   const { data: subscriptionData, isLoading: checkingSubscription  } = useQuery({
     queryKey: ['subscription', session?.user.id],
