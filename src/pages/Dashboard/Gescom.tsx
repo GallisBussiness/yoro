@@ -14,10 +14,10 @@ const GesCom: React.FC = () => {
     data: session, 
     isPending,
   } = authclient.useSession()
-
-if(session && !session.user) {
-  navigate('/auth/signin', { replace: true });
-}
+console.log(session)
+// if(session && !session.user) {
+//   navigate('/auth/signin', { replace: true });
+// }
 
   const { data: subscriptionData, isLoading: checkingSubscription  } = useQuery({
     queryKey: ['subscription', session?.user.id],
