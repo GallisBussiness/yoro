@@ -2,7 +2,7 @@ import React, { useEffect} from 'react';
 import DefaultLayout from '../../layout/DefaultLayout';
 import { Outlet} from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Center, Loader, LoadingOverlay } from '@mantine/core';
+import { Center, Loader } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { checkSubscription } from '../../services/authservice';
 import { authclient } from '../../../lib/auth-client';
@@ -14,10 +14,14 @@ const GesCom: React.FC = () => {
     data: session, 
     isPending,
   } = authclient.useSession()
-console.log(session)
-// if(session && !session.user) {
-//   navigate('/auth/signin', { replace: true });
-// }
+
+
+  useEffect(() => {
+    if(isPending) return;
+    if (!session) {
+      navigate('/auth/signin', { replace: true });
+    }
+  }, [session,isPending]);
 
   const { data: subscriptionData, isLoading: checkingSubscription  } = useQuery({
     queryKey: ['subscription', session?.user.id],
@@ -35,7 +39,7 @@ console.log(session)
   },[subscriptionData]);
 
 
-  if (checkingSubscription) {
+  if (checkingSubscription || isPending) {
     return (
       <Center style={{ height: '100vh' }}>
         <Loader size="xl" />
@@ -45,14 +49,9 @@ console.log(session)
 
   return (
     <>
-    {session ? <DefaultLayout>
+    <DefaultLayout>
      <Outlet />
-    </DefaultLayout> :  <LoadingOverlay
-    visible={isPending}
-    zIndex={1000}
-    overlayProps={{ radius: 'sm', blur: 2 }}
-    loaderProps={{ color: '#8A2BE2', type: 'bars' }}
-  />}
+    </DefaultLayout>
     </>
   );
 };

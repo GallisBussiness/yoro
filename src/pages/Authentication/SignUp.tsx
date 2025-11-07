@@ -13,13 +13,14 @@ const SignUp: React.FC = () => {
   const [isPending, setIsPending] = useState(false);
   const navigate = useNavigate();
 
-  const {data: session} = authclient.useSession();
+  const {data: session,isPending:isPendingSession } = authclient.useSession();
   
   useEffect(() => {
+   if(isPendingSession) return;
   if (session) {
       navigate('/dashboard', { replace: true });
     }
-  }, [session]);
+  }, [session,isPendingSession]);
 
   const onRegister = async (values: RegisterInterface) => {
     setIsPending(true);

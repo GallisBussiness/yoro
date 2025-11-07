@@ -14,7 +14,8 @@ const SignIn: React.FC = () => {
   const {data: session,isPending:isPendingSession} = authclient.useSession();
 
   useEffect(() => {
-if (isPendingSession==false && session) {
+    if (isPendingSession) return;
+if (session) {
       navigate('/dashboard', { replace: true });
     }
   }, [session,isPendingSession]);
@@ -29,7 +30,7 @@ const onLogin = async (values: LoginInterface) => {
         password: values.password,
         callbackURL: '/dashboard',
       });
-      
+
       if(res?.error) {
         // Vérifier si l'erreur est due à un email non vérifié
         if(res.error.code === "EMAIL_NOT_VERIFIED") {

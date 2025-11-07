@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App } from 'antd';
 import { Button, Text, Card, Group, Badge, Loader, Center, Paper, Title, Divider } from '@mantine/core';
@@ -14,11 +14,13 @@ import { authclient } from '../../../lib/auth-client';
 const Subscription: React.FC = () => {
   const navigate = useNavigate();
      
-      const {data:session,isPending} = authclient.useSession()
-      console.log(session)
-      // if(session && !session.user) {
-      //   navigate('/auth/signin', { replace: true });
-      // }
+      const {data:session,isPending:isPendingSession} = authclient.useSession()
+      useLayoutEffect(() => {
+        if(isPendingSession) return;
+        if (!session) {
+          navigate('/auth/signin', { replace: true });
+        } 
+      }, [session,isPendingSession]);
   const { message } = App.useApp();
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 
@@ -127,7 +129,7 @@ const Subscription: React.FC = () => {
     return defaultFeatures;
   };
 
-  if (checkingSubscription || loadingPacks || isPending) {
+  if (checkingSubscription || loadingPacks) {
     return (
       <Center style={{ height: '100vh' }}>
         <Loader size="xl" />
