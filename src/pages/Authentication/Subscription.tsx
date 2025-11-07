@@ -14,12 +14,12 @@ import { authclient } from '../../../lib/auth-client';
 const Subscription: React.FC = () => {
   const navigate = useNavigate();
      
-      const {data:session} = authclient.useSession()
+      const {data:session,isPending} = authclient.useSession()
       useLayoutEffect(() => {
-        if (!session) {
+        if (isPending==false && !session) {
           navigate('/auth/signin', { replace: true });
         } 
-      }, [session]);
+      }, [session,isPending]);
   const { message } = App.useApp();
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 
@@ -128,7 +128,7 @@ const Subscription: React.FC = () => {
     return defaultFeatures;
   };
 
-  if (checkingSubscription || loadingPacks) {
+  if (checkingSubscription || loadingPacks || isPending) {
     return (
       <Center style={{ height: '100vh' }}>
         <Loader size="xl" />

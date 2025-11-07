@@ -8,12 +8,12 @@ const PendingSubscription: React.FC = () => {
 
 
    const navigate = useNavigate();
-   const {data: session} = authclient.useSession();
+   const {data: session,isPending} = authclient.useSession();
     useLayoutEffect(() => {
-      if (!session) {
+      if (isPending==false && !session) {
         navigate('/auth/signin', { replace: true });
       }
-    }, [session]);
+    }, [session,isPending]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">

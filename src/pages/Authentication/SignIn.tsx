@@ -11,13 +11,13 @@ const SignIn: React.FC = () => {
   const [isPending, setIsPending] = useState(false);
   const navigate = useNavigate();
 
-  const {data: session} = authclient.useSession();
+  const {data: session,isPending:isPendingSession} = authclient.useSession();
 
   useEffect(() => {
-if (session) {
+if (isPendingSession==false && session) {
       navigate('/dashboard', { replace: true });
     }
-  }, [session]);
+  }, [session,isPendingSession]);
   
   // Nous n'utilisons plus Mantine Form car il y a un conflit avec Ant Design Form
 

@@ -18,10 +18,10 @@ const GesCom: React.FC = () => {
 
 
   useLayoutEffect(() => {
-    if (!session) {
+    if (isPending==false && !session) {
       navigate('/auth/signin', { replace: true });
     }
-  }, [session]);
+  }, [session,isPending]);
 
   const { data: subscriptionData, isLoading: checkingSubscription  } = useQuery({
     queryKey: ['subscription', session?.user.id],
