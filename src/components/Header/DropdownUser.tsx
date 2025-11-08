@@ -15,8 +15,7 @@ const DropdownUser = () => {
   const handleLogout = async () => {
     await authclient.signOut({
       fetchOptions: {
-        onSuccess: (ctx) => {
-          console.log(ctx);
+        onSuccess: () => {
           localStorage.removeItem("ges_com_token");
           navigate('/auth/signin', { replace: true });
         }

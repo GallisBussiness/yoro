@@ -22,25 +22,25 @@ function Overview() {
   const { data: ventes } = useQuery({
     queryKey: ['ventes'],
     queryFn: () => venteService.getByUser(session!.user.id),
-    enabled: !!session
+    enabled: session !== null
   });
 
   const { data: achats } = useQuery({
     queryKey: ['achats'],
     queryFn: () => achatService.getByUser(session!.user.id),
-    enabled: !!session
+    enabled: session !== null
   });
 
   const { data: articles } = useQuery({
     queryKey: ['articles'],
     queryFn: () => articleService.getByUser(session!.user.id),
-    enabled: !!session
+    enabled: session !== null
   });
 
   const { data: familles } = useQuery({
     queryKey: ['familles'],
     queryFn: () => familleService.getByUser(session!.user.id),
-    enabled: !!session
+    enabled: session !== null
   });
 
   // Calculer les statistiques
