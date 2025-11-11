@@ -3,25 +3,13 @@ import { Link } from 'react-router-dom';
 import { Avatar, Badge } from 'antd';
 import { FiSettings, FiLogOut, FiChevronDown, FiCreditCard } from 'react-icons/fi';
 import { authclient } from '../../../lib/auth-client';
-import { useNavigate } from 'react-router-dom';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const navigate = useNavigate();
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
   const { data: session } = authclient.useSession() 
-
-  const handleLogout = async () => {
-    await authclient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          localStorage.removeItem("ges_com_token");
-          navigate('/auth/signin', { replace: true });
-        }
-      }
-    });
-  };
+  const { signOut } = authclient;
 
   // close on click outside
   useEffect(() => {
@@ -142,7 +130,7 @@ const DropdownUser = () => {
           
           <li>
             <button 
-            onClick={handleLogout}
+            onClick={() => signOut()}
               className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-colors duration-200"
             >
               <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 text-red-500 dark:bg-slate-700">
