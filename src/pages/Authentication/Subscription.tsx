@@ -1,4 +1,4 @@
-import { useLayoutEffect, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { App } from 'antd';
 import { Button, Text, Card, Group, Badge, Loader, Center, Paper, Title, Divider } from '@mantine/core';
@@ -15,7 +15,7 @@ const Subscription: React.FC = () => {
   const navigate = useNavigate();
      
       const {data:session,isPending:isPendingSession} = authclient.useSession()
-      useLayoutEffect(() => {
+      useEffect(() => {
         if(isPendingSession) return;
         if (!session) {
           navigate('/auth/signin', { replace: true });
