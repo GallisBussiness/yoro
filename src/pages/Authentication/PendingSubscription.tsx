@@ -10,9 +10,10 @@ const PendingSubscription: React.FC = () => {
    const navigate = useNavigate();
    const {data: session,isPending} = authclient.useSession();
     useEffect(() => {
-      if (isPending) return;
-      if (!session) {
+      if (!isPending){
+        if (session === null) {
         navigate('/auth/signin', { replace: true });
+      }
       }
     }, [session,isPending]);
 

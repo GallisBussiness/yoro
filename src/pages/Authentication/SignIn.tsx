@@ -14,9 +14,10 @@ const SignIn: React.FC = () => {
   const {data: session,isPending:isPendingSession} = authclient.useSession();
 
   useEffect(() => {
-    if (isPendingSession) return;
-if (session) {
-      navigate('/dashboard', { replace: true });
+    if (!isPendingSession){
+      if (session) {
+        navigate('/dashboard', { replace: true });
+      }
     }
   }, [session,isPendingSession]);
   

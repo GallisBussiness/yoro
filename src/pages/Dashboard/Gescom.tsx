@@ -17,10 +17,11 @@ const GesCom: React.FC = () => {
 
 
   useEffect(() => {
-    if(isPending) return;
-    if (!session) {
-      navigate('/auth/signin', { replace: true });
-    }
+    if(!isPending){
+      if (session === null) {
+        navigate('/auth/signin', { replace: true });
+      }
+    } 
   }, [session,isPending]);
 
   const { data: subscriptionData, isLoading: checkingSubscription  } = useQuery({
