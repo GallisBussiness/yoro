@@ -18,7 +18,7 @@ const Subscription: React.FC = () => {
       useEffect(() => {
         if(!isPendingSession){
           if (session === null) {
-            navigate('/auth/signin', { replace: true });
+            navigate('/auth/signin');
           }
         }
       }, [session,isPendingSession]);

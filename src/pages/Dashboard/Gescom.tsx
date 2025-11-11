@@ -19,7 +19,7 @@ const GesCom: React.FC = () => {
   useEffect(() => {
     if(!isPending){
       if (session === null) {
-        navigate('/auth/signin', { replace: true });
+        navigate('/auth/signin');
       }
     } 
   }, [session,isPending]);

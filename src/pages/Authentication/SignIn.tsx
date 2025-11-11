@@ -16,7 +16,7 @@ const SignIn: React.FC = () => {
   useEffect(() => {
     if (!isPendingSession){
       if (session) {
-        navigate('/dashboard', { replace: true });
+        navigate('/dashboard');
       }
     }
   }, [session,isPendingSession]);
@@ -31,6 +31,8 @@ const onLogin = async (values: LoginInterface) => {
         password: values.password,
         callbackURL: '/dashboard',
       });
+
+      console.log(res);
 
       if(res?.error) {
         // Vérifier si l'erreur est due à un email non vérifié
