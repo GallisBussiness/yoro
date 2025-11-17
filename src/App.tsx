@@ -31,6 +31,8 @@ import Depots from './pages/Dashboard/Depots';
 import DepotDetails from './pages/Dashboard/DepotDetails';
 import Abonnements from './pages/Dashboard/Abonnements';
 import InventaireVentes from './pages/Dashboard/InventaireVentes';
+import VenteCaisses from './pages/Dashboard/VenteCaisses';
+import VenteCaisse from './pages/Dashboard/VenteCaisse';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -300,6 +302,24 @@ function App() {
             <>
               <PageTitle title="Gallis/Inventaire des Ventes" />
              <InventaireVentes />
+            </>
+          }
+        />
+        <Route
+          path="vente-caisses"
+          element={
+            <>
+              <PageTitle title="Gallis/Ventes Caisse" />
+             <VenteCaisses />
+            </>
+          }
+        />
+        <Route
+          path="vente-caisses/:id"
+          element={
+            <>
+              <PageTitle title="Gallis/Vente Caisse" />
+             <VenteCaisse />
             </>
           }
         />

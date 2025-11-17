@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FaUsers, FaFileAlt, FaChevronRight, FaWarehouse, FaClipboardList } from "react-icons/fa";
+import { FaUsers, FaFileAlt, FaChevronRight, FaWarehouse, FaClipboardList, FaCashRegister } from "react-icons/fa";
 import { FaBasketShopping } from 'react-icons/fa6';
 import { MdDashboard, MdInventory, MdProductionQuantityLimits, MdSell } from 'react-icons/md';
 import { motion } from 'framer-motion';
@@ -104,6 +104,31 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   </div>
                   <span>Tableau de bord</span>
                   {hoveredItem === 'dashboard' && (
+                    <motion.div 
+                      initial={{ opacity: 0, x: -5 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="absolute right-2"
+                    >
+                      <FaChevronRight className="text-white/60 text-xs" />
+                    </motion.div>
+                  )}
+                </NavLink>
+              </li>
+                  <li 
+                onMouseEnter={() => setHoveredItem('vente-caisses')} 
+                onMouseLeave={() => setHoveredItem(null)}
+              >
+                <NavLink
+                  to="vente-caisses"
+                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('vente-caisses') 
+                    ? 'bg-white/20 shadow-md' 
+                    : 'hover:bg-white/10'}`}
+                >
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('vente-caisses') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
+                    <FaCashRegister className="text-xl" />
+                  </div>
+                  <span>Ventes Caisse</span>
+                  {hoveredItem === 'vente-caisses' && (
                     <motion.div 
                       initial={{ opacity: 0, x: -5 }}
                       animate={{ opacity: 1, x: 0 }}

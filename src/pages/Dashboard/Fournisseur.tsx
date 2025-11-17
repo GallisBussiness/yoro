@@ -245,7 +245,7 @@ function Fournisseur() {
             <div>
               <Title order={3} className="text-gray-800 dark:text-gray-200 flex items-center gap-2">
                 <FaFileInvoiceDollar className="text-orange-500" /> 
-                Factures du client
+                Factures du fournisseur
               </Title>
               <Text className="text-gray-600 dark:text-gray-400">Historique des factures et paiements</Text>
             </div>
