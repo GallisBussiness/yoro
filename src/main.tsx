@@ -8,8 +8,6 @@ import 'mantine-datatable/styles.css';
 import '@mantine/dropzone/styles.css';
 import './css/style.css';
 import '@mantine/dates/styles.css';
-// import AuthProvider from 'react-auth-kit';
-// import createStore from 'react-auth-kit/createStore';
 import { fr } from 'date-fns/locale';
 import 'dayjs/locale/fr';
 import { Toaster, toast } from 'sonner';
@@ -81,7 +79,10 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <Toaster />
     <DatesProvider settings={{ locale: 'fr' }}>
       <QueryClientProvider client={queryClient}>
-       <Router>
+       <Router future={{
+    v7_relativeSplatPath: true,
+    v7_startTransition: true
+  }}>
         <AntdApp>
            <App />
         </AntdApp>

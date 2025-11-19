@@ -531,12 +531,14 @@ function Overview() {
                         fill="#3b82f6" 
                         name="Nombre de Produits" 
                         radius={[4, 4, 0, 0]}
+                        isAnimationActive={false}
                       />
                       <Bar 
                         dataKey="prixMoyen" 
                         fill="#8A2BE2" 
                         name="Prix Moyen" 
                         radius={[4, 4, 0, 0]}
+                        isAnimationActive={false}
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -654,12 +656,14 @@ function Overview() {
                       fill="#8A2BE2" 
                       name="Quantité" 
                       radius={[4, 4, 0, 0]}
+                      isAnimationActive={false}
                     />
                     <Bar 
                       dataKey="valeur" 
                       fill="#3b82f6" 
                       name="Valeur" 
                       radius={[4, 4, 0, 0]}
+                      isAnimationActive={false}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -689,6 +693,7 @@ function Overview() {
                       fill="#ef4444" 
                       name="Stock restant" 
                       radius={[0, 4, 4, 0]}
+                      isAnimationActive={false}
                     />
                   </BarChart>
                 </ResponsiveContainer>

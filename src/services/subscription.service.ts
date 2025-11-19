@@ -20,11 +20,10 @@ export class SubscriptionService extends Service {
 
   /**
    * Get active subscription for a user
-   * @param userId User ID
    * @returns Promise with the user's active subscription
    */
-  async getActiveByUser(userId: string) {
-    return this.api.get(`/${this.ressource}/subscription/active/${userId}`).then(res => res.data);
+  async getActiveByUser() {
+    return this.api.get(`/${this.ressource}/subscription/active`).then(res => res.data);
   }
 
   /**

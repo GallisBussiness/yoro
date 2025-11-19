@@ -28,8 +28,7 @@ const onLogin = async (values: LoginInterface) => {
     try {
       const res = await authclient.signIn.email({
         email: values.email,
-        password: values.password,
-        callbackURL: '/dashboard',
+        password: values.password
       });
 
       console.log(res);
