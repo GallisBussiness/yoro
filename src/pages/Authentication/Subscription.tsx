@@ -15,13 +15,9 @@ const Subscription: React.FC = () => {
   const navigate = useNavigate();
      
       const {data:session,isPending:isPendingSession} = authclient.useSession()
-      useEffect(() => {
-        if(!isPendingSession){
-          if (session === null) {
-            navigate('/auth/signin');
-          }
-        }
-      }, [session,isPendingSession]);
+      
+      // La vérification de session est déjà faite dans Gescom.tsx
+      // Pas besoin de rediriger ici pour éviter les boucles
   const { message } = App.useApp();
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 

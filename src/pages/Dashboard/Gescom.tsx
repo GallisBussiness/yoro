@@ -34,10 +34,12 @@ const GesCom: React.FC = () => {
 
   useEffect(() => {
     if (session && subscriptionData?.subscription == null && !subscriptionData?.hasActiveSubscription) {
-      navigate('/subscription', { replace: true });
+      // Rediriger vers la page d'abonnement si aucun abonnement actif
+      if (window.location.pathname !== '/subscription') {
+        navigate('/subscription', { replace: true });
+      }
     }
-    return () => {}
-  },[subscriptionData]);
+  },[session, subscriptionData, navigate]);
 
 
   if (checkingSubscription || isPending) {

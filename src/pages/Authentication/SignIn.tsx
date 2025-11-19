@@ -1,6 +1,6 @@
 import { App, Button, Checkbox, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { authclient } from "../../../lib/auth-client";
 import { LoginInterface } from "../../interfaces/login.interface";
 import { Title, Divider, Paper, Text } from "@mantine/core";
@@ -11,15 +11,8 @@ const SignIn: React.FC = () => {
   const [isPending, setIsPending] = useState(false);
   const navigate = useNavigate();
 
-  const {data: session,isPending:isPendingSession} = authclient.useSession();
-
-  useEffect(() => {
-    if (!isPendingSession){
-      if (session) {
-        navigate('/dashboard');
-      }
-    }
-  }, [session,isPendingSession]);
+  // Redirection gérée uniquement après connexion réussie dans onLogin
+  // pour éviter les conflits avec Better Auth
   
   // Nous n'utilisons plus Mantine Form car il y a un conflit avec Ant Design Form
 
