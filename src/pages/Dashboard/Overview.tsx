@@ -11,6 +11,7 @@ import { FaChartLine, FaMoneyBillWave } from 'react-icons/fa6';
 import { formatN } from '../../lib/helpers';
 import { authclient } from '../../../lib/auth-client';
 import { FaShoppingCart } from 'react-icons/fa';
+import { useMemo } from 'react';
 
 function Overview() {
   const { data: session } = authclient.useSession() 
@@ -114,10 +115,12 @@ function Overview() {
     return acc;
   }, {});
 
-  const ventesData = Object.entries(ventesParMois || {}).map(([mois, montant]) => ({
-    mois,
-    montant
-  }));
+  const ventesData = useMemo(() => 
+    Object.entries(ventesParMois || {}).map(([mois, montant]) => ({
+      mois,
+      montant
+    })), [ventesParMois]
+  );
 
   // Données pour le graphique comparatif ventes/achats
   const comparaisonData = ventes?.map((vente: { date: string | number | Date; net_a_payer: number; }) => {
@@ -135,7 +138,7 @@ function Overview() {
   });
 
   // Données pour le graphique des produits par famille
-  const produitsParFamille = () => {
+  const produitsParFamille = useMemo(() => {
     if (!articles || !familles) return [];
     
     // Définir le type pour l'objet compteur
@@ -178,10 +181,10 @@ function Overview() {
     
     // Convertir l'objet en tableau pour le graphique
     return Object.values(compteur);
-  };
+  }, [articles, familles]);
   
   // Données pour l'analyse du stock par dépôt
-  const stockParDepot = () => {
+  const stockParDepot = useMemo(() => {
     if (!achats) return [];
     
     const depotsMap = new Map();
@@ -228,10 +231,10 @@ function Overview() {
     });
     
     return Array.from(depotsMap.values());
-  };
+  }, [achats, ventes]);
   
   // Données pour l'analyse des produits à faible stock
-  const produitsFaibleStock = () => {
+  const produitsFaibleStock = useMemo(() => {
     if (!produitsMap) return [];
     
     // Filtrer les produits avec un stock faible (moins de 10 unités)
@@ -256,7 +259,7 @@ function Overview() {
     return produitsCritiques
       .sort((a, b) => a.quantite - b.quantite)
       .slice(0, 5);
-  };
+  }, [produitsMap]);
 
   // Couleurs pour le graphique en camembert
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#FF5733', '#C70039', '#900C3F'];
@@ -417,7 +420,7 @@ function Overview() {
                 </div>
               </div>
               <Divider className="mb-4 border-slate-100 dark:border-slate-700" />
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={300} key="ventes-chart">
                 <AreaChart data={ventesData}>
                   <defs>
                     <linearGradient id="colorVentes" x1="0" y1="0" x2="0" y2="1">
@@ -459,7 +462,7 @@ function Overview() {
                 </div>
               </div>
               <Divider className="mb-4 border-slate-100 dark:border-slate-700" />
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={300} key="comparaison-chart">
                 <LineChart data={comparaisonData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="date" tick={{ fill: '#6b7280' }} />
@@ -513,8 +516,8 @@ function Overview() {
                   <Text size="xs" fw={500} className="text-slate-500 dark:text-slate-400 mb-2 text-center">
                     Distribution par quantité et prix moyen
                   </Text>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={produitsParFamille()} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <ResponsiveContainer width="100%" height={300} key="famille-bar-chart">
+                    <BarChart data={produitsParFamille} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                       <XAxis dataKey="nom" tick={{ fill: '#6b7280', fontSize: 10 }} />
                       <YAxis tick={{ fill: '#6b7280' }} />
@@ -531,14 +534,12 @@ function Overview() {
                         fill="#3b82f6" 
                         name="Nombre de Produits" 
                         radius={[4, 4, 0, 0]}
-                        isAnimationActive={false}
                       />
                       <Bar 
                         dataKey="prixMoyen" 
                         fill="#8A2BE2" 
                         name="Prix Moyen" 
                         radius={[4, 4, 0, 0]}
-                        isAnimationActive={false}
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -547,10 +548,10 @@ function Overview() {
                   <Text size="xs" fw={500} className="text-slate-500 dark:text-slate-400 mb-2 text-center">
                     Répartition en pourcentage
                   </Text>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={300} key="famille-pie-chart">
                     <PieChart>
                       <Pie
-                        data={produitsParFamille()}
+                        data={produitsParFamille}
                         cx="50%"
                         cy="50%"
                         labelLine={false}
@@ -561,7 +562,7 @@ function Overview() {
                         dataKey="count"
                         paddingAngle={2}
                       >
-                        {produitsParFamille().map((_, index) => (
+                        {produitsParFamille.map((_: any, index: number) => (
                           <Cell 
                             key={`cell-${index}`} 
                             fill={COLORS[index % COLORS.length]} 
@@ -620,7 +621,7 @@ function Overview() {
                   PRODUITS EN RUPTURE
                 </Text>
                 <Text size="xl" fw={700} className="text-red-700 dark:text-red-300">
-                  {produitsFaibleStock().filter(p => p.quantite === 0).length}
+                  {produitsFaibleStock.filter((p: any) => p.quantite === 0).length}
                 </Text>
               </div>
               <div className="p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl border border-green-200 dark:border-green-900/30">
@@ -638,8 +639,8 @@ function Overview() {
                 <Text size="xs" fw={500} className="text-slate-500 dark:text-slate-400 mb-2 text-center">
                   Stock par dépôt
                 </Text>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={stockParDepot()}>
+                <ResponsiveContainer width="100%" height={300} key="stock-depot-chart">
+                  <BarChart data={stockParDepot}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="nom" tick={{ fill: '#6b7280' }} />
                     <YAxis tick={{ fill: '#6b7280' }} />
@@ -656,14 +657,12 @@ function Overview() {
                       fill="#8A2BE2" 
                       name="Quantité" 
                       radius={[4, 4, 0, 0]}
-                      isAnimationActive={false}
                     />
                     <Bar 
                       dataKey="valeur" 
                       fill="#3b82f6" 
                       name="Valeur" 
                       radius={[4, 4, 0, 0]}
-                      isAnimationActive={false}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -672,8 +671,8 @@ function Overview() {
                 <Text size="xs" fw={500} className="text-slate-500 dark:text-slate-400 mb-2 text-center">
                   Produits à faible stock
                 </Text>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={produitsFaibleStock()} layout="vertical">
+                <ResponsiveContainer width="100%" height={300} key="faible-stock-chart">
+                  <BarChart data={produitsFaibleStock} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis type="number" tick={{ fill: '#6b7280' }} />
                     <YAxis dataKey="nom" type="category" tick={{ fill: '#6b7280' }} width={100} />
@@ -693,7 +692,6 @@ function Overview() {
                       fill="#ef4444" 
                       name="Stock restant" 
                       radius={[0, 4, 4, 0]}
-                      isAnimationActive={false}
                     />
                   </BarChart>
                 </ResponsiveContainer>
