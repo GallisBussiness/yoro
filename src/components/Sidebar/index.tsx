@@ -119,7 +119,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 <NavLink
-                  to="vente-caisses"
+                  to="/dashboard/vente-caisses"
                   className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('vente-caisses') 
                     ? 'bg-white/20 shadow-md' 
                     : 'hover:bg-white/10'}`}
@@ -144,7 +144,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 <NavLink
-                  to="clients"
+                  to="/dashboard/clients"
                   className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('clients') 
                     ? 'bg-white/20 shadow-md' 
                     : 'hover:bg-white/10'}`}
@@ -169,7 +169,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 <NavLink
-                  to="fournisseurs"
+                  to="/dashboard/fournisseurs"
                   className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('fournisseurs') 
                     ? 'bg-white/20 shadow-md' 
                     : 'hover:bg-white/10'}`}
@@ -194,7 +194,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 <NavLink
-                  to="ventes"
+                  to="/dashboard/ventes"
                   className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('ventes') && !pathname.includes('inventaire-ventes') 
                     ? 'bg-white/20 shadow-md' 
                     : 'hover:bg-white/10'}`}
@@ -219,7 +219,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 <NavLink
-                  to="approvisionnements"
+                  to="/dashboard/approvisionnements"
                   className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('approvisionnements') 
                     ? 'bg-white/20 shadow-md' 
                     : 'hover:bg-white/10'}`}
@@ -244,7 +244,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 <NavLink
-                  to="articles"
+                  to="/dashboard/articles"
                   className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('articles') 
                     ? 'bg-white/20 shadow-md' 
                     : 'hover:bg-white/10'}`}
@@ -269,7 +269,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 <NavLink
-                  to="stock"
+                  to="/dashboard/stock"
                   className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('stock') 
                     ? 'bg-white/20 shadow-md' 
                     : 'hover:bg-white/10'}`}
@@ -295,7 +295,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 <NavLink
-                  to="inventaire-ventes"
+                  to="/dashboard/inventaire-ventes"
                   className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('inventaire-ventes') 
                     ? 'bg-white/20 shadow-md' 
                     : 'hover:bg-white/10'}`}
