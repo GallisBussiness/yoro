@@ -9,6 +9,9 @@ import { authclient } from '../../../lib/auth-client';
 
 const GesCom: React.FC = () => {
   const navigate = useNavigate();
+
+  const { data: session } = authclient.useSession();
+  console.log(session);
  
 
   // const { data: subscriptionData, isLoading: checkingSubscription  } = useQuery({
