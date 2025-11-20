@@ -13,7 +13,6 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const navigate = useNavigate();
   const { data: session, isPending, error } = authclient.useSession();
-  console.log(session)
 
   useEffect(() => {
     // Attendre que la vérification de session soit terminée
