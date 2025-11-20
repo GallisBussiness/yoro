@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import PageTitle from './components/PageTitle';
+import ProtectedRoute from './components/ProtectedRoute';
 import SignIn from './pages/Authentication/SignIn';
 import ForgotPassword from './pages/Authentication/ForgotPassword';
 import ResetPassword from './pages/Authentication/ResetPassword';
@@ -155,10 +156,10 @@ function App() {
       <Route
           path="/dashboard/*"
           element={
-            <>
+            <ProtectedRoute>
               <PageTitle title="Gallis" />
               <Gescom />
-            </>
+            </ProtectedRoute>
           }
         >
           <Route
