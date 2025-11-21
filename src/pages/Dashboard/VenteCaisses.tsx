@@ -56,7 +56,6 @@ function VenteCaisses() {
   const { mutate: createVenteCaisse, isPending: loadingCreate } = useMutation({
     mutationFn: (data: any) => venteCaisseService.create(data),
     onSuccess: () => {
-      setOpened(false);
       qc.invalidateQueries({ queryKey: key });
       form.resetFields();
       toast.success('Vente caisse créée avec succès');
