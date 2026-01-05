@@ -1,19 +1,19 @@
 import Api from "./Api";
 import { Service } from "./Service";
 
-export interface Dette {
+export interface DetteFournisseur {
   _id?: string;
   montant: number;
   date: Date | string;
-  client: string;
+  fournisseur: string;
 }
 
-export class DetteService extends Service{
-constructor(){
-    super(Api,'dette-fournisseur');
-}
+export class DetteFournisseurService extends Service {
+  constructor() {
+    super(Api, 'dette-fournisseur');
+  }
 
-async findByClient(id:string) {
+  async findByFournisseur(id: string) {
     return this.api.get(`/${this.ressource}/by/${id}`).then(res => res.data);
   }
 
