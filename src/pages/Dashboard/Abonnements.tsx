@@ -84,6 +84,9 @@ const Abonnements: React.FC = () => {
     enabled: !!userId,
   });
 
+
+  console.log(activeSubscription);
+
   
   // Fonction pour obtenir la couleur du badge en fonction du statut
   const getStatusColor = (status: string) => {

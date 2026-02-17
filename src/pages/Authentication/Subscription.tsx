@@ -68,7 +68,6 @@ const Subscription: React.FC = () => {
         tokenUrl: redirect_url,
         presentationMode: global.PayTech.OPEN_IN_POPUP,
         onClose: () => {
-          console.log('Paiement fermé par l\'utilisateur');
           navigate('/cancel?payment_id=' + session?.user.id + '&pack_name=' + selectedPack?.nom);
         },
       }).send();
