@@ -234,8 +234,8 @@ const Abonnements: React.FC = () => {
                     <Text size="sm" fw={500} className="text-green-700 dark:text-green-300">Date d'expiration</Text>
                   </Group>
                   <Text size="sm" className="mt-1">
-                    {activeSubscription.date_fin 
-                      ? format(new Date(activeSubscription.date_fin), 'dd MMMM yyyy', { locale: fr }) 
+                    {activeSubscription?.subscription?.date_fin 
+                      ? format(new Date(activeSubscription?.subscription?.date_fin), 'dd MMMM yyyy', { locale: fr }) 
                       : 'N/A'}
                   </Text>
                 </Box>
@@ -248,7 +248,7 @@ const Abonnements: React.FC = () => {
                     <Text size="sm" fw={500} className="text-purple-700 dark:text-purple-300">Montant</Text>
                   </Group>
                   <Text size="sm" className="mt-1">
-                    {formatN(activeSubscription.pack?.prix || 0)} FCFA
+                    {formatN(activeSubscription?.subscription?.pack?.prix || 0)} FCFA
                   </Text>
                 </Box>
               </div>
