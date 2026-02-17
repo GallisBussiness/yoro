@@ -4,6 +4,7 @@ import { PaymentService } from '../../services/payment.service';
 import { Tooltip } from 'antd';
 import { FaClock, FaCheckCircle } from 'react-icons/fa';
 import { authclient } from '../../../lib/auth-client';
+import { useNavigate } from 'react-router-dom';
 
 interface SubscriptionData {
   pack: {
@@ -16,6 +17,7 @@ interface SubscriptionData {
 }
 
 const SubscriptionInfo = () => {
+    const navigate = useNavigate();
     const { 
       data: session, 
     } = authclient.useSession() 
@@ -28,10 +30,10 @@ const SubscriptionInfo = () => {
     queryFn: () => new PaymentService().getByUser(),
     enabled: !!session,
   });
-  console.log(activeSubscription);
 
   useEffect(() => {
     if (activeSubscription) {
+      if(activeSubscription.subscription){
       // Calculer le nombre de jours restants
       const endDate = new Date(activeSubscription?.subscription?.date_fin);
       const today = new Date();
@@ -43,6 +45,10 @@ const SubscriptionInfo = () => {
         daysRemaining: daysRemaining,
         expirationDate: new Date(activeSubscription?.subscription?.date_fin).toLocaleDateString()
       });
+    }
+    }
+    else{
+     navigate('/subscription');
     }
   }, [activeSubscription]);
 
