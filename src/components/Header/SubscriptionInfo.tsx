@@ -33,15 +33,15 @@ const SubscriptionInfo = () => {
   useEffect(() => {
     if (activeSubscription) {
       // Calculer le nombre de jours restants
-      const endDate = new Date(activeSubscription.subscription.date_fin);
+      const endDate = new Date(activeSubscription?.subscription?.date_fin);
       const today = new Date();
       const timeDiff = endDate.getTime() - today.getTime();
       const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
       setSubscriptionData({
-        pack: activeSubscription.subscription.pack,
+        pack: activeSubscription?.subscription?.pack,
         daysRemaining: daysRemaining,
-        expirationDate: new Date(activeSubscription.subscription.date_fin).toLocaleDateString()
+        expirationDate: new Date(activeSubscription?.subscription?.date_fin).toLocaleDateString()
       });
     }
   }, [activeSubscription]);

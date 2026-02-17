@@ -14,7 +14,7 @@ import { authclient } from '../../../lib/auth-client';
 const Subscription: React.FC = () => {
   const navigate = useNavigate();
      
-      const {data:session,isPending:isPendingSession} = authclient.useSession()
+      const {data:session} = authclient.useSession()
       
       // La vérification de session est déjà faite dans Gescom.tsx
       // Pas besoin de rediriger ici pour éviter les boucles
@@ -61,7 +61,6 @@ const Subscription: React.FC = () => {
     },
     onSuccess: (data) => {
       const {redirect_url} = data;
-      console.log('Redirect URL:', redirect_url);
       const global:any = window;
       
       // Utiliser les URLs de redirection configurées dans le service
