@@ -84,9 +84,6 @@ const Abonnements: React.FC = () => {
     enabled: !!userId,
   });
 
-
-  console.log(activeSubscription);
-
   
   // Fonction pour obtenir la couleur du badge en fonction du statut
   const getStatusColor = (status: string) => {
@@ -225,7 +222,7 @@ const Abonnements: React.FC = () => {
                     <Text size="sm" fw={500} className="text-blue-700 dark:text-blue-300">Forfait</Text>
                   </Group>
                   <Text size="sm" className="mt-1 font-medium">
-                    {activeSubscription?.subscription?.pack?.nom || 'N/A'}
+                    {activeSubscription.pack?.nom || 'N/A'}
                   </Text>
                 </Box>
               </div>
@@ -237,8 +234,8 @@ const Abonnements: React.FC = () => {
                     <Text size="sm" fw={500} className="text-green-700 dark:text-green-300">Date d'expiration</Text>
                   </Group>
                   <Text size="sm" className="mt-1">
-                    {activeSubscription?.subscription?.date_fin 
-                      ? format(new Date(activeSubscription?.subscription?.date_fin), 'dd MMMM yyyy', { locale: fr }) 
+                    {activeSubscription.date_fin 
+                      ? format(new Date(activeSubscription.date_fin), 'dd MMMM yyyy', { locale: fr }) 
                       : 'N/A'}
                   </Text>
                 </Box>
@@ -251,7 +248,7 @@ const Abonnements: React.FC = () => {
                     <Text size="sm" fw={500} className="text-purple-700 dark:text-purple-300">Montant</Text>
                   </Group>
                   <Text size="sm" className="mt-1">
-                    {formatN(activeSubscription?.subscription?.pack?.prix || 0)} FCFA
+                    {formatN(activeSubscription.pack?.prix || 0)} FCFA
                   </Text>
                 </Box>
               </div>

@@ -28,7 +28,7 @@ const SubscriptionInfo = () => {
     queryFn: () => new PaymentService().getByUser(),
     enabled: !!session,
   });
-
+  console.log(activeSubscription);
 
   useEffect(() => {
     if (activeSubscription) {
