@@ -20,4 +20,8 @@ export class DetteFournisseurService extends Service {
   async getByUser(id: string) {
     return this.api.get(`/${this.ressource}/user/${id}`).then(res => res.data);
   }
+
+  async getAllWithTotalPaiements() {
+    return this.api.get(`/${this.ressource}/all-with-total`).then(res => res.data);
+  }
 }

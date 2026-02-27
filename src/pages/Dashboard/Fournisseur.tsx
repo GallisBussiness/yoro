@@ -646,10 +646,10 @@ function Fournisseur() {
                     Total: {formatN(filteredDettes(dettes)?.reduce((total: number, dette: any) => total + dette.montant, 0) || 0)} FCFA
                   </Badge>
                   <Badge size="lg" radius="md" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2">
-                    Payé: {formatN(filteredDettes(dettes)?.reduce((total: number, dette: any) => total + (dette.paiements?.reduce((totalPaiements: number, paiement: any) => totalPaiements + paiement.montant, 0) || 0), 0) || 0)} FCFA
+                    Payé: {formatN(filteredDettes(dettes)?.reduce((total: number, dette: any) => total + (dette.totalPaiements || 0), 0) || 0)} FCFA
                   </Badge>
                   <Badge size="lg" radius="md" className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2">
-                    Restant: {formatN((filteredDettes(dettes)?.reduce((total: number, dette: any) => total + dette.montant, 0) || 0) - (filteredDettes(dettes)?.reduce((total: number, dette: any) => total + (dette.paiements?.reduce((totalPaiements: number, paiement: any) => totalPaiements + paiement.montant, 0) || 0), 0) || 0))} FCFA
+                    Restant: {formatN(filteredDettes(dettes)?.reduce((total: number, dette: any) => total + (dette.resteAPayer || 0), 0) || 0)} FCFA
                   </Badge>
                   <Button
                     onClick={openAddDetteModal}
@@ -733,9 +733,14 @@ function Fournisseur() {
                     ),
                     textAlign: 'center',
                     render: (row: any) => (
-                      <Text fw={500} className="text-gray-800 dark:text-gray-200">
-                        {formatN(row.paiements?.reduce((total: number, paiement: any) => total + paiement.montant, 0) || 0)} FCFA
-                      </Text>
+                      <Badge 
+                        size="lg" 
+                        radius="md" 
+                        color="green"
+                        variant="light"
+                      >
+                        {formatN(row.totalPaiements || 0)} FCFA
+                      </Badge>
                     )
                   },
                   { 
@@ -748,9 +753,14 @@ function Fournisseur() {
                     ),
                     textAlign: 'center',
                     render: (row: any) => (
-                      <Text fw={500} className="text-gray-800 dark:text-gray-200">
-                        {formatN(row.montant - (row.paiements?.reduce((total: number, paiement: any) => total + paiement.montant, 0) || 0))} FCFA
-                      </Text>
+                      <Badge 
+                        size="lg" 
+                        radius="md" 
+                        color={(row.resteAPayer || 0) > 0 ? "red" : "green"}
+                        variant="light"
+                      >
+                        {formatN(row.resteAPayer || 0)} FCFA
+                      </Badge>
                     )
                   },
                   {
