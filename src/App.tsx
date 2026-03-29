@@ -20,12 +20,14 @@ import Fournisseurs from './pages/Dashboard/Fournisseurs';
 import Achats from './pages/Dashboard/Achats';
 import Ventes from './pages/Dashboard/Ventes';
 import Achat from './pages/Dashboard/Achat';
+import NouvelAchat from './pages/Dashboard/NouvelAchat';
 import Inventory from './pages/Dashboard/Inventory';
 import Inventori from './pages/Dashboard/Inventori';
 import Client from './pages/Dashboard/Client';
 import Overview from './pages/Dashboard/Overview';
 import AnnualReport from './pages/Dashboard/AnnualReport';
 import Vente from './pages/Dashboard/Vente';
+import NouvelleVente from './pages/Dashboard/NouvelleVente';
 import Fournisseur from './pages/Dashboard/Fournisseur';
 import Depots from './pages/Dashboard/Depots';
 import DepotDetails from './pages/Dashboard/DepotDetails';
@@ -33,6 +35,7 @@ import Abonnements from './pages/Dashboard/Abonnements';
 import InventaireVentes from './pages/Dashboard/InventaireVentes';
 import VenteCaisses from './pages/Dashboard/VenteCaisses';
 import VenteCaisse from './pages/Dashboard/VenteCaisse';
+import NouvelleVenteCaisse from './pages/Dashboard/NouvelleVenteCaisse';
 
 function App() {
   const { pathname } = useLocation();
@@ -263,6 +266,15 @@ function App() {
           }
         />
         <Route
+          path="approvisionnements/nouveau"
+          element={
+            <>
+              <PageTitle title="Gallis/Nouvel Achat" />
+             <NouvelAchat />
+            </>
+          }
+        />
+        <Route
           path="approvisionnements/:id"
           element={
             <>
@@ -277,6 +289,15 @@ function App() {
             <>
               <PageTitle title="Gallis/Ventes" />
              <Ventes />
+            </>
+          }
+        />
+        <Route
+          path="ventes/nouvelle"
+          element={
+            <>
+              <PageTitle title="Gallis/Nouvelle Vente" />
+             <NouvelleVente />
             </>
           }
         />
@@ -304,6 +325,15 @@ function App() {
             <>
               <PageTitle title="Gallis/Ventes Caisse" />
              <VenteCaisses />
+            </>
+          }
+        />
+        <Route
+          path="vente-caisses/nouvelle"
+          element={
+            <>
+              <PageTitle title="Gallis/Nouvelle Vente Caisse" />
+             <NouvelleVenteCaisse />
             </>
           }
         />

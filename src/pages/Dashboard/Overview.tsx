@@ -1,17 +1,18 @@
-import { Grid, Paper, Text, Group, SimpleGrid, RingProgress, Progress, Divider } from '@mantine/core';
+import { Grid, Paper, Text, Group, SimpleGrid, RingProgress, Progress, Divider, Badge, ThemeIcon } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { VenteService } from '../../services/vente.service';
 import { AchatService } from '../../services/achat.service';
 import { ArticleService } from '../../services/article.service';
 import { FamilleService } from '../../services/famille.service';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, LineChart, Line, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
-import { format, subMonths } from 'date-fns';
+import { format, subMonths, startOfMonth, endOfMonth, startOfYear, isWithinInterval } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { FaChartLine, FaMoneyBillWave } from 'react-icons/fa6';
 import { formatN } from '../../lib/helpers';
 import { authclient } from '../../../lib/auth-client';
-import { FaShoppingCart } from 'react-icons/fa';
+import { FaShoppingCart, FaArrowUp, FaArrowDown, FaBalanceScale, FaCalendarAlt, FaChartPie } from 'react-icons/fa';
 import { useMemo } from 'react';
+import { TbTrendingUp, TbTrendingDown } from 'react-icons/tb';
 
 function Overview() {
   const { data: session } = authclient.useSession() 
@@ -44,10 +45,64 @@ function Overview() {
     enabled: session !== null
   });
 
-  // Calculer les statistiques
+  // ===== CALCULS FINANCIERS =====
+  
+  // Total des gains (ventes)
   const totalVentes = ventes?.reduce((acc: number, v: { net_a_payer: number; }) => acc + v.net_a_payer, 0) || 0;
+  const totalMontantBrutVentes = ventes?.reduce((acc: number, v: { montant: number; }) => acc + v.montant, 0) || 0;
+  const totalRemisesVentes = ventes?.reduce((acc: number, v: { remise: number; }) => acc + v.remise, 0) || 0;
+  
+  // Total des dépenses (achats)
   const totalAchats = achats?.reduce((acc: number, a: { net_a_payer: number; }) => acc + a.net_a_payer, 0) || 0;
+  const totalMontantBrutAchats = achats?.reduce((acc: number, a: { montant: number; }) => acc + a.montant, 0) || 0;
+  const totalRemisesAchats = achats?.reduce((acc: number, a: { remise: number; }) => acc + a.remise, 0) || 0;
+  
+  // Bénéfice
   const beneficeBrut = totalVentes - totalAchats;
+  const margeBeneficiaire = totalVentes > 0 ? (beneficeBrut / totalVentes) * 100 : 0;
+  
+  // Statistiques du mois en cours
+  const now = new Date();
+  const debutMois = startOfMonth(now);
+  const finMois = endOfMonth(now);
+  const debutMoisDernier = startOfMonth(subMonths(now, 1));
+  const finMoisDernier = endOfMonth(subMonths(now, 1));
+  
+  const ventesMoisCourant = ventes?.filter((v: any) => 
+    isWithinInterval(new Date(v.date), { start: debutMois, end: finMois })
+  ).reduce((acc: number, v: any) => acc + v.net_a_payer, 0) || 0;
+  
+  const ventesMoisDernier = ventes?.filter((v: any) => 
+    isWithinInterval(new Date(v.date), { start: debutMoisDernier, end: finMoisDernier })
+  ).reduce((acc: number, v: any) => acc + v.net_a_payer, 0) || 0;
+  
+  const achatsMoisCourant = achats?.filter((a: any) => 
+    isWithinInterval(new Date(a.date), { start: debutMois, end: finMois })
+  ).reduce((acc: number, a: any) => acc + a.net_a_payer, 0) || 0;
+  
+  const achatsMoisDernier = achats?.filter((a: any) => 
+    isWithinInterval(new Date(a.date), { start: debutMoisDernier, end: finMoisDernier })
+  ).reduce((acc: number, a: any) => acc + a.net_a_payer, 0) || 0;
+  
+  const beneficeMoisCourant = ventesMoisCourant - achatsMoisCourant;
+  const beneficeMoisDernier = ventesMoisDernier - achatsMoisDernier;
+  
+  // Évolution en pourcentage
+  const evolutionVentes = ventesMoisDernier > 0 ? ((ventesMoisCourant - ventesMoisDernier) / ventesMoisDernier) * 100 : 0;
+  const evolutionAchats = achatsMoisDernier > 0 ? ((achatsMoisCourant - achatsMoisDernier) / achatsMoisDernier) * 100 : 0;
+  const evolutionBenefice = beneficeMoisDernier !== 0 ? ((beneficeMoisCourant - beneficeMoisDernier) / Math.abs(beneficeMoisDernier)) * 100 : 0;
+  
+  // Statistiques de l'année
+  const debutAnnee = startOfYear(now);
+  const ventesAnnee = ventes?.filter((v: any) => 
+    new Date(v.date) >= debutAnnee
+  ).reduce((acc: number, v: any) => acc + v.net_a_payer, 0) || 0;
+  
+  const achatsAnnee = achats?.filter((a: any) => 
+    new Date(a.date) >= debutAnnee
+  ).reduce((acc: number, a: any) => acc + a.net_a_payer, 0) || 0;
+  
+  const beneficeAnnee = ventesAnnee - achatsAnnee;
   
   // Calculer les statistiques de stock
   const calculerStatistiquesStock = () => {
@@ -63,7 +118,8 @@ function Overview() {
             ref: prod.ref,
             nom: prod.nom,
             quantite: 0,
-            valeur: 0
+            valeur: 0,
+            prixAchat: prod.pu
           });
         }
         
@@ -295,7 +351,7 @@ function Overview() {
             Vue d'ensemble
           </Text>
           <Text size="xl" fw={700} className="text-slate-800 dark:text-white">
-            Tableau de Bord
+            Tableau de Bord Financier
           </Text>
         </div>
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm px-4 py-2 mt-4 md:mt-0 border border-slate-100 dark:border-slate-700">
@@ -305,7 +361,212 @@ function Overview() {
         </div>
       </div>
 
-      {/* Cartes des statistiques */}
+      {/* ===== SECTION RÉSUMÉ FINANCIER ===== */}
+      <Paper withBorder p="xl" radius="lg" className="mb-8 shadow-lg border-slate-100 dark:border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900">
+        <div className="flex items-center gap-3 mb-6">
+          <ThemeIcon size="xl" radius="md" color="violet" variant="filled">
+            <FaChartPie size={24} />
+          </ThemeIcon>
+          <div>
+            <Text size="lg" fw={700} className="text-white">
+              Résumé Financier Global
+            </Text>
+            <Text size="xs" className="text-slate-400">
+              Vue d'ensemble de toutes vos transactions
+            </Text>
+          </div>
+        </div>
+
+        <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xl">
+          {/* GAINS (Ventes) */}
+          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-5 shadow-lg">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                <FaArrowUp size={20} className="text-white" />
+              </div>
+              <Badge color="green" variant="light" size="lg">GAINS</Badge>
+            </div>
+            <Text size="xs" className="text-green-100 uppercase tracking-wider mb-1">
+              Total des Ventes
+            </Text>
+            <Text size="xl" fw={800} className="text-white mb-2">
+              {formatN(totalVentes)} FCFA
+            </Text>
+            <Divider color="white" opacity={0.2} my="sm" />
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <Text size="xs" className="text-green-100">Montant brut</Text>
+                <Text size="xs" fw={600} className="text-white">{formatN(totalMontantBrutVentes)} F</Text>
+              </div>
+              <div className="flex justify-between">
+                <Text size="xs" className="text-green-100">Remises accordées</Text>
+                <Text size="xs" fw={600} className="text-white">- {formatN(totalRemisesVentes)} F</Text>
+              </div>
+              <div className="flex justify-between">
+                <Text size="xs" className="text-green-100">Nombre de ventes</Text>
+                <Text size="xs" fw={600} className="text-white">{ventes?.length || 0}</Text>
+              </div>
+            </div>
+          </div>
+
+          {/* DÉPENSES (Achats) */}
+          <div className="bg-gradient-to-br from-red-500 to-rose-600 rounded-xl p-5 shadow-lg">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                <FaArrowDown size={20} className="text-white" />
+              </div>
+              <Badge color="red" variant="light" size="lg">DÉPENSES</Badge>
+            </div>
+            <Text size="xs" className="text-red-100 uppercase tracking-wider mb-1">
+              Total des Achats
+            </Text>
+            <Text size="xl" fw={800} className="text-white mb-2">
+              {formatN(totalAchats)} FCFA
+            </Text>
+            <Divider color="white" opacity={0.2} my="sm" />
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <Text size="xs" className="text-red-100">Montant brut</Text>
+                <Text size="xs" fw={600} className="text-white">{formatN(totalMontantBrutAchats)} F</Text>
+              </div>
+              <div className="flex justify-between">
+                <Text size="xs" className="text-red-100">Remises obtenues</Text>
+                <Text size="xs" fw={600} className="text-white">- {formatN(totalRemisesAchats)} F</Text>
+              </div>
+              <div className="flex justify-between">
+                <Text size="xs" className="text-red-100">Nombre d'achats</Text>
+                <Text size="xs" fw={600} className="text-white">{achats?.length || 0}</Text>
+              </div>
+            </div>
+          </div>
+
+          {/* BÉNÉFICE */}
+          <div className={`bg-gradient-to-br ${beneficeBrut >= 0 ? 'from-violet-500 to-purple-600' : 'from-orange-500 to-amber-600'} rounded-xl p-5 shadow-lg`}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                <FaBalanceScale size={20} className="text-white" />
+              </div>
+              <Badge color={beneficeBrut >= 0 ? 'violet' : 'orange'} variant="light" size="lg">
+                {beneficeBrut >= 0 ? 'BÉNÉFICE' : 'PERTE'}
+              </Badge>
+            </div>
+            <Text size="xs" className="text-purple-100 uppercase tracking-wider mb-1">
+              Résultat Net
+            </Text>
+            <Text size="xl" fw={800} className="text-white mb-2">
+              {beneficeBrut >= 0 ? '+' : ''}{formatN(beneficeBrut)} FCFA
+            </Text>
+            <Divider color="white" opacity={0.2} my="sm" />
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <Text size="xs" className="text-purple-100">Marge bénéficiaire</Text>
+                <Text size="xs" fw={600} className="text-white">{margeBeneficiaire.toFixed(1)}%</Text>
+              </div>
+              <div className="flex justify-between">
+                <Text size="xs" className="text-purple-100">Ratio dépenses/gains</Text>
+                <Text size="xs" fw={600} className="text-white">{totalVentes > 0 ? ((totalAchats / totalVentes) * 100).toFixed(1) : 0}%</Text>
+              </div>
+              <div className="flex justify-between">
+                <Text size="xs" className="text-purple-100">Statut</Text>
+                <Text size="xs" fw={600} className="text-white">
+                  {beneficeBrut >= 0 ? '✅ Rentable' : '⚠️ Déficitaire'}
+                </Text>
+              </div>
+            </div>
+          </div>
+        </SimpleGrid>
+      </Paper>
+
+      {/* ===== SECTION MOIS EN COURS ===== */}
+      <Paper withBorder p="lg" radius="lg" className="mb-8 shadow-sm border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
+        <div className="flex items-center gap-3 mb-6">
+          <ThemeIcon size="lg" radius="md" color="blue" variant="light">
+            <FaCalendarAlt size={18} />
+          </ThemeIcon>
+          <div>
+            <Text size="md" fw={700} className="text-slate-800 dark:text-white">
+              Performance du Mois - {format(now, 'MMMM yyyy', { locale: fr })}
+            </Text>
+            <Text size="xs" className="text-slate-500">
+              Comparaison avec le mois précédent
+            </Text>
+          </div>
+        </div>
+
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
+          {/* Ventes du mois */}
+          <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-900/30">
+            <div className="flex items-center justify-between mb-2">
+              <Text size="xs" fw={500} className="text-green-600 dark:text-green-400">
+                VENTES DU MOIS
+              </Text>
+              <div className={`flex items-center gap-1 ${evolutionVentes >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {evolutionVentes >= 0 ? <TbTrendingUp size={14} /> : <TbTrendingDown size={14} />}
+                <Text size="xs" fw={600}>{evolutionVentes >= 0 ? '+' : ''}{evolutionVentes.toFixed(1)}%</Text>
+              </div>
+            </div>
+            <Text size="xl" fw={700} className="text-green-700 dark:text-green-300">
+              {formatN(ventesMoisCourant)} F
+            </Text>
+            <Text size="xs" className="text-green-600/70 dark:text-green-400/70 mt-1">
+              vs {formatN(ventesMoisDernier)} F le mois dernier
+            </Text>
+          </div>
+
+          {/* Achats du mois */}
+          <div className="p-4 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 rounded-xl border border-red-200 dark:border-red-900/30">
+            <div className="flex items-center justify-between mb-2">
+              <Text size="xs" fw={500} className="text-red-600 dark:text-red-400">
+                ACHATS DU MOIS
+              </Text>
+              <div className={`flex items-center gap-1 ${evolutionAchats <= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {evolutionAchats <= 0 ? <TbTrendingDown size={14} /> : <TbTrendingUp size={14} />}
+                <Text size="xs" fw={600}>{evolutionAchats >= 0 ? '+' : ''}{evolutionAchats.toFixed(1)}%</Text>
+              </div>
+            </div>
+            <Text size="xl" fw={700} className="text-red-700 dark:text-red-300">
+              {formatN(achatsMoisCourant)} F
+            </Text>
+            <Text size="xs" className="text-red-600/70 dark:text-red-400/70 mt-1">
+              vs {formatN(achatsMoisDernier)} F le mois dernier
+            </Text>
+          </div>
+
+          {/* Bénéfice du mois */}
+          <div className={`p-4 bg-gradient-to-r ${beneficeMoisCourant >= 0 ? 'from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border-violet-200 dark:border-violet-900/30' : 'from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-orange-200 dark:border-orange-900/30'} rounded-xl border`}>
+            <div className="flex items-center justify-between mb-2">
+              <Text size="xs" fw={500} className={beneficeMoisCourant >= 0 ? 'text-violet-600 dark:text-violet-400' : 'text-orange-600 dark:text-orange-400'}>
+                BÉNÉFICE DU MOIS
+              </Text>
+              <div className={`flex items-center gap-1 ${evolutionBenefice >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {evolutionBenefice >= 0 ? <TbTrendingUp size={14} /> : <TbTrendingDown size={14} />}
+                <Text size="xs" fw={600}>{evolutionBenefice >= 0 ? '+' : ''}{evolutionBenefice.toFixed(1)}%</Text>
+              </div>
+            </div>
+            <Text size="xl" fw={700} className={beneficeMoisCourant >= 0 ? 'text-violet-700 dark:text-violet-300' : 'text-orange-700 dark:text-orange-300'}>
+              {beneficeMoisCourant >= 0 ? '+' : ''}{formatN(beneficeMoisCourant)} F
+            </Text>
+            <Text size="xs" className={beneficeMoisCourant >= 0 ? 'text-violet-600/70 dark:text-violet-400/70' : 'text-orange-600/70 dark:text-orange-400/70'} mt-1>
+              vs {beneficeMoisDernier >= 0 ? '+' : ''}{formatN(beneficeMoisDernier)} F le mois dernier
+            </Text>
+          </div>
+
+          {/* Bénéfice de l'année */}
+          <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-900/30">
+            <Text size="xs" fw={500} className="text-blue-600 dark:text-blue-400 mb-2">
+              BÉNÉFICE ANNUEL {now.getFullYear()}
+            </Text>
+            <Text size="xl" fw={700} className={beneficeAnnee >= 0 ? 'text-blue-700 dark:text-blue-300' : 'text-orange-700 dark:text-orange-300'}>
+              {beneficeAnnee >= 0 ? '+' : ''}{formatN(beneficeAnnee)} F
+            </Text>
+            <Text size="xs" className="text-blue-600/70 dark:text-blue-400/70 mt-1">
+              Ventes: {formatN(ventesAnnee)} F | Achats: {formatN(achatsAnnee)} F
+            </Text>
+          </div>
+        </SimpleGrid>
+      </Paper>
+
+      {/* ===== CARTES STATISTIQUES CLASSIQUES ===== */}
       <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg" className="mb-8">
         <Paper withBorder p="lg" radius="lg" className="shadow-sm hover:shadow-md transition-shadow duration-300 border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
           <Group className="mb-3">

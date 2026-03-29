@@ -359,11 +359,11 @@ const handleUpdate  = (data: any) => {
   open();
 }
 
-const handleCreate  = () => {
-  setRemise(0);
-  form.reset();
-  open();
-}
+// const handleCreate  = () => {
+//   setRemise(0);
+//   form.reset();
+//   open();
+// }
 
 
 
@@ -786,7 +786,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
           <Button 
             bg="#8A2BE2" 
             leftSection={<AiOutlinePlus className="h-5 w-5 text-white"/>} 
-            onClick={handleCreate}
+            onClick={() => navigate('/dashboard/ventes/nouvelle')}
             className="shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
             radius="xl"
           >

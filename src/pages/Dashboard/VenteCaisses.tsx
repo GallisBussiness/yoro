@@ -20,14 +20,16 @@ import {
 } from 'antd';
 
 const { RangePicker } = DatePicker;
-import { FaTrash, FaEdit, FaSearch, FaPlus, FaCashRegister, FaCalendar, FaMoneyBillWave } from "react-icons/fa";
+import { FaTrash, FaEdit, FaSearch, FaPlus, FaCashRegister, FaCalendar, FaMoneyBillWave, FaBarcode, FaPrint, FaEye, FaDownload } from "react-icons/fa";
 import { toast } from 'sonner';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { useNavigate } from "react-router-dom";
 import { WeeklyRevenue } from "./WeeklyRevenue";
 import { VenteCaisseService } from "../../services/vente-caisse.service";
-import { VenteCaisse } from "../../types/vente-caisse";
+import { VenteCaisse, VenteCaisseProduit } from "../../types/vente-caisse";
+import { printTicket, downloadTicket, openTicketInNewTab } from "../../utils/ticketPdf";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -37,32 +39,19 @@ const { Title, Text } = Typography;
 const PAGE_SIZE = 10;
 
 function VenteCaisses() {
-  const [opened, setOpened] = useState(false);
+  const navigate = useNavigate();
   const [openedU, setOpenedU] = useState(false);
   const [query, setQuery] = useState('');
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+  
   const qc = useQueryClient();
   const venteCaisseService = new VenteCaisseService();
   const key = ['vente-caisse'];
-  const [form] = Form.useForm();
   const [formU] = Form.useForm();
-
 
   const { data: venteCaisses, isLoading } = useQuery({
     queryKey: key,
     queryFn: () => venteCaisseService.getAll(),
-  });
-
-  const { mutate: createVenteCaisse, isPending: loadingCreate } = useMutation({
-    mutationFn: (data: any) => venteCaisseService.create(data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: key });
-      form.resetFields();
-      toast.success('Vente caisse créée avec succès');
-    },
-    onError: () => {
-      toast.error('Erreur lors de la création');
-    }
   });
 
   const { mutate: updateVenteCaisse, isPending: loadingUpdate } = useMutation({
@@ -96,17 +85,9 @@ function VenteCaisses() {
     toast.info("L'action a été annulée !");
   };
 
-  const onCreate = (values: any) => {
-    const data = {
-      montant: values.montant,
-      date: values.date.toISOString()
-    };
-    createVenteCaisse(data);
-  };
-
   const onUpdate = (values: any) => {
     const data = {
-      montant: values.montant,
+      montantTotal: values.montantTotal,
       date: dayjs(values.date).toISOString()
     };
     updateVenteCaisse({ id: formU.getFieldValue('_id'), data });
@@ -123,14 +104,12 @@ function VenteCaisses() {
   const getFilteredData = () => {
     let data = venteCaisses || [];
     
-    // Filtre par recherche
     if (query) {
-      data = data.filter(({ montant, date }: VenteCaisse) => 
-        `${montant}${new Date(date).toLocaleDateString()}`.toLowerCase().includes(query.trim().toLowerCase())
+      data = data.filter((v: VenteCaisse) => 
+        `${v.montantTotal}${new Date(v.date).toLocaleDateString()}${v.numero || ''}`.toLowerCase().includes(query.trim().toLowerCase())
       );
     }
     
-    // Filtre par plage de dates
     if (dateRange && dateRange[0] && dateRange[1]) {
       data = data.filter((vente: VenteCaisse) => {
         const venteDate = dayjs(vente.date);
@@ -142,28 +121,45 @@ function VenteCaisses() {
   };
 
   const calculateTotal = (venteCaisses: VenteCaisse[] = []) => {
-    return venteCaisses.reduce((sum, vente) => sum + vente.montant, 0);
+    return venteCaisses.reduce((sum, vente) => sum + (vente.montantTotal || 0), 0);
   };
 
-
-
-  // Colonnes du tableau
   const columns = [
     {
       title: (
         <Space>
-          <FaMoneyBillWave className="text-green-500" />
-          <Text strong>Montant</Text>
+          <FaBarcode className="text-purple-500" />
+          <Text strong>Produits</Text>
         </Space>
       ),
-      dataIndex: 'montant',
-      key: 'montant',
+      dataIndex: 'produits',
+      key: 'produits',
+      width: 250,
+      render: (prods: VenteCaisseProduit[]) => (
+        <div className="space-y-1">
+          {prods?.slice(0, 3).map((p, i) => (
+            <Tag key={i} color="blue" className="text-xs">
+              {p.nom} x{p.quantite}
+            </Tag>
+          ))}
+          {prods?.length > 3 && (
+            <Tag color="default">+{prods.length - 3} autres</Tag>
+          )}
+          {(!prods || prods.length === 0) && (
+            <Text type="secondary" className="text-xs">Aucun produit</Text>
+          )}
+        </div>
+      )
+    },
+    {
+      title: <Text strong className="text-green-600">Montant Total</Text>,
+      dataIndex: 'montantTotal',
+      key: 'montantTotal',
       align: 'center' as const,
-      sorter: (a: VenteCaisse, b: VenteCaisse) => a.montant - b.montant,
-      sortDirections: ['ascend', 'descend'] as any,
-      render: (montant: number) => (
-        <Tag color="green" className="text-base px-3 py-1">
-          {montant.toLocaleString()} FCFA
+      sorter: (a: VenteCaisse, b: VenteCaisse) => (a.montantTotal || 0) - (b.montantTotal || 0),
+      render: (montantTotal: number) => (
+        <Tag color="green" className="text-base px-3 py-1 font-bold">
+          {montantTotal?.toLocaleString()} FCFA
         </Tag>
       )
     },
@@ -178,13 +174,12 @@ function VenteCaisses() {
       key: 'date',
       align: 'center' as const,
       sorter: (a: VenteCaisse, b: VenteCaisse) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-      sortDirections: ['ascend', 'descend'] as any,
       defaultSortOrder: 'descend' as any,
       render: (date: string) => (
-        <Text strong className="text-gray-800 dark:text-gray-200">
+        <Text className="text-gray-800 dark:text-gray-200 text-xs">
           {new Date(date).toLocaleDateString('fr-FR', {
             year: 'numeric',
-            month: 'long',
+            month: 'short',
             day: 'numeric',
             hour:'numeric',
             minute:'numeric'
@@ -197,13 +192,35 @@ function VenteCaisses() {
       key: 'actions',
       align: 'center' as const,
       render: (_: any, record: VenteCaisse) => (
-        <Space size="middle">
+        <Space size="small">
+          <Tooltip title="Imprimer ticket">
+            <Button
+              icon={<FaPrint />}
+              onClick={() => printTicket(record)}
+              className="text-green-600 border-green-600"
+            />
+          </Tooltip>
+          <Tooltip title="Télécharger PDF">
+            <Button
+              icon={<FaDownload />}
+              onClick={() => downloadTicket(record)}
+              className="text-blue-600 border-blue-600"
+            />
+          </Tooltip>
+          <Tooltip title="Voir aperçu">
+            <Button
+              icon={<FaEye />}
+              onClick={() => openTicketInNewTab(record)}
+              className="text-purple-600 border-purple-600"
+            />
+          </Tooltip>
           <Tooltip title="Modifier">
             <Button
               type="primary"
               icon={<FaEdit />}
               onClick={() => handleUpdate(record)}
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+              className="bg-gradient-to-r from-green-500 to-green-600"
+              size="small"
             />
           </Tooltip>
           <Popconfirm
@@ -216,11 +233,7 @@ function VenteCaisses() {
             okButtonProps={{ danger: true }}
           >
             <Tooltip title="Supprimer">
-              <Button
-                danger
-                icon={<FaTrash />}
-                className="bg-gradient-to-r from-red-500 to-red-600"
-              />
+              <Button danger icon={<FaTrash />} size="small" />
             </Tooltip>
           </Popconfirm>
         </Space>
@@ -262,7 +275,7 @@ function VenteCaisses() {
               <Button
                 type="primary"
                 icon={<FaPlus className="h-5 w-5" />}
-                onClick={() => setOpened(true)}
+                onClick={() => navigate('/dashboard/vente-caisses/nouvelle')}
                 className="bg-purple-600 hover:bg-purple-700 transition-colors duration-300 shadow-md"
                 size="large"
               >
@@ -313,7 +326,7 @@ function VenteCaisses() {
                         <Button
                           type="primary"
                           icon={<FaPlus />}
-                          onClick={() => setOpened(true)}
+                          onClick={() => navigate('/dashboard/vente-caisses/nouvelle')}
                           className="bg-gradient-to-r from-green-500 to-green-600"
                         >
                           Ajouter une vente
@@ -328,85 +341,6 @@ function VenteCaisses() {
             </WeeklyRevenue>
           </Card>
         </div>
-
-        {/* Drawer Création */}
-        <Drawer
-          title={
-            <Space>
-              <FaCashRegister className="text-green-500" />
-              <Title level={3} className="text-gray-800 dark:text-gray-200 mb-0">Nouvelle Vente Caisse</Title>
-            </Space>
-          }
-          placement="right"
-          onClose={() => setOpened(false)}
-          open={opened}
-          width={500}
-        >
-          <Spin spinning={loadingCreate} tip="Création en cours...">
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={onCreate}
-              initialValues={{
-                montant: 0,
-                date: dayjs()
-              }}
-            >
-              <Card className="bg-green-50 dark:bg-gray-800 border border-green-100 dark:border-gray-700 shadow-sm mb-4">
-                <Text className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3 block">
-                  Informations de la vente
-                </Text>
-
-                <Form.Item
-                  label="Montant"
-                  name="montant"
-                  rules={[
-                    { required: true, message: 'Montant requis' },
-                    { type: 'number', min: 0, message: 'Le montant doit être positif' }
-                  ]}
-                >
-                  <InputNumber
-                    placeholder="Entrez le montant"
-                    prefix={<FaMoneyBillWave className="text-gray-500" />}
-                    className="w-full"
-                    min={0}
-                    formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
-                    parser={value => value!.replace(/\s?/g, '') as any}
-                    addonAfter="FCFA"
-                    size="large"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label="Date"
-                  name="date"
-                  rules={[{ required: true, message: 'Date requise' }]}
-                >
-                  <DatePicker
-                    placeholder="Sélectionnez la date"
-                    format="DD/MM/YYYY"
-                    className="w-full"
-                    size="large"
-                  />
-                </Form.Item>
-              </Card>
-
-              <Space className="mt-6">
-                <Button onClick={() => setOpened(false)}>
-                  Annuler
-                </Button>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  icon={<FaPlus />}
-                  className="bg-gradient-to-r from-green-500 to-green-600"
-                >
-                  Créer la vente
-                </Button>
-              </Space>
-            </Form>
-          </Spin>
-        </Drawer>
 
         {/* Drawer Modification */}
         <Drawer
@@ -433,15 +367,15 @@ function VenteCaisses() {
                 </Text>
 
                 <Form.Item
-                  label="Montant"
-                  name="montant"
+                  label="Montant Total"
+                  name="montantTotal"
                   rules={[
                     { required: true, message: 'Montant requis' },
                     { type: 'number', min: 0, message: 'Le montant doit être positif' }
                   ]}
                 >
                   <InputNumber
-                    placeholder="Entrez le montant"
+                    placeholder="Entrez le montant total"
                     prefix={<FaMoneyBillWave className="text-gray-500" />}
                     className="w-full"
                     min={0}
@@ -482,6 +416,7 @@ function VenteCaisses() {
             </Form>
           </Spin>
         </Drawer>
+
       </div>
     </Spin>
   );

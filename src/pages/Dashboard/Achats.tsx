@@ -564,7 +564,7 @@ return (
        <Button 
          bg="#8A2BE2" 
          leftSection={<AiOutlinePlus className="h-5 w-5"/>} 
-         onClick={handleCreate}
+         onClick={() => navigate('/dashboard/approvisionnements/nouveau')}
          className="shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
          radius="xl"
        >

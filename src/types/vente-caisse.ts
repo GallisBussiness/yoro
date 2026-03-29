@@ -1,13 +1,23 @@
+export type VenteCaisseProduit = {
+  nom: string;
+  quantite: number;
+  prixUnitaire: number;
+  montant: number;
+};
+
 export type VenteCaisse = {
   _id: string;
-  montant: number;
+  numero?: string;
+  produits: VenteCaisseProduit[];
+  montantTotal: number;
   date: string;
   createdAt?: string;
   updatedAt?: string;
 };
 
 export type CreateVenteCaisseDto = {
-  montant: number;
+  produits: VenteCaisseProduit[];
+  montantTotal: number;
   date: string;
 };
 
