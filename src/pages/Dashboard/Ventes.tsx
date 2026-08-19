@@ -4,14 +4,14 @@ import { yupResolver } from 'mantine-form-yup-resolver';
 import * as yup from 'yup';
 import { DataTable } from "mantine-datatable";
 import { AiOutlinePlus } from "react-icons/ai";
-import { ActionIcon, Badge, Box, Button, Drawer, Group, HoverCard, LoadingOverlay, Modal, NumberFormatter, NumberInput, Popover, Radio, Stack, Table, Text, TextInput, Tooltip} from "@mantine/core";
-import { FaEye, FaPlus, FaTrash, FaSearch, FaShoppingBag, FaRegCalendarAlt, FaMoneyBillWave, FaUser, FaPrint, FaSortAlphaDown, FaSortAlphaDownAlt, FaCartPlus } from "react-icons/fa";
+import { ActionIcon, Badge, Box, Button, Drawer, Group, HoverCard, LoadingOverlay, Modal, NumberFormatter, NumberInput, Popover, Radio, Select as SelectM, Stack, Table, Text, TextInput, Tooltip} from "@mantine/core";
+import { FaEye, FaPlus, FaTrash, FaShoppingBag, FaRegCalendarAlt, FaMoneyBillWave, FaUser, FaPrint, FaSortAlphaDown, FaSortAlphaDownAlt, FaCartPlus } from "react-icons/fa";
 import { FaCartShopping, FaMinus, FaRegCircleCheck} from "react-icons/fa6";
 import { BsFillPenFill } from "react-icons/bs";
 import { useForm } from "@mantine/form";
 import { toast } from 'sonner';
 import {useDebouncedValue, useDisclosure } from "@mantine/hooks";
-import { Input, Select } from "antd";
+import { SearchInput } from "../../components/ui";
 import {WeeklyRevenue} from "./WeeklyRevenue";
 import { VenteService } from "../../services/vente.service";
 import useScanDetection from 'use-scan-detection';
@@ -22,12 +22,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ParamService } from "../../services/paramservice";
 import { ClientService } from "../../services/client.service";
 import { DateInput, DatePicker } from "@mantine/dates";
-import { sortBy } from "lodash";
 import { TbSum, TbDiscount } from "react-icons/tb";
 import { InventoryService } from "../../services/Inventory.service";
-import { formatN } from "../../lib/helpers";
+import { formatN, sortByKey, isValidUUID } from "../../lib/helpers";
 import { authclient } from '../../../lib/auth-client';
-import { validate } from "uuid";
 import { printInvoice } from "./invoice";
 import { FamilleService } from "../../services/famille.service";
 import { UniteService } from "../../services/unite.service";
@@ -414,7 +412,7 @@ useEffect(() => {
    }
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE;
-  const data = sortBy(ventes, sortStatus.columnAccessor);
+  const data = sortByKey(ventes, sortStatus.columnAccessor);
   setRecords(sortStatus.direction === 'desc' ? (filtered(data).slice(from, to) ?? []).reverse() : filtered(data).slice(from, to) ?? []);
 }, [searchParams,page,ventes,debouncedQuery,dateSearchRange,sortStatus]);
 
@@ -426,7 +424,7 @@ useScanDetection({
   
     try {
       const c = code.replace(/Shift/gi,"");
-      if(validate(c)) { 
+      if(isValidUUID(c)) { 
       const ar = await mutateAsync(c);
       
       if(!ar) {
@@ -504,9 +502,9 @@ useScanDetection({
 // Ajouter des raccourcis clavier pour faciliter l'utilisation
 useEffect(() => {
   const handleKeyDown = (event: KeyboardEvent) => {
-    // Alt+A pour focus sur la recherche d'articles
+    // Alt+A pour focus sur la recherche d'articles (Mantine Select trigger)
     if (event.altKey && event.key === 'a') {
-      const selectElement = document.querySelector('.ant-select-selector');
+      const selectElement = document.querySelector('[data-mantine-select-trigger]');
       if (selectElement) {
         (selectElement as HTMLElement).click();
       }
@@ -644,7 +642,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
   const isStockLow = item.qte >= stockQuantity;
   
   return (
-  <div key={item?.ref} className={`grid grid-cols-4 gap-2 items-center p-2 rounded-md mb-1 ${index % 2 === 0 ? 'bg-white dark:bg-slate-800/80' : 'bg-slate-50 dark:bg-slate-700/50'} transition-all duration-300 hover:shadow-md`}>
+  <div key={item?.ref} className={`grid grid-cols-4 gap-2 items-center p-2 rounded-md mb-1 ${index % 2 === 0 ? 'bg-gc-surface/80' : 'bg-slate-50 dark:bg-slate-700/50'} transition-all duration-300 hover:shadow-md`}>
     <div className="relative">
       <div className="bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-md text-blue-600 dark:text-blue-300 font-medium text-sm text-center">
         {item.ref}
@@ -670,7 +668,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
         key={form.key(`produits.${index}.pu`)}
         {...form.getInputProps(`produits.${index}.pu`)}
         classNames={{
-          input: "rounded-md border-slate-200 dark:border-slate-700 font-medium",
+          input: "rounded-md border-gc font-medium",
           wrapper: "shadow-sm"
         }}
       />
@@ -702,7 +700,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
             classNames={{
               input: isStockLow 
                 ? 'bg-red-50 text-red-700 font-medium rounded-md border-red-200 pl-7 pr-7' 
-                : 'rounded-md border-slate-200 dark:border-slate-700 font-medium pl-7 pr-7 text-center',
+                : 'rounded-md border-gc font-medium pl-7 pr-7 text-center',
               wrapper: "shadow-sm",
             }}
             key={form.key(`produits.${index}.qte`)}
@@ -765,26 +763,26 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
 })
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 min-h-screen p-4">
+    <div className="bg-gc-muted min-h-screen p-4">
       <LoadingOverlay
          visible={loadingDelete || isLoadingA || loadingCreate || isLoadingP || isLoadingI || loadingCreateClient }
          zIndex={1000}
          overlayProps={{ radius: 'sm', blur: 2 }}
-         loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+         loaderProps={{ color: 'brand', type: 'dots' }}
        />
      <div className="mt-2">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
         <div>
-          <Text size="xs" fw={500} className="text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+          <Text size="xs" fw={500} className="text-gc-muted uppercase tracking-wider mb-1">
             Gestion des ventes
           </Text>
-          <Text size="xl" fw={700} className="text-slate-800 dark:text-white">
+          <Text size="xl" fw={700} className="text-gc">
             Mes Ventes
           </Text>
         </div>
         <div className="mt-4 md:mt-0">
           <Button 
-            bg="#8A2BE2" 
+            color="brand" 
             leftSection={<AiOutlinePlus className="h-5 w-5 text-white"/>} 
             onClick={() => navigate('/dashboard/ventes/nouvelle')}
             className="shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
@@ -797,14 +795,13 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
 
      <WeeklyRevenue add={null}>
      <>
-     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 mb-6">
+     <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-4 mb-6">
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-         <div className="w-full md:w-1/3 relative">
-            <Input 
-              value={query} 
-              onChange={(e) => setQuery(e.currentTarget.value)} 
-              placeholder="Rechercher par référence..." 
-              prefix={<FaSearch className="text-slate-400" />}
+         <div className="w-full md:w-1/3">
+            <SearchInput
+              value={query}
+              onChange={setQuery}
+              placeholder="Rechercher par référence..."
               className="shadow-sm"
             />
          </div>
@@ -831,7 +828,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
        </div>
      </div>
     <DataTable
-      withTableBorder={true} 
+      withTableBorder={false} 
       columns={[
         { 
           accessor: 'ref', 
@@ -883,7 +880,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
           title: <Text fw={600} size="sm">Montant</Text>,
           textAlign: 'center',
           render: (data:any) => (
-            <Text fw={500} className="text-slate-700 dark:text-slate-300">
+            <Text fw={500} className="text-gc">
               {formatN(data?.montant)} FCFA
             </Text>
           ),
@@ -969,7 +966,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
                     </Text>
                   </div>
                   <Table highlightOnHover>
-                    <Table.Thead className="bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] text-white">
+                    <Table.Thead className="bg-gradient-to-r from-primary to-primary/70 text-white">
                       <Table.Tr>
                         <Table.Th className="text-white">N°</Table.Th>
                         <Table.Th className="text-white">Référence</Table.Th>
@@ -980,7 +977,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
                     </Table.Thead>
                     <Table.Tbody>
                       {data.produits.map((el:any, i: number) => (
-                        <Table.Tr key={el.ref} className={i % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50 dark:bg-slate-700'}>
+                        <Table.Tr key={el.ref} className={i % 2 === 0 ? 'bg-gc-surface' : 'bg-slate-50 dark:bg-slate-700'}>
                           <Table.Td>{i+1}</Table.Td>
                           <Table.Td>
                             <div className="bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-md text-blue-600 dark:text-blue-300 text-xs">
@@ -1054,7 +1051,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
                 </Popover.Target>
                 <Popover.Dropdown>
                   <div className="flex flex-col gap-3">
-                    <Text size="sm" fw={500} className="text-slate-700 dark:text-slate-300">
+                    <Text size="sm" fw={500} className="text-gc">
                       Êtes-vous sûr de vouloir supprimer cette vente ?
                     </Text>
                     <div className="flex justify-between gap-2">
@@ -1084,19 +1081,18 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
       ]}
       records={records}
       idAccessor="_id"
-      striped={true}
-      stripedColor="rgba(255, 93, 20, 0.05)"
+      striped={false}
       style={{
         fontWeight: 'normal',
       }}
       fetching={isLoading}
       loaderSize="sm"
-      loaderColor="#8A2BE2"
+      loaderColor="brand"
       loadingText="Chargement des données..."
       emptyState={
         <div className="flex flex-col items-center justify-center py-10">
           <img src="/img/empty.png" alt="Aucune donnée" className="w-32 h-32 mb-4 opacity-60" />
-          <Text size="sm" fw={500} className="text-slate-500 dark:text-slate-400">
+          <Text size="sm" fw={500} className="text-gc-muted">
             Aucune vente trouvée
           </Text>
         </div>
@@ -1117,13 +1113,13 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
       borderRadius="lg"
       shadow="sm"
       horizontalSpacing="md"
-      verticalSpacing="md"
+      verticalSpacing="xs"
       verticalAlign="top"
       highlightOnHover={true}
-      paginationActiveBackgroundColor="#8A2BE2"
+      paginationActiveBackgroundColor="var(--gc-primary)"
       paginationSize="sm"
       bodyRef={bodyRef}
-      className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg"
+      className="border-none shadow-none"
     />
      </>
      
@@ -1135,7 +1131,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
      opened={opened} 
      onClose={close} 
      title={
-       <Text size="lg" fw={700} className="text-slate-800 dark:text-white">
+       <Text size="lg" fw={700} className="text-gc">
          {form.getValues()._id ? 'Modifier la vente' : 'Nouvelle vente'}
        </Text>
      } 
@@ -1150,16 +1146,16 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
          visible={loadingCreate || isPending || loadingUpdate}
          zIndex={1000}
          overlayProps={{ radius: 'sm', blur: 2 }}
-         loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+         loaderProps={{ color: 'brand', type: 'dots' }}
        />
        <form onSubmit={form.onSubmit(onCreate)} className="space-y-2">
-       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-2">
+       <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-2">
         <div className="flex flex-col md:flex-row items-start justify-between gap-6">
-       <div className="bg-slate-50 dark:bg-slate-800/60 p-2 rounded-lg">
+       <div className="bg-gc-muted/60 p-2 rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <FaUser size={16} className="text-orange-500" />
-            <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+            <Text fw={600} size="sm" className="text-gc">
               Informations client
             </Text>
           </div>
@@ -1175,37 +1171,35 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
           </Button>
         </div>
         
-        <Select
+        <SelectM
           placeholder="Sélectionner un client"
-          options={clients?.map((v: { tel: any; nom: any; addr: any;_id:string }) => ({
+          searchable
+          data={clients?.map((v: { tel: any; nom: any; addr: any;_id:string }) => ({
             label: `${v.nom} ${v.tel ? `/ ${v.tel}` : ''} ${v.addr ? `/ ${v.addr}` : ''}`,
             value: v._id
           }))}
           {...form.getInputProps('client')}
-          loading={isLoadingClient}
-          showSearch
-          optionFilterProp="label"
-          filterSort={(optionA, optionB) =>
-            `${optionA.label}`.toLowerCase().localeCompare(`${optionB.label}`.toLowerCase())}
+          size="sm"
+          radius={8}
+          nothingFoundMessage="Aucun résultat"
           className="w-full mb-2"
-          style={{ borderRadius: '0.5rem' }}
         />
         
-        <Text size="xs" className="text-slate-500 dark:text-slate-400">
+        <Text size="xs" className="text-gc-muted">
           Sélectionnez un client existant ou créez-en un nouveau
         </Text>
       </div>
       <div>
          <div className="flex items-center gap-2 mb-2">
            <FaRegCalendarAlt size={16} className="text-orange-500" />
-           <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-300">
+           <Text fw={600} size="sm" className="text-gc">
              Date de la facture
            </Text>
          </div>
          <DateInput
            placeholder="Sélectionner une date"
            classNames={{
-             input: "rounded-md border-slate-200 dark:border-slate-700",
+             input: "rounded-md border-gc",
              wrapper: "shadow-sm"
            }}
            {...form.getInputProps('date')}
@@ -1216,7 +1210,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
            <div className="w-full md:w-2/3">
              <div className="flex items-center gap-2 mb-2">
                <FaCartShopping size={16} className="text-orange-500" />
-               <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-300">
+               <Text fw={600} size="sm" className="text-gc">
                  Ajouter un produit
                </Text>
                <Button 
@@ -1230,36 +1224,21 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
             Nouvel article
           </Button>
              </div>
-             <Select 
-               showSearch  
-               optionFilterProp="label"
-               filterSort={(optionA, optionB) =>
-                 `${optionA.label}`.toLowerCase().localeCompare(`${optionB.label}`.toLowerCase())}
-               className="w-full" 
-               options={articles?.map((v: {nom:string;_id: string;ref: string; prix: number; unite: any;}) => ({
+             <SelectM
+               searchable
+               className="w-full"
+               data={articles?.map((v: {nom:string;_id: string;ref: string; prix: number; unite: any;}) => ({
                  label: `${v.nom} / ${v.ref}`,
                  value: JSON.stringify(v),
                  disabled: invs?.find((p: { ref: any; }) => p.ref === v.ref)?.qr <= 0
                }))}
-               loading={isLoadingA} 
-               value={ref} 
-               onChange={onSelect} 
+               value={ref}
+               onChange={onSelect}
                placeholder="Rechercher un produit..."
-               size="large"
-               style={{ borderRadius: '0.5rem' }}
-               dropdownRender={(menu) => (
-                 <div>
-                   {menu}
-                   <div className="p-2 border-t border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700">
-                     <Text size="xs" className="text-slate-600 dark:text-slate-300">
-                       <span className="inline-block w-3 h-3 rounded-full bg-green-500 mr-1"></span> En stock
-                       <span className="inline-block w-3 h-3 rounded-full bg-red-500 ml-3 mr-1"></span> Rupture de stock
-                     </Text>
-                   </div>
-                 </div>
-               )}
-               optionRender={(option) => {
-                 // S'assurer que option.value est défini avant de le parser
+               size="sm"
+               radius={8}
+               nothingFoundMessage="Aucun résultat"
+               renderOption={({ option }) => {
                  const parsedValue = option.value ? JSON.parse(option.value as string) : null;
                  const isInStock = parsedValue ? invs?.find((p: { ref: any; }) => p.ref === parsedValue.ref)?.qr > 0 : false;
                  return (
@@ -1279,8 +1258,12 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
                  );
                }}
              />
+            <Text size="xs" className="text-gc-muted mt-1">
+              <span className="inline-block w-3 h-3 rounded-full bg-green-500 mr-1 align-middle"></span> En stock
+              <span className="inline-block w-3 h-3 rounded-full bg-red-500 ml-3 mr-1 align-middle"></span> Rupture de stock
+            </Text>
              <div className="flex justify-between items-center mt-1">
-               <Text size="xs" className="text-slate-500 dark:text-slate-400">
+               <Text size="xs" className="text-gc-muted">
                  Scannez un code-barres ou sélectionnez un produit dans la liste
                </Text>
                <Text size="xs" className="text-blue-600 dark:text-blue-400">
@@ -1292,7 +1275,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
            <div className="w-full md:w-1/3">
              <div className="flex items-center gap-2 mb-2">
                <TbDiscount size={16} className="text-orange-500" />
-               <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-300">
+               <Text fw={600} size="sm" className="text-gc">
                  Remise
                </Text>
              </div>
@@ -1303,7 +1286,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
                value={remise}
                onChange={handleRemise}
                classNames={{
-                 input: "rounded-md border-slate-200 dark:border-slate-700",
+                 input: "rounded-md border-gc",
                  wrapper: "shadow-sm"
                }}
              />
@@ -1313,10 +1296,10 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
          <div className="h-px w-full bg-slate-100 dark:bg-slate-700 my-4"></div>
         
      <Box mx="auto"> 
-       <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-lg mb-6">
+       <div className="bg-gc-muted/60 p-4 rounded-lg mb-6">
          <div className="flex items-center gap-2 mb-4">
            <FaShoppingBag size={16} className="text-orange-500" />
-           <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+           <Text fw={600} size="sm" className="text-gc">
              Produits sélectionnés
            </Text>
          </div>
@@ -1354,7 +1337,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
        </div>
     </Box>
 
-      <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+      <div className="bg-gc-surface p-4 rounded-lg shadow-sm border border-gc">
         <div className="flex flex-col justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="flex flex-col items-center justify-center bg-orange-50 dark:bg-orange-900/20 p-3 rounded-full">
@@ -1393,7 +1376,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
           
           <Button 
             type="submit" 
-            bg="#8A2BE2" 
+            color="brand" 
             loading={loadingCreate || loadingUpdate}
             size="md"
             className="shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-bold"
@@ -1416,7 +1399,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
      opened={quantityModalOpened}
      onClose={() => setQuantityModalOpened(false)}
      title={
-       <Text size="lg" fw={700} className="text-slate-800 dark:text-white flex items-center gap-2">
+       <Text size="lg" fw={700} className="text-gc flex items-center gap-2">
          <FaCartPlus className="text-orange-500" />
          Spécifier la quantité
        </Text>
@@ -1433,13 +1416,13 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
        <div className="space-y-4">
          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
            <div className="flex items-center justify-between">
-             <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+             <Text fw={600} size="sm" className="text-gc">
                {selectedProduct.nom}
              </Text>
              <Badge color="blue">{selectedProduct.ref}</Badge>
            </div>
            <div className="flex items-center justify-between mt-2">
-             <Text size="xs" className="text-slate-500 dark:text-slate-400">
+             <Text size="xs" className="text-gc-muted">
                Prix unitaire:
              </Text>
              <Text fw={600} size="sm" className="text-orange-600 dark:text-orange-400">
@@ -1447,7 +1430,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
              </Text>
            </div>
            <div className="flex items-center justify-between mt-1">
-             <Text size="xs" className="text-slate-500 dark:text-slate-400">
+             <Text size="xs" className="text-gc-muted">
                Stock disponible:
              </Text>
              <Text fw={600} size="sm" className={selectedProduct.stockMax <= 5 ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>
@@ -1456,7 +1439,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
            </div>
          </div>
 
-         <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+         <div className="bg-gc-surface p-4 rounded-lg shadow-sm border border-gc">
            <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-3 flex items-center gap-2">
              <FaCartShopping size={14} className="text-orange-500" />
              Quantité à ajouter
@@ -1482,7 +1465,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
                min={1}
                ref={quantityInputRef}
                classNames={{
-                 input: "rounded-md border-slate-200 dark:border-slate-700 font-medium text-center",
+                 input: "rounded-md border-gc font-medium text-center",
                  wrapper: "flex-1 shadow-sm"
                }}
                rightSection={
@@ -1518,7 +1501,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
            </Button>
            <Button 
              onClick={addProductWithQuantity}
-             className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-200 text-white flex-1 hover:shadow-lg"
+             className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 text-white flex-1 hover:shadow-lg"
              leftSection={<FaCartPlus size={16} />}
            >
              Ajouter
@@ -1532,7 +1515,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
      opened={openedA} 
      onClose={closeA} 
      title={
-       <Text size="lg" fw={700} className="text-slate-800 dark:text-white">
+       <Text size="lg" fw={700} className="text-gc">
          Nouveau Client
        </Text>
      }
@@ -1548,11 +1531,11 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
        visible={loadingCreateClient}
        zIndex={1000}
        overlayProps={{ radius: 'sm', blur: 2 }}
-       loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+       loaderProps={{ color: 'brand', type: 'dots' }}
      />
      
      <form onSubmit={formC.onSubmit(onCreateC)} className="space-y-4">
-       <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+       <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
          <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
            <FaUser size={14} className="text-orange-500" />
            Informations du client
@@ -1564,7 +1547,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
            required
            {...formC.getInputProps('nom')}
            classNames={{
-             input: "rounded-md border-slate-200 dark:border-slate-700",
+             input: "rounded-md border-gc",
              wrapper: "shadow-sm mb-3"
            }}
          />
@@ -1574,7 +1557,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
            placeholder="Numéro de téléphone"
            {...formC.getInputProps('tel')}
            classNames={{
-             input: "rounded-md border-slate-200 dark:border-slate-700",
+             input: "rounded-md border-gc",
              wrapper: "shadow-sm mb-3"
            }}
          />
@@ -1584,14 +1567,14 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
            placeholder="Adresse du client"
            {...formC.getInputProps('addr')}
            classNames={{
-             input: "rounded-md border-slate-200 dark:border-slate-700",
+             input: "rounded-md border-gc",
              wrapper: "shadow-sm mb-3"
            }}
          />
 
          <Button 
            type="submit" 
-           bg="#8A2BE2" 
+           color="brand" 
            loading={loadingCreateClient}
            className="shadow-md hover:shadow-lg transition-all duration-200 mt-4 w-full"
            leftSection={<FaRegCircleCheck size={16} />}
@@ -1607,7 +1590,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
      opened={printModalOpened}
      onClose={() => setPrintModalOpened(false)}
      title={
-       <Text size="lg" fw={700} className="text-slate-800 dark:text-white">
+       <Text size="lg" fw={700} className="text-gc">
          Format d'impression
        </Text>
      }
@@ -1626,7 +1609,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
            name="formatPaper"
            className="space-y-2"
          >
-           <div className="p-3 border border-slate-200 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+           <div className="p-3 border border-gc rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
              <Radio value="A4" label={
                <div className="ml-2">
                  <Text size="sm" fw={500}>Format A4</Text>
@@ -1635,7 +1618,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
              } />
            </div>
            
-           <div className="p-3 border border-slate-200 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+           <div className="p-3 border border-gc rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
              <Radio value="A5" label={
                <div className="ml-2">
                  <Text size="sm" fw={500}>Format A5</Text>
@@ -1664,7 +1647,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
         opened={openedArticle} 
         onClose={closeArticle} 
         title={
-          <Text size="lg" fw={700} className="text-slate-800 dark:text-white">
+          <Text size="lg" fw={700} className="text-gc">
             Nouvel Article
           </Text>
         }
@@ -1680,10 +1663,10 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
           visible={loadingCreateArticle}
           zIndex={1000}
           overlayProps={{ radius: 'sm', blur: 2 }}
-          loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+          loaderProps={{ color: 'brand', type: 'dots' }}
         />
         <form onSubmit={formArticle.onSubmit(onCreateArticle)} className="space-y-4">
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+          <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
             <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
               <FaShoppingBag size={14} className="text-orange-500" />
               Informations de l'article
@@ -1695,7 +1678,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
               required
               {...formArticle.getInputProps('ref')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
             />
@@ -1706,7 +1689,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
               required
               {...formArticle.getInputProps('nom')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
             />
@@ -1717,7 +1700,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
               required
               {...formArticle.getInputProps('prix')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
               rightSection={<Text size="xs" color="dimmed">FCFA</Text>}
@@ -1729,30 +1712,38 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
               required
               {...formArticle.getInputProps('stock_seuil')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
             />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-              <Select
+              <SelectM
                 placeholder="Sélectionner une famille"
-                options={familles?.map((f: any) => ({ label: f.nom, value: f._id }))}
+                searchable
+                data={familles?.map((f: any) => ({ label: f.nom, value: f._id }))}
                 {...formArticle.getInputProps('famille')}
+                size="sm"
+                radius={8}
+                nothingFoundMessage="Aucun résultat"
                 className="shadow-sm"
               />
-              
-              <Select
+
+              <SelectM
                 placeholder="Sélectionner une unité"
-                options={unites?.map((f: any) => ({ label: f.nom, value: f._id }))}
+                searchable
+                data={unites?.map((f: any) => ({ label: f.nom, value: f._id }))}
                 {...formArticle.getInputProps('unite')}
+                size="sm"
+                radius={8}
+                nothingFoundMessage="Aucun résultat"
                 className="shadow-sm"
               />
             </div>
 
             <Button 
               type="submit" 
-              bg="#8A2BE2" 
+              color="brand" 
               loading={loadingCreateArticle}
               className="shadow-md hover:shadow-lg transition-all duration-200 mt-4 w-full"
               leftSection={<FaRegCircleCheck size={16} />}

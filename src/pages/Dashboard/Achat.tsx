@@ -32,7 +32,7 @@ function Achat() {
         visible={isLoading}
         zIndex={1000}
         overlayProps={{ radius: 'md', blur: 3 }}
-        loaderProps={{ color: '#8A2BE2', type: 'bars' }}
+        loaderProps={{ color: 'brand', type: 'bars' }}
       />
       
       {data && (
@@ -40,7 +40,7 @@ function Achat() {
           <Paper 
             p="md" 
             radius="md" 
-            className="bg-white dark:bg-gray-800 shadow-xl mb-4"
+            className="bg-card shadow-xl mb-4"
             style={{
               backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
               backdropFilter: "blur(10px)"
@@ -136,17 +136,17 @@ function Achat() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Text size="sm" className="text-gray-500 dark:text-gray-400">Montant total:</Text>
+                    <Text size="sm" className="text-muted-foreground">Montant total:</Text>
                     <Text fw={600}>{formatN(calculateTotal())} FCFA</Text>
                   </div>
                   
                   <div>
-                    <Text size="sm" className="text-gray-500 dark:text-gray-400">Remise:</Text>
+                    <Text size="sm" className="text-muted-foreground">Remise:</Text>
                     <Text fw={600}>{formatN(data.remise || 0)} FCFA</Text>
                   </div>
                   
                   <div>
-                    <Text size="sm" className="text-gray-500 dark:text-gray-400">Net à payer:</Text>
+                    <Text size="sm" className="text-muted-foreground">Net à payer:</Text>
                     <Text fw={600} className="text-orange-600 dark:text-orange-400">
                       {formatN(calculateTotal() - (data.remise || 0))} FCFA
                     </Text>
@@ -166,7 +166,7 @@ function Achat() {
                 striped 
                 highlightOnHover 
                 withColumnBorders
-                className="overflow-hidden rounded-md border border-gray-200 dark:border-gray-700"
+                className="overflow-hidden rounded-md border border-border"
               >
                 <Table.Thead className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
                   <Table.Tr>
@@ -183,9 +183,9 @@ function Achat() {
                   {data?.produits.map((el: any, i: number) => (
                     <Table.Tr 
                       key={el.ref} 
-                      className="transition-colors hover:bg-orange-50 dark:hover:bg-orange-900/10"
+                      className="transition-colors hover:bg-muted/50"
                     >
-                      <Table.Td className="font-medium text-gray-700 dark:text-gray-300">{i + 1}</Table.Td>
+                      <Table.Td className="font-medium text-foreground">{i + 1}</Table.Td>
                       <Table.Td>
                         <Badge 
                           variant="light" 

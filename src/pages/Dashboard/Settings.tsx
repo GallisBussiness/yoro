@@ -1,67 +1,59 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import { FaCog, FaRuler, FaTags } from "react-icons/fa";
-import { Tabs, Paper, Text, Divider } from '@mantine/core';
+import { FaCog, FaRuler, FaTags } from 'react-icons/fa';
+import { Tabs, Text, Divider } from '@mantine/core';
+import { Card } from '../../components/shadcn/card';
 import Unites from './Unites';
 import Familles from './Familles';
 import Parametres from './Params/Parametres';
-
 
 const Settings = () => {
   return (
     <div className="mx-auto p-4">
       <Breadcrumb pageName="Paramétrage" />
-      
-      <Paper 
-        p="md" 
-        radius="md" 
-        className="bg-white dark:bg-gray-800 shadow-xl mb-4"
-        style={{
-          backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
-          backdropFilter: "blur(10px)"
-        }}
-      >
+
+      <Card className="mb-4 p-4 md:p-5 shadow-md">
         <div className="mb-4">
-          <Text fw={600} size="lg" className="text-gray-800 dark:text-gray-200 flex items-center gap-2">
-            <FaCog className="text-orange-500" /> Configuration du système
+          <Text fw={600} size="lg" className="text-foreground flex items-center gap-2">
+            <FaCog className="text-primary" /> Configuration du système
           </Text>
-          <Text size="sm" color="dimmed" className="mt-1">
+          <Text size="sm" className="mt-1 text-muted-foreground">
             Gérez les paramètres de votre entreprise, les unités de mesure et les familles d'articles
           </Text>
           <Divider className="my-3" />
         </div>
-        
-        <Tabs 
+
+        <Tabs
           defaultValue="parametres"
           variant="pills"
           styles={{
             root: { width: '100%' },
-            list: { marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.25rem' },
+            list: { marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.25rem' },
             tab: { fontWeight: 500, transition: 'all 0.2s' },
-            panel: { paddingTop: '1rem' }
+            panel: { paddingTop: '1rem' },
           }}
           classNames={{
-            tab: "font-medium transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400"
+            tab: 'font-medium transition-all duration-200 text-muted-foreground hover:text-foreground',
           }}
         >
           <Tabs.List>
-            <Tabs.Tab 
-              value="parametres" 
-              leftSection={<FaCog className="text-orange-500" />}
-              className="data-[active=true]:bg-gradient-to-r data-[active=true]:from-orange-500 data-[active=true]:to-orange-600 data-[active=true]:text-white"
+            <Tabs.Tab
+              value="parametres"
+              leftSection={<FaCog className="text-primary" />}
+              className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
             >
               Paramètres
             </Tabs.Tab>
-            <Tabs.Tab 
-              value="unites" 
-              leftSection={<FaRuler className="text-orange-500" />}
-              className="data-[active=true]:bg-gradient-to-r data-[active=true]:from-orange-500 data-[active=true]:to-orange-600 data-[active=true]:text-white"
+            <Tabs.Tab
+              value="unites"
+              leftSection={<FaRuler className="text-primary" />}
+              className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
             >
               Unités
             </Tabs.Tab>
-            <Tabs.Tab 
-              value="familles" 
-              leftSection={<FaTags className="text-orange-500" />}
-              className="data-[active=true]:bg-gradient-to-r data-[active=true]:from-orange-500 data-[active=true]:to-orange-600 data-[active=true]:text-white"
+            <Tabs.Tab
+              value="familles"
+              leftSection={<FaTags className="text-primary" />}
+              className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
             >
               Familles
             </Tabs.Tab>
@@ -79,7 +71,7 @@ const Settings = () => {
             <Familles />
           </Tabs.Panel>
         </Tabs>
-      </Paper>
+      </Card>
     </div>
   );
 };

@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { App } from 'antd';
-import { Button, Text, Card, Group, Badge, Loader, Center, Paper, Title, Divider } from '@mantine/core';
+import { toast } from 'sonner';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { FaCheck, FaCrown, FaRocket, FaLeaf, FaShieldAlt, FaHeadset, FaUsers, FaChartLine, FaRegCreditCard } from 'react-icons/fa';
+import { Check, Crown, Rocket, Leaf, ShieldCheck, CreditCard, Headset, Users, TrendingUp } from 'lucide-react';
+import { Button } from '../../components/shadcn/button';
+import { Card, CardContent } from '../../components/shadcn/card';
+import { Badge } from '../../components/shadcn/badge';
+import { Separator } from '../../components/shadcn/separator';
 import { PackService } from '../../services/pack.service';
 import { PaymentService } from '../../services/payment.service';
 import { Pack } from '../../interfaces/pack.interface';
@@ -11,14 +14,48 @@ import { Payment } from '../../interfaces/payment.interface';
 import { checkSubscription } from '../../services/authservice';
 import { authclient } from '../../../lib/auth-client';
 
+type PackTier = 'basic' | 'business' | 'premium';
+
+const tierStyles: Record<PackTier, { chip: string; ring: string; btn: string; check: string; header: string }> = {
+  basic: {
+    chip: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400',
+    ring: 'ring-emerald-500',
+    btn: 'bg-emerald-600 hover:bg-emerald-700 text-white',
+    check: 'text-emerald-600',
+    header: 'from-emerald-500 to-emerald-600',
+  },
+  business: {
+    chip: 'bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400',
+    ring: 'ring-blue-500',
+    btn: 'bg-blue-600 hover:bg-blue-700 text-white',
+    check: 'text-blue-600',
+    header: 'from-blue-500 to-blue-600',
+  },
+  premium: {
+    chip: 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400',
+    ring: 'ring-amber-500',
+    btn: 'bg-amber-600 hover:bg-amber-700 text-white',
+    check: 'text-amber-600',
+    header: 'from-amber-500 to-amber-600',
+  },
+};
+
+const getTier = (nom: string): PackTier => {
+  const n = nom.toLowerCase();
+  if (n.includes('premium')) return 'premium';
+  if (n.includes('business')) return 'business';
+  return 'basic';
+};
+
+const tierIcon: Record<PackTier, typeof Crown> = {
+  basic: Leaf,
+  business: Rocket,
+  premium: Crown,
+};
+
 const Subscription: React.FC = () => {
   const navigate = useNavigate();
-     
-      const {data:session} = authclient.useSession()
-      
-      // La vérification de session est déjà faite dans Gescom.tsx
-      // Pas besoin de rediriger ici pour éviter les boucles
-  const { message } = App.useApp();
+  const { data: session } = authclient.useSession();
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
 
   // Check if user already has an active subscription
@@ -28,19 +65,15 @@ const Subscription: React.FC = () => {
     enabled: !!session?.user.id,
   });
 
-
   useEffect(() => {
     if (subscriptionData?.subscription) {
-      // Si l'abonnement est actif, rediriger vers le tableau de bord
       if (subscriptionData.hasActiveSubscription) {
         navigate('/dashboard', { replace: true });
-      } 
-      // Si l'abonnement est en attente, rediriger vers la page d'attente
-      else if (subscriptionData.subscription.status === "en_attente") {
+      } else if (subscriptionData.subscription.status === 'en_attente') {
         navigate('/auth/pending-subscription', { replace: true });
       }
     }
-  },[subscriptionData]);
+  }, [subscriptionData]);
 
   // Fetch available packs
   const { data: packs, isLoading: loadingPacks } = useQuery({
@@ -48,344 +81,243 @@ const Subscription: React.FC = () => {
     queryFn: () => new PackService().getAll(),
   });
 
-  // Calculate payment amount based on subscription type
-
   // Create payment mutation
   const { mutate: createPayment, isPending: processingPayment } = useMutation({
-    mutationFn: async ({ pack }: { pack: Pack}) => {
-      const paymentData: Omit<Payment, '_id'> = {
-        pack: pack._id,
-      };
-      
+    mutationFn: async ({ pack }: { pack: Pack }) => {
+      const paymentData: Omit<Payment, '_id'> = { pack: pack._id };
       return new PaymentService().create(paymentData);
     },
     onSuccess: (data) => {
-      const {redirect_url} = data;
-      const global:any = window;
-      
-      // Utiliser les URLs de redirection configurées dans le service
-      (new global.PayTech({ })).withOption({
+      const { redirect_url } = data;
+      const global: any = window;
+      new global.PayTech({}).withOption({
         tokenUrl: redirect_url,
         presentationMode: global.PayTech.OPEN_IN_POPUP,
         onClose: () => {
           navigate('/cancel?payment_id=' + session?.user.id + '&pack_name=' + selectedPack?.nom);
         },
       }).send();
-      // if (data && data._id && selectedPack) {
-      //   // Simulate payment verification (in a real app, this would be handled by a payment gateway)
-      //   // simulatePaymentVerification(data._id);
-
-      //   // Redirect to Paytech
-
-        
-        
-      // } else {
-      //   message.error("Erreur lors de la création du paiement");
-      // }
     },
     onError: (error) => {
       console.error(error);
-      message.error("Erreur lors du traitement du paiement");
-    }
+      toast.error('Erreur lors du traitement du paiement');
+    },
   });
 
-  // Handle pack selection
-  const handleSelectPack = (pack: Pack) => {
-    setSelectedPack(pack);
-  };
+  const handleSelectPack = (pack: Pack) => setSelectedPack(pack);
 
-  // Handle payment submission
   const handleSubmitPayment = () => {
     if (!selectedPack) {
-      message.warning("Veuillez sélectionner un forfait d'abonnement");
+      toast.warning("Veuillez sélectionner un forfait d'abonnement");
       return;
     }
     createPayment({ pack: selectedPack });
   };
 
-  // Generate features array from description if not provided
   const getPackFeatures = (pack: Pack): string[] => {
-    if (pack.features && pack.features.length > 0) {
-      return pack.features;
-    }
-    
-    // Default features based on subscription type
-    const defaultFeatures = [
-      "Accès à toutes les fonctionnalités de base",
-      `Validité: ${pack.duree_mois} mois`,
-      "Support par email"
-    ];
-    
+    if (pack.features && pack.features.length > 0) return pack.features;
+    const features = ['Accès à toutes les fonctionnalités de base', `Validité: ${pack.duree_mois} mois`, 'Support par email'];
     if (pack.nom.toLowerCase().includes('premium')) {
-      defaultFeatures.push("Support prioritaire");
-      defaultFeatures.push("Accès aux fonctionnalités avancées");
+      features.push('Support prioritaire', 'Accès aux fonctionnalités avancées');
     }
-    
-    return defaultFeatures;
+    return features;
   };
 
   if (checkingSubscription || loadingPacks) {
     return (
-      <Center style={{ height: '100vh' }}>
-        <Loader size="xl" />
-      </Center>
+      <div className="flex min-h-screen items-center justify-center bg-muted">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary/30 border-t-primary" />
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
-        <Paper
-          p="xl"
-          radius="lg"
-          className="bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700 mb-10"
-          style={{
-            backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
-            backdropFilter: "blur(10px)"
-          }}
-        >
-          <div className="text-center mb-8">
-            <img src='/img/logo.png' alt="Logo" className='w-24 h-24 mx-auto mb-4 drop-shadow-md' />
-            <Title order={1} className="text-gray-800 dark:text-white font-bold tracking-tight mb-2">
-              Choisissez votre forfait
-            </Title>
-            <Text className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Sélectionnez le forfait qui correspond le mieux à vos besoins et commencez à utiliser YORO HAIR dès aujourd'hui.
-            </Text>
-          </div>
-          
-          <Divider className="my-6" />
+    <div className="min-h-screen bg-muted py-12 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl">
+        <Card className="mb-10 shadow-xl">
+          <CardContent className="p-6 md:p-10">
+            <div className="mb-8 text-center">
+              <img src="/img/logo.png" alt="Logo" className="mx-auto mb-4 h-24 w-24 drop-shadow-md" />
+              <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">Choisissez votre forfait</h1>
+              <p className="mx-auto max-w-2xl text-muted-foreground">
+                Sélectionnez le forfait qui correspond le mieux à vos besoins et commencez à utiliser YORO HAIR dès aujourd’hui.
+              </p>
+            </div>
 
-        {/* Subscription Packs */}
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
-          {packs && packs.map((pack: Pack) => {
-            // Déterminer l'icône et la couleur en fonction du type de forfait
-            const isPremium = pack.nom.toLowerCase().includes('premium');
-            const isBusiness = pack.nom.toLowerCase().includes('business');
-            // const isBasic = !isPremium && !isBusiness;
-            
-            const packIcon = isPremium ? <FaCrown size={24} /> : isBusiness ? <FaRocket size={24} /> : <FaLeaf size={24} />;
-            const gradientColors = isPremium 
-              ? 'from-[#8A2BE2] to-[#9370DB]' 
-              : isBusiness 
-                ? 'from-blue-500 to-blue-600' 
-                : 'from-green-500 to-green-600';
-            
-            return (
-              <Card 
-                key={pack._id} 
-                shadow="sm" 
-                padding="xl" 
-                radius="lg" 
-                withBorder={false}
-                className={`transition-all duration-300 overflow-hidden ${selectedPack?._id === pack._id 
-                  ? 'ring-2 ring-[#8A2BE2] transform scale-105 shadow-xl' 
-                  : 'hover:shadow-xl hover:transform hover:scale-102'}`}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                  backdropFilter: 'blur(10px)',
-                  boxShadow: selectedPack?._id === pack._id 
-                    ? '0 10px 25px -5px rgba(255, 93, 20, 0.3)' 
-                    : '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                }}
-              >
-                {/* Header avec gradient */}
-                <div className={`absolute top-0 left-0 right-0 h-24 bg-gradient-to-r ${gradientColors} -mt-6 -mx-6 rounded-t-lg`}></div>
-                
-                {/* Badge et icône */}
-                <div className="relative text-center mb-6 mt-4">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-lg mb-4">
-                    <div className={`text-${isPremium ? '[#8A2BE2]' : isBusiness ? 'blue-500' : 'green-500'}`}>
-                      {packIcon}
+            <Separator className="my-6" />
+
+            {/* Subscription Packs */}
+            <div className="mb-12 grid gap-6 md:grid-cols-3">
+              {packs &&
+                packs.map((pack: Pack) => {
+                  const tier = getTier(pack.nom);
+                  const ts = tierStyles[tier];
+                  const Icon = tierIcon[tier];
+                  const selected = selectedPack?._id === pack._id;
+
+                  return (
+                    <Card
+                      key={pack._id}
+                      className={`relative overflow-hidden transition-all duration-300 ${
+                        selected ? `ring-2 ${ts.ring} shadow-xl` : 'hover:shadow-lg'
+                      }`}
+                    >
+                      {/* Header band */}
+                      <div className={`absolute inset-x-0 top-0 h-20 bg-gradient-to-r ${ts.header}`} />
+
+                      <CardContent className="relative p-6 pt-10">
+                        <div className="mb-4 text-center">
+                          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-card shadow-lg ring-1 ring-border">
+                            <Icon className={`h-7 w-7 ${ts.check}`} />
+                          </div>
+                          <Badge variant="secondary" className={`px-4 py-1.5 text-sm ${ts.chip}`}>
+                            {pack.nom}
+                          </Badge>
+                        </div>
+
+                        <div className="mb-4 text-center">
+                          <p className="num text-2xl font-extrabold text-foreground">
+                            {pack.prix.toLocaleString()} FCFA
+                          </p>
+                          <p className="text-sm text-muted-foreground">pour {pack.duree_mois} mois</p>
+                        </div>
+
+                        <Separator className="my-4" />
+
+                        <p className="mb-6 text-center text-sm italic text-muted-foreground">{pack.description}</p>
+
+                        <div className="mb-8 space-y-3">
+                          {getPackFeatures(pack).map((feature, index) => (
+                            <div key={index} className="flex items-start gap-3">
+                              <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${ts.chip}`}>
+                                <Check className="h-3 w-3" />
+                              </div>
+                              <span className="text-sm text-foreground flex-1">{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <Button
+                          className={`w-full ${selected ? 'bg-primary text-primary-foreground hover:bg-primary/90' : ts.btn}`}
+                          onClick={() => handleSelectPack(pack)}
+                          disabled={!pack.actif}
+                        >
+                          {!pack.actif ? 'Non disponible' : selected ? 'Sélectionné' : 'Sélectionner'}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+            </div>
+
+            {/* Payment Section */}
+            {selectedPack && (
+              <Card className="mx-auto max-w-2xl overflow-hidden shadow-lg">
+                <div className="h-1.5 bg-gradient-to-r from-primary to-accent" />
+                <CardContent className="p-6 md:p-8">
+                  <div className="mb-6 flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted">
+                      <CreditCard className="h-5 w-5 text-primary" />
+                    </div>
+                    <h2 className="text-xl font-semibold text-foreground">Finaliser votre abonnement</h2>
+                  </div>
+
+                  <Separator className="my-6" />
+
+                  <div className="mb-6 rounded-lg bg-muted p-4">
+                    <div className="mb-4 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Forfait sélectionné</p>
+                        <p className="text-lg font-bold text-foreground">{selectedPack.nom}</p>
+                      </div>
+                      <Badge variant="secondary" className="px-3 py-1.5">{selectedPack.duree_mois} mois</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Prix du forfait</span>
+                        <span className="num text-foreground">{selectedPack.prix.toLocaleString()} FCFA</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Taxes</span>
+                        <span className="text-foreground">Incluses</span>
+                      </div>
                     </div>
                   </div>
-                  <Badge 
-                    size="lg" 
-                    className={`text-white bg-gradient-to-r ${gradientColors} border-0 px-4 py-2 shadow-md`}
-                    radius="md"
-                  >
-                    {pack.nom}
-                  </Badge>
-                </div>
 
-                {/* Prix */}
-                <div className="text-center mb-4">
-                  <Text fw={800} size="2xl" className="text-gray-800 dark:text-white">
-                    {pack.prix.toLocaleString()} FCFA
-                  </Text>
-                  <Text size="sm" className="text-gray-500 dark:text-gray-400">
-                    pour {pack.duree_mois} mois
-                  </Text>
-                </div>
+                  <div className="relative my-8">
+                    <Separator />
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-4 text-xs uppercase tracking-wider text-muted-foreground">
+                      Récapitulatif
+                    </div>
+                  </div>
 
-                <Divider className="my-4" />
+                  <div className="mb-6">
+                    <div className="mb-6 flex items-center justify-between">
+                      <span className="text-base font-medium text-foreground">Montant total</span>
+                      <span className="num text-2xl font-extrabold text-primary">
+                        {selectedPack.prix.toLocaleString()} FCFA
+                      </span>
+                    </div>
 
-                {/* Description */}
-                <Text size="sm" className="text-gray-600 dark:text-gray-300 text-center mb-6 italic">
-                  {pack.description}
-                </Text>
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      disabled={processingPayment}
+                      onClick={handleSubmitPayment}
+                    >
+                      {processingPayment ? (
+                        <span className="flex items-center gap-2">
+                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+                          Traitement en cours…
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <ShieldCheck className="h-4 w-4" />
+                          Payer maintenant
+                        </span>
+                      )}
+                    </Button>
 
-                {/* Caractéristiques */}
-                <div className="space-y-4 mb-8">
-                  {getPackFeatures(pack).map((feature, index) => (
-                    <Group key={index} className="items-start">
-                      <div className={`p-1.5 rounded-full ${isPremium ? 'bg-orange-100 dark:bg-orange-900/30' : isBusiness ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-green-100 dark:bg-green-900/30'}`}>
-                        <FaCheck className={`${isPremium ? 'text-[#8A2BE2]' : isBusiness ? 'text-blue-500' : 'text-green-500'}`} />
-                      </div>
-                      <Text size="sm" className="text-gray-700 dark:text-gray-300 flex-1">{feature}</Text>
-                    </Group>
-                  ))}
-                </div>
-
-                {/* Bouton */}
-                <Button
-                  fullWidth
-                  size="lg"
-                  radius="md"
-                  className={`${selectedPack?._id === pack._id 
-                    ? 'bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] text-white' 
-                    : isPremium 
-                      ? 'bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] opacity-80 hover:opacity-100 text-white' 
-                      : isBusiness 
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
-                        : 'bg-gradient-to-r from-green-500 to-green-600 text-white'} 
-                    transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1`}
-                  onClick={() => handleSelectPack(pack)}
-                  disabled={!pack.actif}
-                >
-                  {!pack.actif ? 'Non disponible' : selectedPack?._id === pack._id ? 'Sélectionné' : 'Sélectionner'}
-                </Button>
+                    <p className="mt-3 text-center text-xs text-muted-foreground">
+                      Paiement 100% sécurisé. Vos informations sont protégées.
+                    </p>
+                  </div>
+                </CardContent>
               </Card>
-            );
-          })}
-        </div>
+            )}
 
-        {/* Payment Section */}
-        {selectedPack && (
-          <Paper
-            p="xl"
-            radius="lg"
-            className="max-w-2xl mx-auto overflow-hidden relative"
-            style={{
-              backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
-              backdropFilter: "blur(10px)",
-              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
-            }}
-          >
-            {/* Bande décorative en haut */}
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#8A2BE2] to-[#9370DB]"></div>
-            
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full">
-                <FaRegCreditCard className="text-[#8A2BE2] text-xl" />
-              </div>
-              <Title order={2} className="text-gray-800 dark:text-white">
-                Finaliser votre abonnement
-              </Title>
-            </div>
-            
-            <Divider className="my-6" />
-            
-            {/* Récapitulatif de l'abonnement */}
-            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 mb-6">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <Text className="text-gray-500 dark:text-gray-400 text-sm">Forfait sélectionné</Text>
-                  <Text fw={700} className="text-gray-800 dark:text-white text-lg">{selectedPack.nom}</Text>
-                </div>
-                <Badge 
-                  size="lg" 
-                  className="text-white bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] border-0 px-3 py-1.5 shadow-sm"
-                  radius="md"
-                >
-                  {selectedPack.duree_mois} mois
-                </Badge>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Text className="text-gray-600 dark:text-gray-300">Prix du forfait</Text>
-                  <Text className="text-gray-800 dark:text-white">{selectedPack.prix.toLocaleString()} FCFA</Text>
-                </div>
-                <div className="flex justify-between">
-                  <Text className="text-gray-600 dark:text-gray-300">Taxes</Text>
-                  <Text className="text-gray-800 dark:text-white">Incluses</Text>
-                </div>
-              </div>
-            </div>
-            
-            {/* Ligne de séparation */}
-            <div className="relative my-8">
-              <Divider />
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 px-4 text-gray-400 text-sm">
-                RÉCAPITULATIF
-              </div>
-            </div>
-            
-            {/* Total et bouton de paiement */}
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-6">
-                <Text fw={500} size="lg" className="text-gray-700 dark:text-gray-300">Montant total:</Text>
-                <Text fw={800} size="xl" className="text-[#8A2BE2]">{selectedPack.prix.toLocaleString()} FCFA</Text>
+            {/* Trust badges */}
+            <div className="mt-12 mb-6 text-center">
+              <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-6 md:flex-row">
+                {[
+                  { icon: Headset, title: 'Support client', desc: 'Nous sommes là pour vous aider', tone: 'text-blue-600 bg-blue-100 dark:bg-blue-500/15 dark:text-blue-400' },
+                  { icon: Users, title: 'Communauté', desc: 'Rejoignez nos utilisateurs', tone: 'text-purple-600 bg-purple-100 dark:bg-purple-500/15 dark:text-purple-400' },
+                  { icon: TrendingUp, title: 'Croissance', desc: 'Développez votre activité', tone: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-400' },
+                ].map((b) => {
+                  const Icon = b.icon;
+                  return (
+                    <div key={b.title} className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 shadow-sm">
+                      <div className={`flex h-11 w-11 items-center justify-center rounded-full ${b.tone}`}>
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-semibold text-foreground">{b.title}</p>
+                        <p className="text-sm text-muted-foreground">{b.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
-              <Button
-                fullWidth
-                size="xl"
-                radius="md"
-                className="bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] hover:from-[#9370DB] hover:to-[#8A2BE2] border-none shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-                loading={processingPayment}
-                onClick={handleSubmitPayment}
-                leftSection={!processingPayment && <FaShieldAlt />}
-              >
-                {processingPayment ? 'Traitement en cours...' : 'Payer maintenant'}
-              </Button>
-              
-              <Text size="xs" className="text-gray-500 dark:text-gray-400 text-center mt-3">
-                Paiement 100% sécurisé. Vos informations sont protégées.  
-              </Text>
+              <p className="mt-8 text-muted-foreground">
+                Vous avez des questions ?{' '}
+                <a href="#" className="font-medium text-primary hover:text-accent transition-colors">
+                  Contactez notre support
+                </a>
+              </p>
             </div>
-          </Paper>
-        )}
-
-        <div className="text-center mt-12 mb-6">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-4xl mx-auto">
-            <div className="flex items-center gap-3 bg-white dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-                <FaHeadset className="text-blue-500 text-xl" />
-              </div>
-              <div className="text-left">
-                <Text fw={600} className="text-gray-800 dark:text-white">Support client</Text>
-                <Text size="sm" className="text-gray-600 dark:text-gray-400">Nous sommes là pour vous aider</Text>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3 bg-white dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
-              <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
-                <FaUsers className="text-purple-500 text-xl" />
-              </div>
-              <div className="text-left">
-                <Text fw={600} className="text-gray-800 dark:text-white">Communauté</Text>
-                <Text size="sm" className="text-gray-600 dark:text-gray-400">Rejoignez nos utilisateurs</Text>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3 bg-white dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
-              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
-                <FaChartLine className="text-green-500 text-xl" />
-              </div>
-              <div className="text-left">
-                <Text fw={600} className="text-gray-800 dark:text-white">Croissance</Text>
-                <Text size="sm" className="text-gray-600 dark:text-gray-400">Développez votre activité</Text>
-              </div>
-            </div>
-          </div>
-          
-          <Text className="text-gray-600 dark:text-gray-400 mt-8">
-            Vous avez des questions ? <a href="#" className="text-[#8A2BE2] hover:text-orange-600 transition-colors duration-300 font-medium">Contactez notre support</a>
-          </Text>
-        </div>
-        </Paper>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

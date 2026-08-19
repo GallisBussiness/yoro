@@ -432,9 +432,9 @@ export default function InventaireVentes() {
       {/* Tableau des ventes */}
       <Card shadow="sm">
         <DataTable
-          withTableBorder
+          withTableBorder={false}
           withColumnBorders
-          striped
+          striped={false}
           highlightOnHover
           records={ventesFiltered}
           columns={[

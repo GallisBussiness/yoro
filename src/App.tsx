@@ -36,6 +36,9 @@ import InventaireVentes from './pages/Dashboard/InventaireVentes';
 import VenteCaisses from './pages/Dashboard/VenteCaisses';
 import VenteCaisse from './pages/Dashboard/VenteCaisse';
 import NouvelleVenteCaisse from './pages/Dashboard/NouvelleVenteCaisse';
+import VentesSimples from './pages/Dashboard/VentesSimples';
+import NouvelleVenteSimple from './pages/Dashboard/NouvelleVenteSimple';
+import VenteSimple from './pages/Dashboard/VenteSimple';
 
 function App() {
   const { pathname } = useLocation();
@@ -343,6 +346,33 @@ function App() {
             <>
               <PageTitle title="Gallis/Vente Caisse" />
              <VenteCaisse />
+            </>
+          }
+        />
+        <Route
+          path="ventes-simples"
+          element={
+            <>
+              <PageTitle title="Gallis/Ventes Rapides" />
+             <VentesSimples />
+            </>
+          }
+        />
+        <Route
+          path="ventes-simples/nouvelle"
+          element={
+            <>
+              <PageTitle title="Gallis/Nouvelle Vente Rapide" />
+             <NouvelleVenteSimple />
+            </>
+          }
+        />
+        <Route
+          path="ventes-simples/:id"
+          element={
+            <>
+              <PageTitle title="Gallis/Vente Rapide" />
+             <VenteSimple />
             </>
           }
         />

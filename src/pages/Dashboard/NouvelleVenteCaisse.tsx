@@ -1,46 +1,50 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { 
-  Button, 
-  InputNumber, 
-  Typography, 
-  Card, 
-  Tag, 
-  Divider,
-  Select
-} from 'antd';
-import { FaTrash, FaPlus, FaCashRegister, FaMoneyBillWave, FaBarcode, FaPrint, FaMinus, FaArrowLeft, FaShoppingCart } from "react-icons/fa";
+import {
+  ActionIcon,
+  NumberInput,
+  Select,
+  Text,
+} from '@mantine/core';
 import { toast } from 'sonner';
-import dayjs from 'dayjs';
 import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft, ScanLine, ShoppingCart, Trash2, Plus, Minus,
+  Receipt, Printer, Keyboard, PackageSearch,
+} from 'lucide-react';
 import { VenteCaisseService } from "../../services/vente-caisse.service";
 import { ArticleService } from "../../services/article.service";
 import { VenteCaisse } from "../../types/vente-caisse";
 import useScanDetection from 'use-scan-detection';
 import { authclient } from '../../../lib/auth-client';
 import { printTicket } from "../../utils/ticketPdf";
+import { Card, CardContent } from '../../components/shadcn/card';
+import { Button } from '../../components/shadcn/button';
+import { Badge } from '../../components/shadcn/badge';
+import { Separator } from '../../components/shadcn/separator';
+import { formatN } from '../../lib/helpers';
 
-const { Title, Text } = Typography;
+const formatToday = () => {
+  const d = new Date();
+  const jours = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  const h = d.getHours().toString().padStart(2, '0');
+  const m = d.getMinutes().toString().padStart(2, '0');
+  return `${jours[d.getDay()]} ${d.getDate()} ${mois[d.getMonth()]} ${d.getFullYear()} - ${h}:${m}`;
+};
 
 function NouvelleVenteCaisse() {
   const { data: session } = authclient.useSession();
   const navigate = useNavigate();
-  
-  // État local pour les produits (format interne)
-  type ProduitLocal = {
-    nom: string;
-    prixUnitaire: number;
-    quantite: number;
-    ref: string;
-  };
+
+  type ProduitLocal = { nom: string; prixUnitaire: number; quantite: number; ref: string; };
   const [produits, setProduits] = useState<ProduitLocal[]>([]);
   const [searchValue, setSearchValue] = useState('');
-  
+
   const qc = useQueryClient();
   const venteCaisseService = new VenteCaisseService();
   const articleService = new ArticleService();
 
-  // Récupérer les articles
   const { data: articles } = useQuery({
     queryKey: ['articles'],
     queryFn: () => articleService.getByUser(session!.user.id),
@@ -52,9 +56,7 @@ function NouvelleVenteCaisse() {
     onSuccess: (newVente: VenteCaisse) => {
       qc.invalidateQueries({ queryKey: ['vente-caisse'] });
       toast.success('Vente caisse créée avec succès');
-      // Imprimer automatiquement le ticket
       printTicket(newVente);
-      // Réinitialiser le formulaire
       setProduits([]);
     },
     onError: () => {
@@ -62,14 +64,13 @@ function NouvelleVenteCaisse() {
     }
   });
 
-  // Scanner de code-barres
   useScanDetection({
     onComplete: (code: String) => {
       const codeStr = code.toString();
       const article = articles?.find((a: any) => a.ref === codeStr || a.codeBarre === codeStr);
       if (article) {
         addOrIncrementProduct(article);
-        toast.success(`${article.nom} ajouté`, { icon: '📦' });
+        toast.success(`${article.nom} ajouté`);
       } else {
         toast.error(`Produit non trouvé: ${codeStr}`);
       }
@@ -77,14 +78,13 @@ function NouvelleVenteCaisse() {
     minLength: 3
   });
 
-  // Ajouter ou incrémenter un produit
   const addOrIncrementProduct = (article: any) => {
     const existingIndex = produits.findIndex(p => p.ref === article.ref);
     if (existingIndex !== -1) {
       const updated = [...produits];
       updated[existingIndex].quantite += 1;
       setProduits(updated);
-      toast.success(`Quantité de ${article.nom} augmentée`, { icon: '⬆️' });
+      toast.success(`Quantité de ${article.nom} augmentée`);
     } else {
       setProduits([...produits, {
         ref: article.ref,
@@ -95,7 +95,6 @@ function NouvelleVenteCaisse() {
     }
   };
 
-  // Calculs
   const montantTotal = produits.reduce((sum, p) => sum + (p.prixUnitaire * p.quantite), 0);
   const nombreArticles = produits.reduce((sum, p) => sum + p.quantite, 0);
 
@@ -120,14 +119,13 @@ function NouvelleVenteCaisse() {
       toast.error('Ajoutez au moins un produit');
       return;
     }
-    // Transformer les produits au format attendu par le backend
     const produitsFormatted = produits.map(p => ({
       nom: p.nom,
       quantite: p.quantite,
       prixUnitaire: p.prixUnitaire,
       montant: p.prixUnitaire * p.quantite
     }));
-    
+
     const data = {
       produits: produitsFormatted,
       montantTotal,
@@ -136,260 +134,254 @@ function NouvelleVenteCaisse() {
     createVenteCaisse(data);
   };
 
-  const handleNewSale = () => {
-    setProduits([]);
+  const handleNewSale = () => setProduits([]);
+
+  const handlePrint = () => {
+    if (produits.length === 0) return;
+    // Reconstitute a minimal VenteCaisse-like object for printTicket
+    const mockVente = {
+      _id: 'temp',
+      produits: produits.map(p => ({ nom: p.nom, quantite: p.quantite, prixUnitaire: p.prixUnitaire, montant: p.prixUnitaire * p.quantite })),
+      montantTotal,
+      date: new Date().toISOString(),
+    } as any;
+    printTicket(mockVente);
   };
 
-  // Filtrer les articles pour la recherche
-  const filteredArticles = articles?.filter((a: any) => 
+  const filteredArticles = articles?.filter((a: any) =>
     a.nom.toLowerCase().includes(searchValue.toLowerCase()) ||
     a.ref.toLowerCase().includes(searchValue.toLowerCase())
   ) || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
+    <div className="min-h-screen bg-background p-4 md:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <Button 
-            icon={<FaArrowLeft />} 
-            onClick={() => navigate('/dashboard/ventes-caisse')}
-            className="bg-slate-700 text-white border-none hover:bg-slate-600"
-          >
+          <Button variant="outline" size="sm" onClick={() => navigate('/dashboard/ventes-caisse')}>
+            <ArrowLeft className="h-4 w-4" />
             Retour
           </Button>
           <div>
-            <Title level={3} className="text-white mb-0 flex items-center gap-2">
-              <FaCashRegister className="text-green-400" />
-              Caisse Enregistreuse
-            </Title>
-            <Text className="text-slate-400">
-              {dayjs().format('dddd DD MMMM YYYY - HH:mm')}
-            </Text>
+            <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+              <Receipt className="h-5 w-5 text-emerald-500" />
+              Caisse enregistreuse
+            </h2>
+            <p className="text-sm text-muted-foreground">{formatToday()}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Tag color="blue" className="text-lg px-4 py-1">
-            <FaShoppingCart className="inline mr-2" />
+          <Badge variant="info" className="gap-1.5 px-3 py-1.5 text-sm">
+            <ShoppingCart className="h-4 w-4" />
             {nombreArticles} article{nombreArticles > 1 ? 's' : ''}
-          </Tag>
+          </Badge>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Section Gauche - Recherche et Produits */}
-        <div className="lg:col-span-2 space-y-4">
-          {/* Barre de recherche */}
-          <Card className="bg-slate-800 border-slate-700">
-            <div className="flex items-center gap-3 mb-4">
-              <FaBarcode className="text-purple-400 text-xl" />
-              <Text className="text-white font-medium">Scanner ou rechercher un produit</Text>
-            </div>
-            <Select
-              showSearch
-              placeholder="Tapez le nom ou scannez le code-barres..."
-              className="w-full"
-              size="large"
-              value={null}
-              searchValue={searchValue}
-              onSearch={setSearchValue}
-              filterOption={false}
-              onChange={(value) => {
-                const article = articles?.find((a: any) => a._id === value);
-                if (article) {
-                  addOrIncrementProduct(article);
-                  setSearchValue('');
-                }
-              }}
-              options={filteredArticles.slice(0, 10).map((a: any) => ({
-                value: a._id,
-                label: (
-                  <div className="flex justify-between items-center py-1">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Section Gauche — Recherche + Panier */}
+        <div className="space-y-4 lg:col-span-2">
+          {/* Recherche */}
+          <Card>
+            <CardContent className="p-4 md:p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <ScanLine className="h-5 w-5 text-primary" />
+                <Text fw={600} size="sm" className="text-foreground">Scanner ou rechercher un produit</Text>
+              </div>
+              <Select
+                searchable
+                placeholder="Tapez le nom ou scannez le code-barres..."
+                size="sm"
+                radius={8}
+                value={null}
+                searchValue={searchValue}
+                onSearchChange={setSearchValue}
+                filter={({ options }) => options}
+                nothingFoundMessage="Aucun produit trouvé"
+                leftSection={<ScanLine className="h-4 w-4 text-muted-foreground" />}
+                data={filteredArticles.slice(0, 10).map((a: any) => ({
+                  value: a._id,
+                  label: a.nom,
+                  article: a,
+                })) as any}
+                onChange={(value) => {
+                  const article = articles?.find((a: any) => a._id === value);
+                  if (article) {
+                    addOrIncrementProduct(article);
+                    setSearchValue('');
+                  }
+                }}
+                renderOption={({ option }: any) => (
+                  <div className="flex w-full items-center justify-between py-1">
                     <div>
-                      <span className="font-medium">{a.nom}</span>
-                      <span className="text-gray-400 text-xs ml-2">({a.ref})</span>
+                      <span className="font-medium text-foreground">{option.article?.nom}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">({option.article?.ref})</span>
                     </div>
-                    <Tag color="green">{a.prix?.toLocaleString()} F</Tag>
+                    <Badge variant="pos" className="num">{formatN(option.article?.prix)} F</Badge>
                   </div>
-                )
-              }))}
-              notFoundContent={
-                <div className="text-center py-4 text-gray-400">
-                  <FaBarcode size={30} className="mx-auto mb-2 opacity-30" />
-                  <p>Aucun produit trouvé</p>
-                </div>
-              }
-            />
-            <Text className="text-slate-500 text-xs mt-2 block">
-              💡 Scannez un code-barres ou tapez le nom du produit
-            </Text>
+                )}
+              />
+              <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <PackageSearch className="h-3.5 w-3.5" />
+                Scannez un code-barres ou tapez le nom du produit
+              </p>
+            </CardContent>
           </Card>
 
-          {/* Liste des produits */}
-          <Card className="bg-slate-800 border-slate-700">
-            <div className="flex items-center justify-between mb-4">
-              <Text className="text-white font-medium text-lg">
-                Panier ({produits.length} produit{produits.length > 1 ? 's' : ''})
-              </Text>
-              {produits.length > 0 && (
-                <Button size="small" danger onClick={() => setProduits([])}>
-                  Vider le panier
-                </Button>
-              )}
-            </div>
-
-            {produits.length === 0 ? (
-              <div className="text-center py-16">
-                <FaShoppingCart size={60} className="mx-auto mb-4 text-slate-600" />
-                <Text className="text-slate-400 text-lg block">Panier vide</Text>
-                <Text className="text-slate-500 text-sm">Scannez ou recherchez des produits</Text>
+          {/* Panier */}
+          <Card>
+            <CardContent className="p-4 md:p-5">
+              <div className="mb-4 flex items-center justify-between">
+                <Text fw={600} size="sm" className="text-foreground">
+                  Panier ({produits.length} produit{produits.length > 1 ? 's' : ''})
+                </Text>
+                {produits.length > 0 && (
+                  <Button variant="outline" size="sm" onClick={() => setProduits([])}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Vider
+                  </Button>
+                )}
               </div>
-            ) : (
-              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                {produits.map((prod, index) => (
-                  <div 
-                    key={index} 
-                    className="flex items-center justify-between p-4 bg-slate-700/50 rounded-xl border border-slate-600 hover:border-green-500/50 transition-all"
-                  >
-                    <div className="flex-1">
-                      <Text strong className="text-white text-base block">{prod.nom}</Text>
-                      <Text className="text-slate-400 text-sm">
-                        {prod.prixUnitaire.toLocaleString()} F × {prod.quantite}
-                      </Text>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center bg-slate-600 rounded-lg">
-                        <Button 
-                          type="text"
-                          icon={<FaMinus className="text-white" />} 
-                          onClick={() => updateQuantity(index, -1)}
-                          disabled={prod.quantite <= 1}
-                          className="text-white hover:bg-slate-500"
-                        />
-                        <InputNumber
-                          min={1}
-                          value={prod.quantite}
-                          onChange={(val) => setQuantity(index, val || 1)}
-                          className="w-16 text-center bg-transparent border-none text-white"
-                          controls={false}
-                        />
-                        <Button 
-                          type="text"
-                          icon={<FaPlus className="text-white" />} 
-                          onClick={() => updateQuantity(index, 1)}
-                          className="text-white hover:bg-slate-500"
-                        />
-                      </div>
-                      <div className="w-28 text-right">
-                        <Text strong className="text-green-400 text-lg">
-                          {(prod.prixUnitaire * prod.quantite).toLocaleString()} F
+
+              {produits.length === 0 ? (
+                <div className="py-16 text-center">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                    <ShoppingCart className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <p className="text-base font-medium text-foreground">Panier vide</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Scannez ou recherchez des produits</p>
+                </div>
+              ) : (
+                <div className="max-h-[400px] space-y-2 overflow-y-auto pr-1">
+                  {produits.map((prod, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between rounded-lg border border-border bg-card p-3 transition-colors hover:border-primary/40"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <Text fw={600} size="sm" className="block truncate text-foreground">{prod.nom}</Text>
+                        <Text size="xs" className="num text-muted-foreground">
+                          {formatN(prod.prixUnitaire)} F × {prod.quantite}
                         </Text>
                       </div>
-                      <Button 
-                        type="text"
-                        danger 
-                        icon={<FaTrash />} 
-                        onClick={() => removeProduct(index)}
-                        className="hover:bg-red-500/20"
-                      />
+                      <div className="flex items-center gap-3">
+                        {/* Quantity stepper */}
+                        <div className="flex items-center rounded-lg border border-border bg-muted">
+                          <ActionIcon variant="subtle" color="gray" onClick={() => updateQuantity(index, -1)} disabled={prod.quantite <= 1}>
+                            <Minus className="h-3.5 w-3.5" />
+                          </ActionIcon>
+                          <NumberInput
+                            min={1}
+                            value={prod.quantite}
+                            onChange={(val) => setQuantity(index, typeof val === 'number' ? val : (val ? Number(val) : 1))}
+                            hideControls
+                            variant="unstyled"
+                            className="num w-14 text-center text-sm font-semibold text-foreground"
+                          />
+                          <ActionIcon variant="subtle" color="gray" onClick={() => updateQuantity(index, 1)}>
+                            <Plus className="h-3.5 w-3.5" />
+                          </ActionIcon>
+                        </div>
+                        {/* Line total */}
+                        <div className="num w-28 text-right text-base font-bold text-emerald-600 dark:text-emerald-400">
+                          {formatN(prod.prixUnitaire * prod.quantite)} F
+                        </div>
+                        <ActionIcon variant="subtle" color="red" onClick={() => removeProduct(index)}>
+                          <Trash2 className="h-4 w-4" />
+                        </ActionIcon>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </CardContent>
           </Card>
         </div>
 
-        {/* Section Droite - Récapitulatif et Paiement */}
+        {/* Section Droite — Récapitulatif + Actions */}
         <div className="space-y-4">
           {/* Récapitulatif */}
-          <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700">
-            <Title level={4} className="text-white mb-4 flex items-center gap-2">
-              <FaMoneyBillWave className="text-green-400" />
-              <span className="font-bold text-white">Récapitulatif</span>
-            </Title>
+          <Card className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] text-white">
+            <CardContent className="p-4 md:p-5">
+              <h4 className="mb-4 flex items-center gap-2 text-sm font-bold text-white">
+                <Receipt className="h-4 w-4 text-emerald-400" />
+                Récapitulatif
+              </h4>
 
-            <div className="space-y-4">
-              <div className="flex justify-between items-center py-2 border-b border-slate-700">
-                <Text className="text-slate-400">Sous-total</Text>
-                <Text className="text-white text-xl font-medium">
-                  {montantTotal.toLocaleString()} F
-                </Text>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between border-b border-white/10 py-2">
+                  <span className="text-sm text-slate-400">Sous-total</span>
+                  <span className="num text-lg font-medium text-white">{formatN(montantTotal)} F</span>
+                </div>
+
+                <div className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 p-5 text-center">
+                  <p className="mb-1 text-xs uppercase tracking-wider text-emerald-100">Total à payer</p>
+                  <p className="num text-3xl font-extrabold text-white">{formatN(montantTotal)}</p>
+                  <p className="text-sm text-emerald-100">FCFA</p>
+                </div>
               </div>
-
-              <Divider className="border-slate-600 my-4" />
-
-              <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl p-6 text-center">
-                <Text className="text-green-100 text-sm block mb-1">TOTAL À PAYER</Text>
-                <Text className="text-white text-4xl font-bold">
-                  {montantTotal.toLocaleString()}
-                </Text>
-                <Text className="text-green-100 text-lg ml-2">FCFA</Text>
-              </div>
-            </div>
+            </CardContent>
           </Card>
 
-          {/* Boutons d'action */}
+          {/* Actions */}
           <div className="space-y-3">
             <Button
-              type="primary"
-              size="large"
-              block
-              icon={<FaCashRegister />}
+              size="lg"
+              className="h-14 w-full text-base font-bold"
               onClick={handleValidate}
-              loading={loadingCreate}
               disabled={produits.length === 0}
-              className="h-16 text-xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 border-none hover:from-green-600 hover:to-emerald-700 shadow-lg shadow-green-500/30"
             >
-              VALIDER ({montantTotal.toLocaleString()} F)
+              {loadingCreate ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+                  Validation…
+                </span>
+              ) : (
+                <>
+                  <Receipt className="h-5 w-5" />
+                  Valider ({formatN(montantTotal)} F)
+                </>
+              )}
             </Button>
 
             <div className="grid grid-cols-2 gap-3">
-              <Button
-                size="large"
-                icon={<FaTrash />}
-                onClick={handleNewSale}
-                disabled={produits.length === 0}
-                className="h-12 bg-slate-700 text-white border-slate-600 hover:bg-slate-600"
-              >
+              <Button variant="outline" size="lg" onClick={handleNewSale} disabled={produits.length === 0}>
+                <Trash2 className="h-4 w-4" />
                 Annuler
               </Button>
-              <Button
-                size="large"
-                icon={<FaPrint />}
-                disabled={produits.length === 0}
-                className="h-12 bg-slate-700 text-white border-slate-600 hover:bg-slate-600"
-              >
+              <Button variant="outline" size="lg" onClick={handlePrint} disabled={produits.length === 0}>
+                <Printer className="h-4 w-4" />
                 Imprimer
               </Button>
             </div>
           </div>
 
           {/* Raccourcis clavier */}
-          <Card className="bg-slate-800/50 border-slate-700">
-            <Text className="text-slate-400 text-xs block mb-2">Raccourcis clavier</Text>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="flex items-center gap-2">
-                <Tag className="bg-slate-700 text-slate-300 border-none">F2</Tag>
-                <Text className="text-slate-400">Rechercher</Text>
+          <Card>
+            <CardContent className="p-4">
+              <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                <Keyboard className="h-3.5 w-3.5" />
+                Raccourcis clavier
+              </p>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {[
+                  { key: 'F2', action: 'Rechercher' },
+                  { key: 'F8', action: 'Valider' },
+                  { key: 'Esc', action: 'Annuler' },
+                  { key: 'F12', action: 'Imprimer' },
+                ].map((s) => (
+                  <div key={s.key} className="flex items-center gap-2">
+                    <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
+                      {s.key}
+                    </kbd>
+                    <span className="text-muted-foreground">{s.action}</span>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center gap-2">
-                <Tag className="bg-slate-700 text-slate-300 border-none">F8</Tag>
-                <Text className="text-slate-400">Valider</Text>
-              </div>
-              <div className="flex items-center gap-2">
-                <Tag className="bg-slate-700 text-slate-300 border-none">Esc</Tag>
-                <Text className="text-slate-400">Annuler</Text>
-              </div>
-              <div className="flex items-center gap-2">
-                <Tag className="bg-slate-700 text-slate-300 border-none">F12</Tag>
-                <Text className="text-slate-400">Imprimer</Text>
-              </div>
-            </div>
+            </CardContent>
           </Card>
         </div>
       </div>
-
     </div>
   );
 }

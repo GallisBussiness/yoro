@@ -1,161 +1,143 @@
-import { App, Button, Form, Input } from "antd";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { Title, Divider, Paper, Text } from "@mantine/core";
-import { FaEnvelope, FaArrowRight, FaArrowLeft } from "react-icons/fa";
-import { authclient } from "../../../lib/auth-client";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { toast } from 'sonner';
+import { Mail, ArrowRight, ArrowLeft } from 'lucide-react';
+import { authclient } from '../../../lib/auth-client';
+import { Card, CardContent } from '../../components/shadcn/card';
+import { Input } from '../../components/shadcn/input';
+import { Button } from '../../components/shadcn/button';
+import { Label } from '../../components/shadcn/label';
+
+const schema = z.object({
+  email: z
+    .string()
+    .min(1, 'Veuillez entrer votre email')
+    .email('Veuillez entrer un email valide'),
+});
+type FormValues = z.infer<typeof schema>;
 
 const ForgotPassword: React.FC = () => {
-  const { message } = App.useApp();
   const [isPending, setIsPending] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const navigate = useNavigate();
 
-  const onRequestReset = async (values: { email: string }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: '' },
+  });
+
+  const onRequestReset = async (values: FormValues) => {
     setIsPending(true);
     try {
       const { data, error } = await authclient.forgetPassword({
         email: values.email,
-        redirectTo: import.meta.env.VITE_APP_URL + "/auth/reset-password",
+        redirectTo: import.meta.env.VITE_APP_URL + '/auth/reset-password',
       });
-      if(error) {
-        message.error("Une erreur s'est produite. Veuillez vérifier votre email.");
+      if (error) {
+        toast.error("Une erreur s'est produite. Veuillez vérifier votre email.");
       } else {
-        if(data?.status) {
+        if (data?.status) {
           setEmailSent(true);
-          message.success("Instructions de réinitialisation envoyées à votre email !");
+          toast.success('Instructions de réinitialisation envoyées à votre email !');
         }
       }
     } catch (error) {
       console.error(error);
-      message.error("Une erreur s'est produite lors de l'envoi des instructions");
+      toast.error("Une erreur s'est produite lors de l'envoi des instructions");
     } finally {
       setIsPending(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="flex flex-col justify-center flex-1 px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-        <div className="w-full max-w-md mx-auto">
-          <Paper 
-            p="xl" 
-            radius="lg" 
-            className="bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700"
-            style={{
-              backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
-              backdropFilter: "blur(10px)"
-            }}
-          >
-            <div className="text-center mb-6">
-              <img
-                className="w-auto h-16 mx-auto mb-4"
-                src="/img/logo.png"
-                alt="YORO"
-              />
-              <Title order={2} className="text-gray-800 dark:text-white font-bold tracking-tight">
-                {emailSent ? "Vérifiez votre email" : "Mot de passe oublié"}
-              </Title>
-              <Text size="sm" className="text-gray-600 dark:text-gray-400 mt-2">
-                {emailSent 
-                  ? "Nous avons envoyé les instructions de réinitialisation à votre adresse email" 
-                  : "Entrez votre email pour recevoir un lien de réinitialisation"}
-              </Text>
+    <div className="flex min-h-screen items-center justify-center bg-muted px-4 py-12">
+      <div className="w-full max-w-md">
+        <Card className="border-border bg-card shadow-xl">
+          <CardContent className="p-6 md:p-8">
+            <div className="mb-6 text-center">
+              <img className="mx-auto mb-4 h-16 w-auto" src="/img/logo.png" alt="YORO" />
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                {emailSent ? 'Vérifiez votre email' : 'Mot de passe oublié'}
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {emailSent
+                  ? 'Nous avons envoyé les instructions de réinitialisation à votre adresse email'
+                  : 'Entrez votre email pour recevoir un lien de réinitialisation'}
+              </p>
             </div>
-
-            <Divider className="my-6" />
 
             {emailSent ? (
               <div className="space-y-6">
-                <div className="p-4 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-100 dark:border-green-800">
-                  <Text className="text-green-700 dark:text-green-400 text-center">
-                    Veuillez consulter votre boîte de réception et suivre les instructions pour réinitialiser votre mot de passe.
-                  </Text>
+                <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/30">
+                  <p className="text-center text-emerald-700 dark:text-emerald-400">
+                    Veuillez consulter votre boîte de réception et suivre les instructions pour réinitialiser
+                    votre mot de passe.
+                  </p>
                 </div>
-                
+
                 <Button
                   onClick={() => navigate('/auth/signin')}
-                  className="w-full h-12 flex items-center justify-center bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] hover:from-[#9370DB] hover:to-[#8A2BE2] border-none rounded-md shadow-md hover:shadow-lg transition-all duration-300 text-base font-medium text-white"
+                  className="w-full"
+                  size="lg"
                 >
-                  <FaArrowLeft className="mr-2" />
-                  <span>Retour à la connexion</span>
+                  <span className="flex items-center gap-2">
+                    <ArrowLeft className="h-4 w-4" />
+                    Retour à la connexion
+                  </span>
                 </Button>
               </div>
             ) : (
-              <Form
-                name="forgotPassword"
-                layout="vertical"
-                onFinish={onRequestReset}
-                autoComplete="off"
-                className="space-y-4"
-              >
-                <Form.Item
-                  label={<span className="text-gray-700 dark:text-gray-300 font-medium">Email</span>}
-                  name="email"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Veuillez entrer votre email",
-                    },
-                    {
-                      type: "email",
-                      message: "Veuillez entrer un email valide",
-                    },
-                  ]}
-                >
-                  <Input
-                    prefix={<FaEnvelope className="text-[#8A2BE2]" />}
-                    placeholder="Entrez votre email"
-                    size="large"
-                    className="rounded-md border-gray-300 dark:border-gray-600 focus:border-[#8A2BE2] focus:shadow-md transition-all duration-300"
-                  />
-                </Form.Item>
+              <form onSubmit={handleSubmit(onRequestReset)} className="space-y-4" autoComplete="off">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">Email</Label>
+                  <div className="relative">
+                    <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Entrez votre email"
+                      className="pl-9"
+                      aria-invalid={!!errors.email}
+                      {...register('email')}
+                    />
+                  </div>
+                  {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+                </div>
 
-                <Form.Item>
-                  <Button
-                    htmlType="submit"
-                    className="w-full h-12 flex items-center justify-center bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] hover:from-[#9370DB] hover:to-[#8A2BE2] border-none rounded-md shadow-md hover:shadow-lg transition-all duration-300 text-base font-medium text-white"
-                    loading={isPending}
-                  >
-                    <span className="mr-2">Envoyer les instructions</span>
-                    {!isPending && <FaArrowRight />}
-                  </Button>
-                </Form.Item>
+                <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+                  {isPending ? (
+                    <span className="flex items-center gap-2">
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+                      Envoi…
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Envoyer les instructions
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  )}
+                </Button>
 
-                <div className="text-center mt-4">
+                <div className="text-center">
                   <Link
                     to="/auth/signin"
-                    className="text-sm font-medium text-[#8A2BE2] hover:text-orange-600 transition-colors duration-300 flex items-center justify-center"
+                    className="flex items-center justify-center gap-1 text-sm font-medium text-primary hover:text-accent transition-colors"
                   >
-                    <FaArrowLeft className="mr-1" />
+                    <ArrowLeft className="h-4 w-4" />
                     <span>Retour à la connexion</span>
                   </Link>
                 </div>
-              </Form>
+              </form>
             )}
-          </Paper>
-        </div>
-      </div>
-
-      <div className="relative flex-1 hidden w-0 lg:block">
-        <div className="absolute inset-0 object-cover w-full h-full bg-gradient-to-br from-[#8A2BE2] to-[#9370DB]">
-          <div className="flex flex-col justify-center h-full p-12 text-white">
-            <Title order={1} className="text-4xl font-bold mb-6 text-white">Réinitialisation de mot de passe</Title>
-            <Text size="xl" className="mb-10 text-white opacity-90">Récupérez l'accès à votre compte en quelques étapes simples</Text>
-
-            <div className="space-y-8">
-              <div className="flex items-start gap-6 transform transition-transform duration-300 hover:translate-x-2">
-                <div className="p-4 bg-white/20 backdrop-blur-md rounded-xl shadow-lg">
-                  <FaEnvelope className="text-white text-2xl" />
-                </div>
-                <div>
-                  <Title order={3} className="font-semibold text-white mb-1">Vérification par email</Title>
-                  <Text className="text-white/80">Nous vous envoyons un lien sécurisé par email</Text>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

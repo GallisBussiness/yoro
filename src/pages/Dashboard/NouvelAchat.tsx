@@ -36,7 +36,6 @@ import {
 import { useForm } from "@mantine/form";
 import { toast } from 'sonner';
 import { useDisclosure } from "@mantine/hooks";
-import { Select } from "antd";
 import { AchatService } from "../../services/achat.service";
 import useScanDetection from 'use-scan-detection';
 import { ArticleService } from "../../services/article.service";
@@ -47,9 +46,8 @@ import { FournisseurService } from "../../services/fournisseur.service";
 import { DateInput } from "@mantine/dates";
 import { TbDiscount } from "react-icons/tb";
 import { DepotService } from "../../services/depot.service";
-import { formatN } from "../../lib/helpers";
+import { formatN, isValidUUID } from "../../lib/helpers";
 import { authclient } from '../../../lib/auth-client';
-import { validate } from "uuid";
 
 const schemaF = yup.object().shape({
   nom: yup.string().required('Invalide Nom'),
@@ -261,7 +259,7 @@ function NouvelAchat() {
 
       try {
         const c = code.replace(/Shift/gi, "");
-        if (validate(c)) {
+        if (isValidUUID(c)) {
           const ar = await mutateAsync(c);
 
           if (!ar) {
@@ -337,16 +335,16 @@ function NouvelAchat() {
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 min-h-screen">
+    <div className="bg-gc-muted min-h-screen">
       <LoadingOverlay
         visible={loadingCreate || isPending || loadingCreateFournisseur || isLoadingA || isLoadingFournisseur || isLoadingDepot}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
-        loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+        loaderProps={{ color: 'brand', type: 'dots' }}
       />
 
       {/* Header */}
-      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50">
+      <div className="bg-gc-surface border-b border-gc sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -359,7 +357,7 @@ function NouvelAchat() {
                 Retour
               </Button>
               <div>
-                <Title order={3} className="text-slate-800 dark:text-white">
+                <Title order={3} className="text-gc">
                   Nouvel Achat
                 </Title>
                 <Text size="xs" className="text-slate-500">
@@ -391,13 +389,13 @@ function NouvelAchat() {
             {/* Colonne gauche - Informations fournisseur, dépôt et date */}
             <div className="space-y-4">
               {/* Informations fournisseur */}
-              <Paper shadow="sm" p="md" radius="md" className="bg-white dark:bg-slate-800">
+              <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <ThemeIcon size="md" radius="md" color="blue" variant="light">
                       <FaUser size={14} />
                     </ThemeIcon>
-                    <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+                    <Text fw={600} size="sm" className="text-gc">
                       Fournisseur
                     </Text>
                   </div>
@@ -412,30 +410,28 @@ function NouvelAchat() {
                   </Button>
                 </div>
 
-                <Select
+                <SelectM
                   placeholder="Sélectionner un fournisseur"
-                  options={fournisseurs?.map((v: { tel: any; nom: any; addr: any; _id: string }) => ({
+                  data={fournisseurs?.map((v: { tel: any; nom: any; addr: any; _id: string }) => ({
                     label: `${v.nom} ${v.tel ? `/ ${v.tel}` : ''} ${v.addr ? `/ ${v.addr}` : ''}`,
                     value: v._id
                   }))}
                   {...form.getInputProps('fournisseur')}
                   loading={isLoadingFournisseur}
-                  showSearch
-                  optionFilterProp="label"
-                  filterSort={(optionA, optionB) =>
-                    `${optionA.label}`.toLowerCase().localeCompare(`${optionB.label}`.toLowerCase())}
+                  searchable
+                  nothingFoundMessage="Aucun résultat"
                   className="w-full"
-                  size="large"
+                  size="sm"
                 />
               </Paper>
 
               {/* Dépôt */}
-              <Paper shadow="sm" p="md" radius="md" className="bg-white dark:bg-slate-800">
+              <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface">
                 <div className="flex items-center gap-2 mb-3">
                   <ThemeIcon size="md" radius="md" color="teal" variant="light">
                     <FaWarehouse size={14} />
                   </ThemeIcon>
-                  <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+                  <Text fw={600} size="sm" className="text-gc">
                     Dépôt de destination
                   </Text>
                 </div>
@@ -448,17 +444,18 @@ function NouvelAchat() {
                   {...form.getInputProps('depot')}
                   searchable
                   clearable
+                  nothingFoundMessage="Aucun résultat"
                   size="md"
                 />
               </Paper>
 
               {/* Date */}
-              <Paper shadow="sm" p="md" radius="md" className="bg-white dark:bg-slate-800">
+              <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface">
                 <div className="flex items-center gap-2 mb-3">
                   <ThemeIcon size="md" radius="md" color="green" variant="light">
                     <FaRegCalendarAlt size={14} />
                   </ThemeIcon>
-                  <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+                  <Text fw={600} size="sm" className="text-gc">
                     Date de l'achat
                   </Text>
                 </div>
@@ -470,12 +467,12 @@ function NouvelAchat() {
               </Paper>
 
               {/* Remise */}
-              <Paper shadow="sm" p="md" radius="md" className="bg-white dark:bg-slate-800">
+              <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface">
                 <div className="flex items-center gap-2 mb-3">
                   <ThemeIcon size="md" radius="md" color="purple" variant="light">
                     <TbDiscount size={14} />
                   </ThemeIcon>
-                  <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+                  <Text fw={600} size="sm" className="text-gc">
                     Remise
                   </Text>
                 </div>
@@ -532,14 +529,14 @@ function NouvelAchat() {
 
             {/* Colonne droite - Lignes de facture */}
             <div className="lg:col-span-3">
-              <Paper shadow="sm" p="md" radius="md" className="bg-white dark:bg-slate-800">
+              <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <ThemeIcon size="lg" radius="md" color="blue" variant="light">
                       <FaFileInvoice size={18} />
                     </ThemeIcon>
                     <div>
-                      <Text fw={600} className="text-slate-700 dark:text-slate-200">
+                      <Text fw={600} className="text-gc">
                         Lignes de l'achat
                       </Text>
                       <Text size="xs" className="text-slate-500">
@@ -572,20 +569,18 @@ function NouvelAchat() {
                             {index + 1}
                           </Table.Td>
                           <Table.Td>
-                            <Select
+                            <SelectM
                               placeholder="Sélectionner un article"
-                              options={articles?.map((a: any) => ({
+                              data={articles?.map((a: any) => ({
                                 label: `${a.nom} (${a.ref})`,
                                 value: a._id
                               }))}
                               value={articles?.find((a: any) => a.ref === item.ref)?._id}
-                              onChange={(val) => selectArticleForLine(index, val)}
-                              showSearch
-                              optionFilterProp="label"
-                              filterSort={(optionA, optionB) =>
-                                `${optionA.label}`.toLowerCase().localeCompare(`${optionB.label}`.toLowerCase())}
+                              onChange={(val) => selectArticleForLine(index, val as string)}
+                              searchable
+                              nothingFoundMessage="Aucun résultat"
                               className="w-full"
-                              size="middle"
+                              size="sm"
                               loading={isLoadingA}
                             />
                           </Table.Td>
@@ -671,7 +666,7 @@ function NouvelAchat() {
         opened={openedFournisseurModal}
         onClose={closeFournisseurModal}
         title={
-          <Text size="lg" fw={700} className="text-slate-800 dark:text-white flex items-center gap-2">
+          <Text size="lg" fw={700} className="text-gc flex items-center gap-2">
             <FaUser className="text-blue-500" />
             Nouveau fournisseur
           </Text>

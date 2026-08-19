@@ -26,7 +26,7 @@ function VenteCaisse() {
         visible={isLoading}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
-        loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+        loaderProps={{ color: 'brand', type: 'dots' }}
       />
       <div className="mb-6 flex items-center">
         <Button 
@@ -45,7 +45,7 @@ function VenteCaisse() {
           <Paper 
             p="xl" 
             radius="md" 
-            className="bg-white dark:bg-gray-800 shadow-lg mb-6"
+            className="bg-card shadow-lg mb-6"
             style={{
               backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8))",
               backdropFilter: "blur(10px)"
@@ -73,20 +73,20 @@ function VenteCaisse() {
             <Divider className="my-4" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              <Card p="md" radius="md" className="bg-green-50 dark:bg-gray-700 border border-green-100 dark:border-gray-600 shadow-sm">
+              <Card p="md" radius="md" className="bg-emerald-50 dark:bg-emerald-500/10 border border-border shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <FaMoneyBillWave className="text-green-500" />
-                  <Text fw={600} className="text-gray-700 dark:text-gray-200">Montant</Text>
+                  <Text fw={600} className="text-foreground">Montant</Text>
                 </div>
                 <Text size="xl" fw={700} className="text-green-600 dark:text-green-400 pl-7">
                   {formatN(venteCaisse?.montant || 0)} FCFA
                 </Text>
               </Card>
               
-              <Card p="md" radius="md" className="bg-blue-50 dark:bg-gray-700 border border-blue-100 dark:border-gray-600 shadow-sm">
+              <Card p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <FaCalendarAlt className="text-blue-500" />
-                  <Text fw={600} className="text-gray-700 dark:text-gray-200">Date</Text>
+                  <Text fw={600} className="text-foreground">Date</Text>
                 </div>
                 <Text size="lg" className="text-gray-800 dark:text-gray-100 pl-7">
                   {venteCaisse?.date ? format(new Date(venteCaisse.date), 'dd MMMM yyyy', { locale: fr }) : 'Non renseignée'}
@@ -98,12 +98,12 @@ function VenteCaisse() {
             <Divider className="my-6" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card p="md" radius="md" className="bg-purple-50 dark:bg-gray-700 border border-purple-100 dark:border-gray-600 shadow-sm">
+              <Card p="md" radius="md" className="bg-violet-50 dark:bg-violet-500/10 border border-border shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <FaCalendarAlt className="text-purple-500" />
-                  <Text fw={600} className="text-gray-700 dark:text-gray-200">Date de création</Text>
+                  <Text fw={600} className="text-foreground">Date de création</Text>
                 </div>
-                <Text size="sm" className="text-gray-600 dark:text-gray-300 pl-7">
+                <Text size="sm" className="text-muted-foreground pl-7">
                   {venteCaisse?.createdAt ? format(new Date(venteCaisse.createdAt), 'dd MMMM yyyy à HH:mm', { locale: fr }) : 'Non disponible'}
                 </Text>
               </Card>
@@ -111,9 +111,9 @@ function VenteCaisse() {
               <Card p="md" radius="md" className="bg-indigo-50 dark:bg-gray-700 border border-indigo-100 dark:border-gray-600 shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <FaCalendarAlt className="text-indigo-500" />
-                  <Text fw={600} className="text-gray-700 dark:text-gray-200">Dernière modification</Text>
+                  <Text fw={600} className="text-foreground">Dernière modification</Text>
                 </div>
-                <Text size="sm" className="text-gray-600 dark:text-gray-300 pl-7">
+                <Text size="sm" className="text-muted-foreground pl-7">
                   {venteCaisse?.updatedAt ? format(new Date(venteCaisse.updatedAt), 'dd MMMM yyyy à HH:mm', { locale: fr }) : 'Non disponible'}
                 </Text>
               </Card>

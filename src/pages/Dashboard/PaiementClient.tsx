@@ -16,14 +16,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DataTable } from "mantine-datatable";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Empty } from "antd";
-import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaBoxOpen } from "react-icons/fa";
+import { EmptyState } from "../../components/ui";
 import { formatN } from "../../lib/helpers";
 import { VenteService } from "../../services/vente.service";
 import { PaiementClientService } from "../../services/paiement-client.service";
 import { ClientService } from "../../services/client.service";
 import { WeeklyRevenue } from "./WeeklyRevenue";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { authclient } from '../../../lib/auth-client';
 
 const PAGE_SIZE = 10;
@@ -206,7 +206,7 @@ function PaiementClient() {
 
           {/* Table des paiements */}
           <DataTable
-            withTableBorder={true}
+            withTableBorder={false}
             columns={[
               { 
                 accessor: 'date', 
@@ -246,13 +246,13 @@ function PaiementClient() {
             ]}
             records={records}
             idAccessor="_id"
-            striped={true}
-            stripedColor="#f7ddd2"
+            striped={false}
             fetching={isLoadingPaiements}
             emptyState={
-              <Empty 
-                image="/img/empty.png" 
-                description="Aucun paiement trouvé pour cette vente" 
+              <EmptyState
+                icon={<FaBoxOpen size={26} />}
+                title="Aucun paiement"
+                hint="Aucun paiement trouvé pour cette vente"
               />
             }
             totalRecords={paiements?.length || 0}
@@ -262,9 +262,9 @@ function PaiementClient() {
             highlightOnHover
             borderRadius="lg"
             shadow="lg"
-            horizontalSpacing="xs"
+            horizontalSpacing="md"
             verticalAlign="top"
-            paginationActiveBackgroundColor="#8A2BE2"
+            paginationActiveBackgroundColor="var(--gc-primary)"
           />
 
           {/* Modal pour ajouter/éditer un paiement */}

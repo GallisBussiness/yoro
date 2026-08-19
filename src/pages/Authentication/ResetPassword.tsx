@@ -1,240 +1,198 @@
-import { App, Button, Form, Input } from "antd";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
-import { authclient } from "../../../lib/auth-client";
-import { Title, Divider, Paper, Text } from "@mantine/core";
-import { FaLock, FaArrowRight, FaArrowLeft, FaCheckCircle } from "react-icons/fa";
+import { useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { toast } from 'sonner';
+import { Lock, ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { authclient } from '../../../lib/auth-client';
+import { Card, CardContent } from '../../components/shadcn/card';
+import { Input } from '../../components/shadcn/input';
+import { Button } from '../../components/shadcn/button';
+import { Label } from '../../components/shadcn/label';
+
+const schema = z
+  .object({
+    password: z
+      .string()
+      .min(1, 'Veuillez entrer votre nouveau mot de passe')
+      .min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
+    confirmPassword: z.string().min(1, 'Veuillez confirmer votre mot de passe'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Les deux mots de passe ne correspondent pas',
+    path: ['confirmPassword'],
+  });
+
+type FormValues = z.infer<typeof schema>;
 
 const ResetPassword: React.FC = () => {
-  const { message } = App.useApp();
   const [isPending, setIsPending] = useState(false);
   const [resetComplete, setResetComplete] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
-  
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { password: '', confirmPassword: '' },
+  });
+
   if (!token) {
     return (
-      <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="flex flex-col justify-center flex-1 px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-          <div className="w-full max-w-md mx-auto">
-            <Paper 
-              p="xl" 
-              radius="lg" 
-              className="bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700"
-              style={{
-                backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
-                backdropFilter: "blur(10px)"
-              }}
-            >
-              <div className="text-center mb-6">
-                <img
-                  className="w-auto h-16 mx-auto mb-4"
-                  src="/img/logo.png"
-                  alt="YORO"
-                />
-                <Title order={2} className="text-gray-800 dark:text-white font-bold tracking-tight">
-                  Lien invalide
-                </Title>
+      <div className="flex min-h-screen items-center justify-center bg-muted px-4 py-12">
+        <div className="w-full max-w-md">
+          <Card className="border-border bg-card shadow-xl">
+            <CardContent className="p-6 md:p-8">
+              <div className="mb-6 text-center">
+                <img className="mx-auto mb-4 h-16 w-auto" src="/img/logo.png" alt="YORO" />
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">Lien invalide</h2>
               </div>
 
-              <Divider className="my-6" />
-
-              <div className="p-4 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-100 dark:border-red-800 mb-6">
-                <Text className="text-red-700 dark:text-red-400 text-center">
+              <div className="mb-6 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/30">
+                <p className="text-center text-red-700 dark:text-red-400">
                   Le lien de réinitialisation est invalide ou a expiré. Veuillez demander un nouveau lien.
-                </Text>
+                </p>
               </div>
-              
+
               <Button
                 onClick={() => navigate('/auth/forgot-password')}
-                className="w-full h-12 flex items-center justify-center bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] hover:from-[#9370DB] hover:to-[#8A2BE2] border-none rounded-md shadow-md hover:shadow-lg transition-all duration-300 text-base font-medium text-white"
+                className="w-full"
+                size="lg"
               >
-                <span className="mr-2">Demander un nouveau lien</span>
-                <FaArrowRight />
+                <span className="flex items-center gap-2">
+                  Demander un nouveau lien
+                  <ArrowRight className="h-4 w-4" />
+                </span>
               </Button>
-            </Paper>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
   }
 
-  const onResetPassword = async (values: { password: string; confirmPassword: string }) => {
-    if (values.password !== values.confirmPassword) {
-      message.error("Les mots de passe ne correspondent pas");
-      return;
-    }
-
+  const onResetPassword = async (values: FormValues) => {
     setIsPending(true);
     try {
-      // Utiliser l'API d'authentification existante pour réinitialiser le mot de passe
-      const { data} = await authclient.resetPassword({
+      const { data } = await authclient.resetPassword({
         token,
         newPassword: values.password,
       });
-      if(data?.status) {
+      if (data?.status) {
         setResetComplete(true);
-        message.success("Votre mot de passe a été réinitialisé avec succès !");
+        toast.success('Votre mot de passe a été réinitialisé avec succès !');
         navigate('/auth/signin');
       }
     } catch (error) {
       console.error(error);
-      message.error("Une erreur s'est produite lors de la réinitialisation du mot de passe");
+      toast.error("Une erreur s'est produite lors de la réinitialisation du mot de passe");
     } finally {
       setIsPending(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="flex flex-col justify-center flex-1 px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-        <div className="w-full max-w-md mx-auto">
-          <Paper 
-            p="xl" 
-            radius="lg" 
-            className="bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700"
-            style={{
-              backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
-              backdropFilter: "blur(10px)"
-            }}
-          >
-            <div className="text-center mb-6">
-              <img
-                className="w-auto h-16 mx-auto mb-4"
-                src="/img/gallis.png"
-                alt="Gestion Commerciale"
-              />
-              <Title order={2} className="text-gray-800 dark:text-white font-bold tracking-tight">
-                {resetComplete ? "Mot de passe réinitialisé" : "Créer un nouveau mot de passe"}
-              </Title>
-              <Text size="sm" className="text-gray-600 dark:text-gray-400 mt-2">
-                {resetComplete 
-                  ? "Votre mot de passe a été mis à jour avec succès" 
-                  : "Veuillez entrer votre nouveau mot de passe"}
-              </Text>
+    <div className="flex min-h-screen items-center justify-center bg-muted px-4 py-12">
+      <div className="w-full max-w-md">
+        <Card className="border-border bg-card shadow-xl">
+          <CardContent className="p-6 md:p-8">
+            <div className="mb-6 text-center">
+              <img className="mx-auto mb-4 h-16 w-auto" src="/img/gallis.png" alt="Gestion Commerciale" />
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                {resetComplete ? 'Mot de passe réinitialisé' : 'Créer un nouveau mot de passe'}
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {resetComplete
+                  ? 'Votre mot de passe a été mis à jour avec succès'
+                  : 'Veuillez entrer votre nouveau mot de passe'}
+              </p>
             </div>
-
-            <Divider className="my-6" />
 
             {resetComplete ? (
               <div className="space-y-6">
                 <div className="flex flex-col items-center justify-center p-6">
-                  <FaCheckCircle className="text-green-500 text-5xl mb-4" />
-                  <Text className="text-gray-700 dark:text-gray-300 text-center mb-4">
-                    Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.
-                  </Text>
+                  <ShieldCheck className="mb-4 h-12 w-12 text-emerald-500" />
+                  <p className="mb-4 text-center text-muted-foreground">
+                    Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter
+                    avec votre nouveau mot de passe.
+                  </p>
                 </div>
-                
-                <Button
-                  onClick={() => navigate('/auth/signin')}
-                  className="w-full h-12 flex items-center justify-center bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] hover:from-[#9370DB] hover:to-[#8A2BE2] border-none rounded-md shadow-md hover:shadow-lg transition-all duration-300 text-base font-medium text-white"
-                >
-                  <span className="mr-2">Se connecter</span>
-                  <FaArrowRight />
+
+                <Button onClick={() => navigate('/auth/signin')} className="w-full" size="lg">
+                  <span className="flex items-center gap-2">
+                    Se connecter
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
                 </Button>
               </div>
             ) : (
-              <Form
-                name="resetPassword"
-                layout="vertical"
-                onFinish={onResetPassword}
-                autoComplete="off"
-                className="space-y-4"
-              >
-                <Form.Item
-                  label={<span className="text-gray-700 dark:text-gray-300 font-medium">Nouveau mot de passe</span>}
-                  name="password"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Veuillez entrer votre nouveau mot de passe",
-                    },
-                    {
-                      min: 8,
-                      message: "Le mot de passe doit contenir au moins 8 caractères",
-                    },
-                  ]}
-                >
-                  <Input.Password
-                    prefix={<FaLock className="text-[#8A2BE2]" />}
-                    placeholder="Entrez votre nouveau mot de passe"
-                    size="large"
-                    className="rounded-md border-gray-300 dark:border-gray-600 focus:border-[#8A2BE2] focus:shadow-md transition-all duration-300"
-                  />
-                </Form.Item>
+              <form onSubmit={handleSubmit(onResetPassword)} className="space-y-4" autoComplete="off">
+                <div className="space-y-1.5">
+                  <Label htmlFor="password">Nouveau mot de passe</Label>
+                  <div className="relative">
+                    <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Entrez votre nouveau mot de passe"
+                      className="pl-9"
+                      aria-invalid={!!errors.password}
+                      {...register('password')}
+                    />
+                  </div>
+                  {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+                </div>
 
-                <Form.Item
-                  label={<span className="text-gray-700 dark:text-gray-300 font-medium">Confirmer le mot de passe</span>}
-                  name="confirmPassword"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Veuillez confirmer votre mot de passe",
-                    },
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (!value || getFieldValue('password') === value) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(new Error('Les deux mots de passe ne correspondent pas'));
-                      },
-                    }),
-                  ]}
-                >
-                  <Input.Password
-                    prefix={<FaLock className="text-[#8A2BE2]" />}
-                    placeholder="Confirmez votre mot de passe"
-                    size="large"
-                    className="rounded-md border-gray-300 dark:border-gray-600 focus:border-[#8A2BE2] focus:shadow-md transition-all duration-300"
-                  />
-                </Form.Item>
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                  <div className="relative">
+                    <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="Confirmez votre mot de passe"
+                      className="pl-9"
+                      aria-invalid={!!errors.confirmPassword}
+                      {...register('confirmPassword')}
+                    />
+                  </div>
+                  {errors.confirmPassword && (
+                    <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
+                  )}
+                </div>
 
-                <Form.Item>
-                  <Button
-                    htmlType="submit"
-                    className="w-full h-12 flex items-center justify-center bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] hover:from-[#9370DB] hover:to-[#8A2BE2] border-none rounded-md shadow-md hover:shadow-lg transition-all duration-300 text-base font-medium text-white"
-                    loading={isPending}
-                  >
-                    <span className="mr-2">Réinitialiser le mot de passe</span>
-                    {!isPending && <FaArrowRight />}
-                  </Button>
-                </Form.Item>
+                <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+                  {isPending ? (
+                    <span className="flex items-center gap-2">
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+                      Réinitialisation…
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Réinitialiser le mot de passe
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  )}
+                </Button>
 
-                <div className="text-center mt-4">
+                <div className="text-center">
                   <Link
                     to="/auth/signin"
-                    className="text-sm font-medium text-[#8A2BE2] hover:text-orange-600 transition-colors duration-300 flex items-center justify-center"
+                    className="flex items-center justify-center gap-1 text-sm font-medium text-primary hover:text-accent transition-colors"
                   >
-                    <FaArrowLeft className="mr-1" />
+                    <ArrowLeft className="h-4 w-4" />
                     <span>Retour à la connexion</span>
                   </Link>
                 </div>
-              </Form>
+              </form>
             )}
-          </Paper>
-        </div>
-      </div>
-
-      <div className="relative flex-1 hidden w-0 lg:block">
-        <div className="absolute inset-0 object-cover w-full h-full bg-gradient-to-br from-[#8A2BE2] to-[#9370DB]">
-          <div className="flex flex-col justify-center h-full p-12 text-white">
-            <Title order={1} className="text-4xl font-bold mb-6 text-white">Sécurité de votre compte</Title>
-            <Text size="xl" className="mb-10 text-white opacity-90">Créez un mot de passe fort pour protéger vos données</Text>
-
-            <div className="space-y-8">
-              <div className="flex items-start gap-6 transform transition-transform duration-300 hover:translate-x-2">
-                <div className="p-4 bg-white/20 backdrop-blur-md rounded-xl shadow-lg">
-                  <FaLock className="text-white text-2xl" />
-                </div>
-                <div>
-                  <Title order={3} className="font-semibold text-white mb-1">Mot de passe sécurisé</Title>
-                  <Text className="text-white/80">Utilisez un mot de passe fort avec des caractères variés</Text>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

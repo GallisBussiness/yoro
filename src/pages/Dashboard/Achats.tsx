@@ -5,12 +5,11 @@ import * as yup from 'yup';
 import { DataTable } from "mantine-datatable";
 import { AiOutlinePlus } from "react-icons/ai";
 import { ActionIcon, Badge, Box, Button, Drawer, LoadingOverlay, Modal, NumberInput, Text, TextInput, Select as SelectM, Tooltip, Group, HoverCard, Table, Popover } from "@mantine/core";
-import { FaEye, FaPlus, FaMinus, FaTrash, FaSearch, FaShoppingBag, FaRegCalendarAlt, FaMoneyBillWave, FaUser, FaCartPlus, FaWarehouse } from "react-icons/fa";
+import { FaEye, FaPlus, FaMinus, FaTrash, FaShoppingBag, FaRegCalendarAlt, FaMoneyBillWave, FaUser, FaCartPlus, FaWarehouse } from "react-icons/fa";
 import { FaRegCircleCheck, FaCartShopping } from "react-icons/fa6";
 import { BsFillPenFill } from "react-icons/bs";
 import { useForm } from "@mantine/form";
 import {useDebouncedValue, useDisclosure } from "@mantine/hooks";
-import { Input, Select } from "antd";
 import {WeeklyRevenue} from "./WeeklyRevenue";
 import useScanDetection from 'use-scan-detection';
 import { ArticleService } from "../../services/article.service";
@@ -22,11 +21,12 @@ import { AchatService } from "../../services/achat.service";
 import { FamilleService } from "../../services/famille.service";
 import { UniteService } from "../../services/unite.service";
 import { authclient } from '../../../lib/auth-client';
-import { formatN } from "../../lib/helpers";
+import { formatN, isValidUUID } from "../../lib/helpers";
+import { SearchInput } from "../../components/ui";
 import { DepotService } from "../../services/depot.service";
 import { Depot } from "../../interfaces/depot.interface";
 import { toast } from "sonner";
-import { validate } from 'uuid';
+
 
 const schema = yup.object().shape({
     date: yup.date().required('Invalid Date'),
@@ -81,7 +81,7 @@ function Achats() {
   const key = ['achat', session?.user.id];
   const {data:achats,isLoading} = useQuery({ queryKey: key, queryFn:() => achatService.getByUser(session!.user.id), enabled: !!session })
   const keyd = ['depots', session?.user.id];
-  const {data:depots,isLoading:isLoadingDepot} = useQuery({ queryKey: keyd, queryFn:() => depotService.getByUser(session!.user.id), enabled: !!session })
+  const {data:depots} = useQuery({ queryKey: keyd, queryFn:() => depotService.getByUser(session!.user.id), enabled: !!session })
   const {mutateAsync,isPending} = useMutation({
     mutationFn: (qr:string) => articleService.byref(encodeURIComponent(qr)),
  });
@@ -242,11 +242,11 @@ const handleUpdate  = (data: any) => {
   open();
 }
 
-const handleCreate  = () => {
-  setRemise(0);
-  form.reset();
-  open();
-}
+  // const handleCreate  = () => {
+  //   setRemise(0);
+  //   form.reset();
+  //   open();
+  // }
 
 
 
@@ -335,7 +335,7 @@ useScanDetection({
      
     try {
       const c = code.replace(/Shift/gi,"");
-      if(validate(c)) {
+      if(isValidUUID(c)) {
         const ar = await mutateAsync(c);
       
         if(!ar) {
@@ -444,7 +444,7 @@ const onSelect = (v:any) => {
 
 const fields = form.getValues().produits.map((item: any, index: number) => {
   return (
-  <div key={item?.ref} className={`grid grid-cols-4 gap-2 items-center p-2 rounded-md mb-1 ${index % 2 === 0 ? 'bg-white dark:bg-slate-800/80' : 'bg-slate-50 dark:bg-slate-700/50'} transition-all duration-300 hover:shadow-md`}>
+  <div key={item?.ref} className={`grid grid-cols-4 gap-2 items-center p-2 rounded-md mb-1 ${index % 2 === 0 ? 'bg-gc-surface/80' : 'bg-slate-50 dark:bg-slate-700/50'} transition-all duration-300 hover:shadow-md`}>
     <div className="relative">
       <div className="bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-md text-blue-600 dark:text-blue-300 font-medium text-sm text-center">
         {item.ref}
@@ -470,7 +470,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
         key={form.key(`produits.${index}.pu`)}
         {...form.getInputProps(`produits.${index}.pu`)}
         classNames={{
-          input: "rounded-md border-slate-200 dark:border-slate-700 font-medium",
+          input: "rounded-md border-gc font-medium",
           wrapper: "shadow-sm"
         }}
         rightSection={<Text size="xs" color="dimmed">FCFA</Text>}
@@ -500,7 +500,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
             min={1}
             style={{ flex: 1}}
             classNames={{
-              input: 'rounded-md border-slate-200 dark:border-slate-700 font-medium pl-7 pr-7 text-center',
+              input: 'rounded-md border-gc font-medium pl-7 pr-7 text-center',
               wrapper: "shadow-sm",
             }}
             key={form.key(`produits.${index}.qte`)}
@@ -558,11 +558,11 @@ return (
     <div className="mt-2">
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-1">Approvisionnement</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Gérez vos achats et approvisionnements</p>
+          <h1 className="text-2xl font-bold text-gc mb-1">Approvisionnement</h1>
+          <p className="text-sm text-gc-muted">Gérez vos achats et approvisionnements</p>
         </div>
        <Button 
-         bg="#8A2BE2" 
+         color="brand" 
          leftSection={<AiOutlinePlus className="h-5 w-5"/>} 
          onClick={() => navigate('/dashboard/approvisionnements/nouveau')}
          className="shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
@@ -574,15 +574,13 @@ return (
      
      <WeeklyRevenue add={null}>
      <>
-     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 mb-6">
+     <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-4 mb-6">
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
          <div className="w-full md:w-1/3 relative">
-            <Input 
-              value={query} 
-              onChange={(e) => setQuery(e.currentTarget.value)} 
-              placeholder="Rechercher par référence..." 
-              prefix={<FaSearch className="text-slate-400" />}
-              className="shadow-sm"
+            <SearchInput
+              value={query}
+              onChange={setQuery}
+              placeholder="Rechercher par référence..."
             />
          </div>
          <div className="flex flex-wrap gap-2">
@@ -608,7 +606,7 @@ return (
        </div>
      </div>
     <DataTable
-      withTableBorder={true} 
+      withTableBorder={false} 
       columns={[
         { 
           accessor: 'ref', 
@@ -636,7 +634,7 @@ return (
           title: <Text fw={600} size="sm">Montant</Text>,
           textAlign: 'center',
           render: (data:any) => (
-            <Text fw={500} className="text-slate-700 dark:text-slate-300">
+            <Text fw={500} className="text-gc">
               {formatN(data?.montant)} FCFA
             </Text>
           )
@@ -677,34 +675,34 @@ return (
                     <FaCartShopping size={14} />
                   </ActionIcon> 
                 </HoverCard.Target>
-                <HoverCard.Dropdown className="p-0 overflow-hidden border border-slate-200 dark:border-slate-700 rounded-lg">
+                <HoverCard.Dropdown className="p-0 overflow-hidden border border-gc rounded-lg">
                   <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-2">
                     <Text fw={600} size="sm" ta="center" className="text-white">
                       Détails des produits
                     </Text>
                   </div>
-                  <Table className="bg-white dark:bg-slate-800">
+                  <Table className="bg-gc-surface">
                     <Table.Thead className="bg-slate-100 dark:bg-slate-700">
                       <Table.Tr>
-                        <Table.Th className="text-slate-700 dark:text-slate-300 text-xs">N°</Table.Th>
-                        <Table.Th className="text-slate-700 dark:text-slate-300 text-xs">Référence</Table.Th>
-                        <Table.Th className="text-slate-700 dark:text-slate-300 text-xs">Description</Table.Th>
-                        <Table.Th className="text-slate-700 dark:text-slate-300 text-xs">Qté</Table.Th>
-                        <Table.Th className="text-slate-700 dark:text-slate-300 text-xs">Prix</Table.Th>
+                        <Table.Th className="text-gc text-xs">N°</Table.Th>
+                        <Table.Th className="text-gc text-xs">Référence</Table.Th>
+                        <Table.Th className="text-gc text-xs">Description</Table.Th>
+                        <Table.Th className="text-gc text-xs">Qté</Table.Th>
+                        <Table.Th className="text-gc text-xs">Prix</Table.Th>
                       </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
                       {data.produits.map((el:any,i: number) => (
-                        <Table.Tr key={el.ref} className={i % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50 dark:bg-slate-700/50'}>
-                          <Table.Td className="text-slate-600 dark:text-slate-400 font-medium">{i+1}</Table.Td>
+                        <Table.Tr key={el.ref} className={i % 2 === 0 ? 'bg-gc-surface' : 'bg-slate-50 dark:bg-slate-700/50'}>
+                          <Table.Td className="text-gc-muted font-medium">{i+1}</Table.Td>
                           <Table.Td>
                             <div className="bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-md text-blue-600 dark:text-blue-300 text-xs font-medium">
                               {el.ref}
                             </div>
                           </Table.Td>
-                          <Table.Td className="text-slate-600 dark:text-slate-400 font-medium">{el.nom}</Table.Td>
-                          <Table.Td className="text-slate-600 dark:text-slate-400 font-medium">{el.qte}</Table.Td>
-                          <Table.Td className="text-slate-600 dark:text-slate-400 font-medium">{formatN(el.pu)} FCFA</Table.Td>
+                          <Table.Td className="text-gc-muted font-medium">{el.nom}</Table.Td>
+                          <Table.Td className="text-gc-muted font-medium">{el.qte}</Table.Td>
+                          <Table.Td className="text-gc-muted font-medium">{formatN(el.pu)} FCFA</Table.Td>
                         </Table.Tr>
                       ))}
                     </Table.Tbody>
@@ -763,9 +761,9 @@ return (
                         <FaTrash size={14} />
                       </ActionIcon>
                     </Popover.Target>
-                    <Popover.Dropdown className="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                    <Popover.Dropdown className="p-4 bg-gc-surface border border-gc">
                       <div className="flex flex-col gap-3">
-                        <Text fw={500} size="sm" className="text-slate-700 dark:text-slate-300">
+                        <Text fw={500} size="sm" className="text-gc">
                           Êtes-vous sûr de vouloir supprimer cet achat ?
                         </Text>
                         <div className="flex justify-end gap-2">
@@ -807,12 +805,12 @@ return (
       borderRadius="lg"
       shadow="sm"
       horizontalSpacing="md"
-      verticalSpacing="md"
+      verticalSpacing="xs"
       verticalAlign="top"
       highlightOnHover={true}
-      paginationActiveBackgroundColor="#8A2BE2"
+      paginationActiveBackgroundColor="var(--gc-primary)"
       paginationSize="sm"
-      className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg"
+      className="border-none shadow-none"
     />
      </>
      
@@ -821,73 +819,69 @@ return (
 
    <Modal opened={opened} onClose={close} title="Nouvel Achat" size="xl" overlayProps={{ blur: 3, opacity: 0.55 }} centered>
         <form onSubmit={form.onSubmit(onCreate)} className="space-y-4">
-       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-2">
+       <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-2">
         <div className="flex flex-col md:flex-row items-start">
-        <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-lg w-1/2">
+        <div className="bg-gc-muted/60 p-4 rounded-lg w-1/2">
          <div className="flex items-center justify-between mb-4">
            <div className="flex items-center gap-2">
              <FaUser size={16} className="text-orange-500" />
-             <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+             <Text fw={600} size="sm" className="text-gc">
                Fournisseur
              </Text>
            </div>
          </div>
          
-         <Select
-           placeholder="Sélectionner un fournisseur"
-           options={fournisseurs?.map((v: { tel: any; nom: any; addr: any;_id:string }) => ({
-             label: `${v.nom} ${v.tel ? `/ ${v.tel}` : ''} ${v.addr ? `/ ${v.addr}` : ''}`,
-             value: v._id
-           }))}
-           {...form.getInputProps('fournisseur')}
-           loading={isLoadingFournisseur}
-           showSearch
-           optionFilterProp="label"
-           filterSort={(optionA, optionB) =>
-             `${optionA.label}`.toLowerCase().localeCompare(`${optionB.label}`.toLowerCase())}
-           className="w-full mb-2"
-           style={{ borderRadius: '0.5rem' }}
-         />
+         <SelectM
+          placeholder="Sélectionner un fournisseur"
+          data={fournisseurs?.map((v: { tel: any; nom: any; addr: any;_id:string }) => ({
+            label: `${v.nom} ${v.tel ? `/ ${v.tel}` : ''} ${v.addr ? `/ ${v.addr}` : ''}`,
+            value: v._id
+          }))}
+          {...form.getInputProps('fournisseur')}
+          searchable
+          nothingFoundMessage="Aucun résultat"
+          className="w-full mb-2"
+          size="sm"
+          radius={8}
+        />
        </div>
        
-       <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-lg w-1/2">
+       <div className="bg-gc-muted/60 p-4 rounded-lg w-1/2">
          <div className="flex items-center justify-between mb-4">
            <div className="flex items-center gap-2">
              <FaWarehouse size={16} className="text-orange-500" />
-             <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+             <Text fw={600} size="sm" className="text-gc">
                Dépôt
              </Text>
            </div>
          </div>
          
-         <Select
-           placeholder="Sélectionner un dépôt"
-           options={depots?.map((v: Depot) => ({
-             label: v.nom,
-             value: v._id!
-           }))}
-           {...form.getInputProps('depot')}
-           loading={isLoadingDepot}
-           showSearch
-           optionFilterProp="label"
-           filterSort={(optionA, optionB) =>
-             `${optionA.label}`.toLowerCase().localeCompare(`${optionB.label}`.toLowerCase())}
-           className="w-full mb-2"
-           style={{ borderRadius: '0.5rem' }}
-         />
+         <SelectM
+          placeholder="Sélectionner un dépôt"
+          data={depots?.map((v: Depot) => ({
+            label: v.nom,
+            value: v._id!
+          }))}
+          {...form.getInputProps('depot')}
+          searchable
+          nothingFoundMessage="Aucun résultat"
+          className="w-full mb-2"
+          size="sm"
+          radius={8}
+        />
        </div> 
         </div>
         <div className="mb-4">
          <div className="flex items-center gap-2 mb-2">
            <FaRegCalendarAlt size={16} className="text-orange-500" />
-           <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-300">
+           <Text fw={600} size="sm" className="text-gc">
              Date de la facture
            </Text>
          </div>
          <DateInput
            placeholder="Sélectionner une date"
            classNames={{
-             input: "rounded-md border-slate-200 dark:border-slate-700",
+             input: "rounded-md border-gc",
              wrapper: "shadow-sm"
            }}
            {...form.getInputProps('date')}
@@ -898,39 +892,25 @@ return (
            <div className="w-full md:w-2/3">
              <div className="flex items-center gap-2 mb-2">
                <FaCartShopping size={16} className="text-orange-500" />
-               <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-300">
+               <Text fw={600} size="sm" className="text-gc">
                  Ajouter un produit
                </Text>
              </div>
              <div className="flex items-center gap-2">
-               <Select 
-                 showSearch  
-                 optionFilterProp="label"
-                 filterSort={(optionA, optionB) =>
-                   `${optionA.label}`.toLowerCase().localeCompare(`${optionB.label}`.toLowerCase())}
-                 className="w-full" 
-                 options={articles?.map((v: {nom:string;_id: string;ref: string; prix: number; unite: any;}) => ({
-                   label: `${v.nom} / ${v.ref}`,
-                   value: JSON.stringify(v)
-                 }))}
-                 loading={isLoadingA} 
-                 value={ref} 
-                 onChange={onSelect} 
-                 placeholder="Rechercher un produit..."
-                 size="large"
-                 style={{ borderRadius: '0.5rem' }}
-                 dropdownRender={(menu) => (
-                   <div>
-                     {menu}
-                     <div className="p-2 border-t border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700">
-                       <Text size="xs" className="text-slate-600 dark:text-slate-300">
-                         <span className="inline-block mr-4">Alt+A : Rechercher</span>
-                         <span className="inline-block">Alt+E : Enregistrer</span>
-                       </Text>
-                     </div>
-                   </div>
-                 )}
-               />
+              <SelectM
+                searchable
+                className="w-full"
+                data={articles?.map((v: {nom:string;_id: string;ref: string; prix: number; unite: any;}) => ({
+                  label: `${v.nom} / ${v.ref}`,
+                  value: JSON.stringify(v)
+                }))}
+                value={ref}
+                onChange={onSelect}
+                placeholder="Rechercher un produit..."
+                size="sm"
+                radius={8}
+                nothingFoundMessage="Aucun produit"
+              />
                <Button 
                  variant="light" 
                  color="orange" 
@@ -942,7 +922,7 @@ return (
                </Button>
              </div>
              <div className="flex justify-between items-center mt-1">
-               <Text size="xs" className="text-slate-500 dark:text-slate-400">
+               <Text size="xs" className="text-gc-muted">
                  Scannez un code-barres ou sélectionnez un produit dans la liste
                </Text>
                <div className="flex items-center gap-1">
@@ -957,7 +937,7 @@ return (
            <div className="w-full md:w-1/3">
              <div className="flex items-center gap-2 mb-2">
                <FaMoneyBillWave size={16} className="text-orange-500" />
-               <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-300">
+               <Text fw={600} size="sm" className="text-gc">
                  Remise
                </Text>
              </div>
@@ -968,7 +948,7 @@ return (
                value={remise}
                onChange={handleRemise}
                classNames={{
-                 input: "rounded-md border-slate-200 dark:border-slate-700",
+                 input: "rounded-md border-gc",
                  wrapper: "shadow-sm"
                }}
                rightSection={<Text size="xs" color="dimmed">FCFA</Text>}
@@ -978,10 +958,10 @@ return (
      
      <Box mx="auto">
     
-       <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-lg">
+       <div className="bg-gc-muted/60 p-4 rounded-lg">
          <div className="flex items-center gap-2 mb-4">
            <FaShoppingBag size={16} className="text-orange-500" />
-           <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+           <Text fw={600} size="sm" className="text-gc">
              Produits sélectionnés
            </Text>
          </div>
@@ -1021,7 +1001,7 @@ return (
      
     </Box>
 
-      <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+      <div className="bg-gc-surface p-4 rounded-lg shadow-sm border border-gc">
         <div className="flex flex-col justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="flex flex-col items-center justify-center bg-orange-50 dark:bg-orange-900/20 p-3 rounded-full">
@@ -1060,7 +1040,7 @@ return (
           
           <Button 
             type="submit" 
-            bg="#8A2BE2" 
+            color="brand" 
             loading={loadingCreate || loadingUpdate}
             size="md"
             className="shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-bold w-full md:w-auto"
@@ -1080,7 +1060,7 @@ return (
      opened={quantityModalOpened}
      onClose={() => setQuantityModalOpened(false)}
      title={
-       <Text size="lg" fw={700} className="text-slate-800 dark:text-white flex items-center gap-2">
+       <Text size="lg" fw={700} className="text-gc flex items-center gap-2">
          <FaCartPlus className="text-orange-500" />
          Spécifier la quantité
        </Text>
@@ -1097,13 +1077,13 @@ return (
        <div className="space-y-4">
          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
            <div className="flex items-center justify-between">
-             <Text fw={600} size="sm" className="text-slate-700 dark:text-slate-200">
+             <Text fw={600} size="sm" className="text-gc">
                {selectedProduct.nom}
              </Text>
              <Badge color="blue">{selectedProduct.ref}</Badge>
            </div>
            <div className="flex items-center justify-between mt-2">
-             <Text size="xs" className="text-slate-500 dark:text-slate-400">
+             <Text size="xs" className="text-gc-muted">
                Prix unitaire:
              </Text>
              <Text fw={600} size="sm" className="text-orange-600 dark:text-orange-400">
@@ -1112,7 +1092,7 @@ return (
            </div>
          </div>
 
-         <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+         <div className="bg-gc-surface p-4 rounded-lg shadow-sm border border-gc">
            <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-3 flex items-center gap-2">
              <FaCartShopping size={14} className="text-orange-500" />
              Quantité à ajouter
@@ -1137,7 +1117,7 @@ return (
                min={1}
                ref={quantityInputRef}
                classNames={{
-                 input: "rounded-md border-slate-200 dark:border-slate-700 font-medium text-center",
+                 input: "rounded-md border-gc font-medium text-center",
                  wrapper: "flex-1 shadow-sm"
                }}
                rightSection={
@@ -1168,7 +1148,7 @@ return (
            </Button>
            <Button 
              onClick={addProductWithQuantity}
-             className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-200 text-white flex-1 shadow-md hover:shadow-lg"
+             className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 text-white flex-1 shadow-md hover:shadow-lg"
              leftSection={<FaCartPlus size={16} />}
            >
              Ajouter
@@ -1182,7 +1162,7 @@ return (
      opened={openedA} 
      onClose={closeA} 
      title={
-       <Text size="lg" fw={700} className="text-slate-800 dark:text-white">
+       <Text size="lg" fw={700} className="text-gc">
          Nouveau Fournisseur
        </Text>
      }
@@ -1198,10 +1178,10 @@ return (
       visible={loadingCreateA || isPending}
       zIndex={1000}
       overlayProps={{ radius: 'sm', blur: 2 }}
-      loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+      loaderProps={{ color: 'brand', type: 'dots' }}
     />
     <form onSubmit={formA.onSubmit(onCreateA)} className="space-y-4">
-      <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+      <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
         <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
           <FaShoppingBag size={14} className="text-orange-500" />
           Informations de l'article
@@ -1213,7 +1193,7 @@ return (
           required
           {...formA.getInputProps('ref')}
           classNames={{
-            input: "rounded-md border-slate-200 dark:border-slate-700",
+            input: "rounded-md border-gc",
             wrapper: "shadow-sm mb-3"
           }}
         />
@@ -1224,7 +1204,7 @@ return (
           required
           {...formA.getInputProps('nom')}
           classNames={{
-            input: "rounded-md border-slate-200 dark:border-slate-700",
+            input: "rounded-md border-gc",
             wrapper: "shadow-sm mb-3"
           }}
         />
@@ -1235,7 +1215,7 @@ return (
           required
           {...formA.getInputProps('prix')}
           classNames={{
-            input: "rounded-md border-slate-200 dark:border-slate-700",
+            input: "rounded-md border-gc",
             wrapper: "shadow-sm mb-3"
           }}
           rightSection={<Text size="xs" color="dimmed">FCFA</Text>}
@@ -1247,7 +1227,7 @@ return (
           required
           {...formA.getInputProps('stock_seuil')}
           classNames={{
-            input: "rounded-md border-slate-200 dark:border-slate-700",
+            input: "rounded-md border-gc",
             wrapper: "shadow-sm mb-3"
           }}
         />
@@ -1259,7 +1239,7 @@ return (
             {...formA.getInputProps('famille')}
             data={familles?.map((f: any) => ({label: f.nom, value: f._id}))}
             classNames={{
-              input: "rounded-md border-slate-200 dark:border-slate-700",
+              input: "rounded-md border-gc",
               wrapper: "shadow-sm"
             }}
           />
@@ -1270,7 +1250,7 @@ return (
             {...formA.getInputProps('unite')}
             data={unites?.map((f: any) => ({label: f.nom, value: f._id}))}
             classNames={{
-              input: "rounded-md border-slate-200 dark:border-slate-700",
+              input: "rounded-md border-gc",
               wrapper: "shadow-sm"
             }}
           />
@@ -1278,7 +1258,7 @@ return (
 
         <Button 
           type="submit" 
-          bg="#8A2BE2" 
+          color="brand" 
           loading={loadingCreateA}
           className="shadow-md hover:shadow-lg transition-all duration-200 mt-4 w-full"
           leftSection={<FaRegCircleCheck size={16} />}

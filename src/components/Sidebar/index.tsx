@@ -1,20 +1,56 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FaUsers, FaFileAlt, FaChevronRight, FaWarehouse, FaClipboardList, FaCashRegister } from "react-icons/fa";
-import { FaBasketShopping } from 'react-icons/fa6';
-import { MdDashboard, MdInventory, MdProductionQuantityLimits, MdSell } from 'react-icons/md';
+import {
+  LayoutDashboard,
+  Users,
+  Package,
+  ShoppingCart,
+  Boxes,
+  ClipboardList,
+  Warehouse,
+  FileText,
+  ScanLine,
+  Zap,
+  X,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface SidebarProps {
   sidebarOpen: boolean;
-  setSidebarOpen: (arg: boolean) => void;
+  setSidebarOpen: (arg0: boolean) => void;
 }
+
+interface NavItem {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  match: (pathname: string) => boolean;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { to: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard, match: (p) => p === '/dashboard' },
+  { to: '/dashboard/ventes-simples', label: 'Ventes Rapides', icon: Zap, match: (p) => p.includes('ventes-simples') },
+  { to: '/dashboard/vente-caisses', label: 'Ventes Caisse', icon: ScanLine, match: (p) => p.includes('vente-caisses') },
+  { to: '/dashboard/clients', label: 'Clients', icon: Users, match: (p) => p.includes('clients') },
+  { to: '/dashboard/fournisseurs', label: 'Fournisseurs', icon: Users, match: (p) => p.includes('fournisseurs') },
+  {
+    to: '/dashboard/ventes',
+    label: 'Ventes',
+    icon: ShoppingCart,
+    match: (p) => p.includes('ventes') && !p.includes('inventaire-ventes') && !p.includes('vente-caisses') && !p.includes('ventes-simples'),
+  },
+  { to: '/dashboard/approvisionnements', label: 'Approvisionnement', icon: Package, match: (p) => p.includes('approvisionnements') },
+  { to: '/dashboard/articles', label: 'Articles', icon: Package, match: (p) => p.includes('articles') },
+  { to: '/dashboard/stock', label: 'Stock', icon: Boxes, match: (p) => p.includes('stock') },
+  { to: '/dashboard/inventaire-ventes', label: 'Inventaire Ventes', icon: ClipboardList, match: (p) => p.includes('inventaire-ventes') },
+  { to: '/dashboard/depots', label: 'Dépôts', icon: Warehouse, match: (p) => p.includes('dashboard/depots') },
+  { to: '/dashboard/annual-report', label: 'Rapport annuel', icon: FileText, match: (p) => p.includes('dashboard/annual-report') },
+];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const location = useLocation();
   const { pathname } = location;
-
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -22,12 +58,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
-      if (
-        !sidebarOpen ||
-        sidebar.current.contains(target) ||
-        trigger.current.contains(target)
-      )
-        return;
+      if (!sidebarOpen || sidebar.current.contains(target) || trigger.current.contains(target)) return;
       setSidebarOpen(false);
     };
     document.addEventListener('click', clickHandler);
@@ -44,328 +75,72 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
-
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-50 flex h-screen w-72.5 flex-col overflow-y-hidden bg-gradient-to-b from-[#8A2BE2] to-[#9370DB] shadow-xl duration-300 ease-in-out lg:static lg:translate-x-0 ${
+      className={`absolute left-0 top-0 z-50 flex h-screen w-72.5 flex-col overflow-y-hidden border-r border-white/5 bg-gradient-to-b from-[#1E293B] to-[#0F172A] shadow-xl duration-300 ease-in-out lg:static lg:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
-      {/* <!-- SIDEBAR HEADER --> */}
-      <div className="flex items-center justify-between gap-2 px-6 py-5 backdrop-blur-sm bg-white/10">
-        <NavLink to="/" className="p-2 rounded-xl bg-white/90 shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-          <img src='/img/logo.png' alt="YORO" className='w-16 h-16 object-contain' />
+      {/* SIDEBAR HEADER */}
+      <div className="flex items-center justify-between gap-2 border-b border-white/5 px-6 py-5">
+        <NavLink to="/" className="rounded-xl bg-white p-1.5 shadow-md transition-all duration-300 hover:shadow-lg">
+          <img src="/img/logo.png" alt="YORO" className="h-14 w-14 object-contain" />
         </NavLink>
-
         <button
           ref={trigger}
           onClick={() => setSidebarOpen(!sidebarOpen)}
           aria-controls="sidebar"
           aria-expanded={sidebarOpen}
-          className="block lg:hidden bg-white/20 p-2 rounded-full hover:bg-white/30 transition-colors duration-300"
+          aria-label="Fermer le menu"
+          className="flex cursor-pointer items-center justify-center rounded-full bg-white/10 p-2 text-white/80 transition-colors duration-300 hover:bg-white/20 lg:hidden"
         >
-          <svg
-            className="fill-white"
-            width="20"
-            height="18"
-            viewBox="0 0 20 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M19 8.175H2.98748L9.36248 1.6875C9.69998 1.35 9.69998 0.825 9.36248 0.4875C9.02498 0.15 8.49998 0.15 8.16248 0.4875L0.399976 8.3625C0.0624756 8.7 0.0624756 9.225 0.399976 9.5625L8.16248 17.4375C8.31248 17.5875 8.53748 17.7 8.76248 17.7C8.98748 17.7 9.17498 17.625 9.36248 17.475C9.69998 17.1375 9.69998 16.6125 9.36248 16.275L3.02498 9.8625H19C19.45 9.8625 19.825 9.4875 19.825 9.0375C19.825 8.55 19.45 8.175 19 8.175Z"
-              fill=""
-            />
-          </svg>
+          <X className="h-5 w-5" />
         </button>
       </div>
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         <nav className="mt-5 py-4 px-4 lg:mt-6 lg:px-6">
           <div>
-            <h3 className="mb-6 ml-2 text-sm font-bold text-white uppercase tracking-wider bg-white/10 py-2 px-4 rounded-lg backdrop-blur-sm shadow-inner">
+            <h3 className="mb-6 ml-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
               YORO HAIR
             </h3>
 
-            <ul className="mb-6 flex flex-col gap-2">
-              <li 
-                onMouseEnter={() => setHoveredItem('dashboard')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname === '/dashboard' 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname === '/dashboard' ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <MdDashboard className="text-xl" />
-                  </div>
-                  <span>Tableau de bord</span>
-                  {hoveredItem === 'dashboard' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
+            <ul className="mb-6 flex flex-col gap-1.5">
+              {NAV_ITEMS.map((item) => {
+                const active = item.match(pathname);
+                const Icon = item.icon;
+                return (
+                  <li
+                    key={item.to}
+                    onMouseEnter={() => setHoveredItem(item.to)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                  >
+                    <NavLink
+                      to={item.to}
+                      className={`group relative flex cursor-pointer items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/90 duration-200 ease-in-out ${
+                        active
+                          ? 'bg-emerald-500/15 text-white shadow-md ring-1 ring-emerald-500/30'
+                          : 'hover:bg-white/10 hover:text-white'
+                      }`}
                     >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-                  <li 
-                onMouseEnter={() => setHoveredItem('vente-caisses')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard/vente-caisses"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('vente-caisses') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('vente-caisses') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <FaCashRegister className="text-xl" />
-                  </div>
-                  <span>Ventes Caisse</span>
-                  {hoveredItem === 'vente-caisses' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-              <li 
-                onMouseEnter={() => setHoveredItem('clients')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard/clients"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('clients') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('clients') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <FaUsers className="text-xl" />
-                  </div>
-                  <span>Clients</span>
-                  {hoveredItem === 'clients' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-              <li 
-                onMouseEnter={() => setHoveredItem('fournisseurs')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard/fournisseurs"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('fournisseurs') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('fournisseurs') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <FaUsers className="text-xl" />
-                  </div>
-                  <span>Fournisseurs</span>
-                  {hoveredItem === 'fournisseurs' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-              <li 
-                onMouseEnter={() => setHoveredItem('ventes')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard/ventes"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('ventes') && !pathname.includes('inventaire-ventes') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('ventes') && !pathname.includes('inventaire-ventes') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <MdSell className="text-xl" />
-                  </div>
-                  <span>Ventes</span>
-                  {hoveredItem === 'ventes' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-              <li 
-                onMouseEnter={() => setHoveredItem('approvisionnements')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard/approvisionnements"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('approvisionnements') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('approvisionnements') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <MdProductionQuantityLimits className="text-xl" />
-                  </div>
-                  <span>Approvisionnement</span>
-                  {hoveredItem === 'approvisionnements' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-              <li 
-                onMouseEnter={() => setHoveredItem('articles')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard/articles"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('articles') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('articles') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <FaBasketShopping className="text-xl" />
-                  </div>
-                  <span>Articles</span>
-                  {hoveredItem === 'articles' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-              <li 
-                onMouseEnter={() => setHoveredItem('stock')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard/stock"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('stock') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('stock') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <MdInventory className="text-xl" />
-                  </div>
-                  <span>Stock</span>
-                  {hoveredItem === 'stock' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-
-              <li 
-                onMouseEnter={() => setHoveredItem('inventaire-ventes')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard/inventaire-ventes"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('inventaire-ventes') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('inventaire-ventes') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <FaClipboardList className="text-xl" />
-                  </div>
-                  <span>Inventaire Ventes</span>
-                  {hoveredItem === 'inventaire-ventes' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-             
-              <li 
-                onMouseEnter={() => setHoveredItem('depots')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard/depots"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('dashboard/depots') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('dashboard/depots') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <FaWarehouse className="text-xl" />
-                  </div>
-                  <span>Depôts</span>
-                  {hoveredItem === 'depots' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
-              <li 
-                onMouseEnter={() => setHoveredItem('report')} 
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <NavLink
-                  to="/dashboard/annual-report"
-                  className={`group relative flex items-center gap-3 rounded-xl py-3 px-4 font-medium text-white duration-300 ease-in-out ${pathname.includes('dashboard/annual-report') 
-                    ? 'bg-white/20 shadow-md' 
-                    : 'hover:bg-white/10'}`}
-                >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${pathname.includes('dashboard/annual-report') ? 'bg-white text-[#8A2BE2]' : 'bg-white/10'} transition-all duration-300`}>
-                    <FaFileAlt className="text-xl" />
-                  </div>
-                  <span>Rapport annuel</span>
-                  {hoveredItem === 'report' && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="absolute right-2"
-                    >
-                      <FaChevronRight className="text-white/60 text-xs" />
-                    </motion.div>
-                  )}
-                </NavLink>
-              </li>
+                      <div
+                        className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 ${
+                          active ? 'bg-white text-emerald-600' : 'bg-white/10 text-white/80'
+                        }`}
+                      >
+                        <Icon className="h-[18px] w-[18px]" />
+                      </div>
+                      <span>{item.label}</span>
+                      {hoveredItem === item.to && !active && (
+                        <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} className="absolute right-2">
+                          <span className="text-xs text-white/40">›</span>
+                        </motion.div>
+                      )}
+                    </NavLink>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </nav>

@@ -1,13 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Table, Button, Tag, Empty, Input } from 'antd';
-import { Paper, Title, Text, Divider, Loader, Tooltip } from '@mantine/core';
-import { 
-  FaWarehouse, 
-  FaMapMarkerAlt, 
-  FaUser, 
-  FaSearch,
+import { Paper, Title, Text, Divider, Loader, Tooltip, Button, Badge } from '@mantine/core';
+import {
+  FaWarehouse,
+  FaMapMarkerAlt,
+  FaUser,
   FaShoppingBag,
   FaEye,
   FaRegCalendarAlt,
@@ -24,6 +22,8 @@ import { ParamService } from '../../services/paramservice';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { formatN } from '../../lib/helpers';
+import { SearchInput, EmptyState } from '../../components/ui';
+import { Table as ShadcnTable, TableHeader, TableBody, TableHead, TableRow, TableCell } from '../../components/shadcn';
 import pdfMake from "pdfmake/build/pdfmake";
 import { font } from "../../vfs_fonts";
 
@@ -79,13 +79,24 @@ const DepotDetails: React.FC = () => {
   // Filtrer les achats par recherche
   const filteredAchats = achatsDepot?.filter((achat: any) => {
     if (searchText === '') return true;
-    
+
     const searchLower = searchText.toLowerCase();
     return (
       (achat.ref && achat.ref.toLowerCase().includes(searchLower)) ||
       (achat.fournisseur?.nom && achat.fournisseur.nom.toLowerCase().includes(searchLower))
     );
   });
+
+  // Pagination manuelle de la table des achats
+  const PAGE_SIZE = 10;
+  const totalAchats = filteredAchats?.length || 0;
+  const totalPages = Math.max(1, Math.ceil(totalAchats / PAGE_SIZE));
+  const pagedAchats = filteredAchats?.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE) ?? [];
+
+  // Réinitialiser la page lorsque la recherche change ou si on sort des bornes
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [page, totalPages]);
 
   // Retour à la liste des dépôts
   const handleBack = () => {
@@ -154,7 +165,7 @@ const DepotDetails: React.FC = () => {
                 y: 0,
                 w: 595,
                 h: 15,
-                color: '#8A2BE2'
+                color: 'brand'
               }
             ]
           };
@@ -198,7 +209,7 @@ const DepotDetails: React.FC = () => {
                 x1: 0, y1: 0,
                 x2: 535, y2: 0,
                 lineWidth: 1,
-                lineColor: '#8A2BE2'
+                lineColor: '#334155'
               }
             ]
           },
@@ -231,8 +242,8 @@ const DepotDetails: React.FC = () => {
             layout: {
               hLineWidth: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? 2 : 1; },
               vLineWidth: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? 2 : 1; },
-              hLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? '#8A2BE2' : '#aaaaaa'; },
-              vLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? '#8A2BE2' : '#aaaaaa'; },
+              hLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? '#334155' : '#aaaaaa'; },
+              vLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? '#334155' : '#aaaaaa'; },
               paddingLeft: function() { return 5; },
               paddingRight: function() { return 5; },
               paddingTop: function() { return 3; },
@@ -252,7 +263,7 @@ const DepotDetails: React.FC = () => {
                 x1: 0, y1: 0,
                 x2: 535, y2: 0,
                 lineWidth: 1,
-                lineColor: '#8A2BE2'
+                lineColor: '#334155'
               }
             ]
           },
@@ -282,8 +293,8 @@ const DepotDetails: React.FC = () => {
             layout: {
               hLineWidth: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? 2 : 1; },
               vLineWidth: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? 2 : 1; },
-              hLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? '#8A2BE2' : '#aaaaaa'; },
-              vLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? '#8A2BE2' : '#aaaaaa'; },
+              hLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? '#334155' : '#aaaaaa'; },
+              vLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? '#334155' : '#aaaaaa'; },
               paddingLeft: function() { return 5; },
               paddingRight: function() { return 5; },
               paddingTop: function() { return 3; },
@@ -298,7 +309,7 @@ const DepotDetails: React.FC = () => {
                 x1: 0, y1: 0,
                 x2: 535, y2: 0,
                 lineWidth: 1,
-                lineColor: '#8A2BE2'
+                lineColor: '#334155'
               }
             ]
           },
@@ -328,8 +339,8 @@ const DepotDetails: React.FC = () => {
             layout: {
               hLineWidth: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? 2 : 1; },
               vLineWidth: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? 2 : 1; },
-              hLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? '#8A2BE2' : '#aaaaaa'; },
-              vLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? '#8A2BE2' : '#aaaaaa'; },
+              hLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? '#334155' : '#aaaaaa'; },
+              vLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? '#334155' : '#aaaaaa'; },
               paddingLeft: function() { return 5; },
               paddingRight: function() { return 5; },
               paddingTop: function() { return 3; },
@@ -344,7 +355,7 @@ const DepotDetails: React.FC = () => {
                 x1: 0, y1: 0,
                 x2: 535, y2: 0,
                 lineWidth: 1,
-                lineColor: '#8A2BE2'
+                lineColor: '#334155'
               }
             ]
           },
@@ -376,8 +387,8 @@ const DepotDetails: React.FC = () => {
             layout: {
               hLineWidth: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? 2 : 1; },
               vLineWidth: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? 2 : 1; },
-              hLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? '#8A2BE2' : '#aaaaaa'; },
-              vLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? '#8A2BE2' : '#aaaaaa'; },
+              hLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.body.length) ? '#334155' : '#aaaaaa'; },
+              vLineColor: function(i: number, node: any) { return (i === 0 || i === node.table.widths.length) ? '#334155' : '#aaaaaa'; },
               paddingLeft: function() { return 5; },
               paddingRight: function() { return 5; },
               paddingTop: function() { return 3; },
@@ -390,7 +401,7 @@ const DepotDetails: React.FC = () => {
             fontSize: 20,
             bold: true,
             margin: [0, 0, 0, 10],
-            color: '#8A2BE2'
+            color: 'brand'
           },
           headerCompany: {
             fontSize: 18,
@@ -412,12 +423,12 @@ const DepotDetails: React.FC = () => {
             fontSize: 16,
             bold: true,
             margin: [0, 15, 0, 10],
-            color: '#8A2BE2'
+            color: 'brand'
           },
           tableHeader: {
             fontSize: 12,
             bold: true,
-            fillColor: '#8A2BE2',
+            fillColor: '#334155',
             color: '#ffffff',
             alignment: 'center',
             margin: [5, 5, 5, 5]
@@ -457,7 +468,7 @@ const DepotDetails: React.FC = () => {
       <Paper
         p="xl"
         radius="lg"
-        className="bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700"
+        className="bg-card shadow-xl border border-border"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
           backdropFilter: "blur(10px)"
@@ -467,27 +478,27 @@ const DepotDetails: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
           <div>
             <div className="flex items-center gap-3">
-              <Button 
-                icon={<FaArrowLeft />} 
+              <Button
+                variant="subtle"
+                leftSection={<FaArrowLeft />}
                 onClick={handleBack}
-                type="text"
-                className="text-gray-600 hover:text-[#8A2BE2] mr-2"
+                className="text-gray-600 hover:text-primary mr-2"
               />
               <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full">
-                <FaWarehouse className="text-[#8A2BE2] text-xl" />
+                <FaWarehouse className="text-primary text-xl" />
               </div>
-              <Title order={2} className="text-gray-800 dark:text-white">
+              <Title order={2} className="text-foreground">
                 {loadingDepot ? (
                   <div className="flex items-center gap-2">
                     <span>Chargement du dépôt</span>
-                    <Loader size="sm" color="#8A2BE2" />
+                    <Loader size="sm" color="brand" />
                   </div>
                 ) : (
                   depot?.nom || "Détails du dépôt"
                 )}
               </Title>
             </div>
-            <Text className="text-gray-600 dark:text-gray-400 mt-2 ml-12">
+            <Text className="text-muted-foreground mt-2 ml-12">
               Visualisez les achats et les informations de ce dépôt
             </Text>
           </div>
@@ -496,11 +507,11 @@ const DepotDetails: React.FC = () => {
           {!loadingDepot && depot && (
             <Tooltip label="Générer un rapport PDF détaillé">
               <Button
-                type="primary"
-                icon={<FaFilePdf />}
+                variant="filled"
+                leftSection={<FaFilePdf />}
                 onClick={generatePDF}
                 loading={generatingPdf}
-                className="bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] hover:from-[#9370DB] hover:to-[#8A2BE2] border-none shadow-sm hover:shadow-md transition-all duration-300 mt-4 md:mt-0"
+                className="bg-gradient-to-r from-primary to-primary/70 hover:from-primary/80 hover:to-primary border-none shadow-sm hover:shadow-md transition-all duration-300 mt-4 md:mt-0"
               >
                 Générer PDF
               </Button>
@@ -512,12 +523,12 @@ const DepotDetails: React.FC = () => {
 
         {loadingDepot ? (
           <div className="flex justify-center items-center py-12">
-            <Loader color="#8A2BE2" size="md" />
+            <Loader color="brand" size="md" />
           </div>
         ) : errorDepot ? (
           <div className="text-center py-8">
             <div className="text-red-500 text-xl mb-2">Erreur lors du chargement du dépôt</div>
-            <Button onClick={() => refetchDepot()}>Réessayer</Button>
+            <Button variant="filled" onClick={() => refetchDepot()}>Réessayer</Button>
           </div>
         ) : depot ? (
           <>
@@ -526,26 +537,26 @@ const DepotDetails: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2 mb-2">
-                    <FaWarehouse className="text-[#8A2BE2]" />
-                    <Text className="text-gray-500 dark:text-gray-400 font-medium">Nom du dépôt</Text>
+                    <FaWarehouse className="text-primary" />
+                    <Text className="text-muted-foreground font-medium">Nom du dépôt</Text>
                   </div>
-                  <Text className="text-gray-800 dark:text-white text-lg font-semibold ml-6">{depot.nom}</Text>
+                  <Text className="text-foreground text-lg font-semibold ml-6">{depot.nom}</Text>
                 </div>
                 
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2 mb-2">
-                    <FaMapMarkerAlt className="text-[#8A2BE2]" />
-                    <Text className="text-gray-500 dark:text-gray-400 font-medium">Adresse</Text>
+                    <FaMapMarkerAlt className="text-primary" />
+                    <Text className="text-muted-foreground font-medium">Adresse</Text>
                   </div>
-                  <Text className="text-gray-800 dark:text-white ml-6">{depot.adresse}</Text>
+                  <Text className="text-foreground ml-6">{depot.adresse}</Text>
                 </div>
                 
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2 mb-2">
-                    <FaUser className="text-[#8A2BE2]" />
-                    <Text className="text-gray-500 dark:text-gray-400 font-medium">Responsable</Text>
+                    <FaUser className="text-primary" />
+                    <Text className="text-muted-foreground font-medium">Responsable</Text>
                   </div>
-                  <Text className="text-gray-800 dark:text-white ml-6">
+                  <Text className="text-foreground ml-6">
                     {depot.responsable || <span className="text-gray-400 italic">Non défini</span>}
                   </Text>
                 </div>
@@ -554,15 +565,15 @@ const DepotDetails: React.FC = () => {
               {depot.description && (
                 <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-900/30">
                   <div className="flex items-center gap-2 mb-2">
-                    <Text className="text-gray-500 dark:text-gray-400 font-medium">Description</Text>
+                    <Text className="text-muted-foreground font-medium">Description</Text>
                   </div>
-                  <Text className="text-gray-700 dark:text-gray-300">{depot.description}</Text>
+                  <Text className="text-foreground">{depot.description}</Text>
                 </div>
               )}
             </div>
 
             {/* Statistiques des achats */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 mb-6">
+            <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-4 mb-6">
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                 <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-4 py-3 rounded-lg">
                   <FaCartShopping size={16} className="text-blue-500" />
@@ -598,18 +609,16 @@ const DepotDetails: React.FC = () => {
 
             {/* Barre de recherche */}
             <div className="mb-6">
-              <Input
-                placeholder="Rechercher un achat par référence ou fournisseur..."
-                prefix={<FaSearch className="text-gray-400" />}
+              <SearchInput
                 value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="rounded-md border-gray-300 dark:border-gray-600 focus:border-[#8A2BE2] focus:shadow-md transition-all duration-300"
-                allowClear
+                onChange={setSearchText}
+                placeholder="Rechercher un achat par référence ou fournisseur..."
+                className="rounded-md border-border focus:border-primary focus:shadow-md transition-all duration-300"
               />
             </div>
 
             {/* Liste des achats */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+            <div className="bg-gc-surface rounded-xl shadow-sm border border-gc overflow-hidden">
               <div className="p-4 bg-gradient-to-r from-orange-500 to-orange-600">
                 <div className="flex items-center gap-2">
                   <FaCartShopping className="text-white" />
@@ -619,127 +628,113 @@ const DepotDetails: React.FC = () => {
 
               {loadingAchatsDepot ? (
                 <div className="flex justify-center items-center py-12">
-                  <Loader color="#8A2BE2" size="md" />
+                  <Loader color="brand" size="md" />
                 </div>
               ) : errorAchatsDepot ? (
                 <div className="text-center py-8">
                   <div className="text-red-500 text-xl mb-2">Erreur lors du chargement des achats</div>
-                  <Button onClick={() => refetchAchatsDepot()}>Réessayer</Button>
+                  <Button variant="filled" onClick={() => refetchAchatsDepot()}>Réessayer</Button>
                 </div>
               ) : filteredAchats && filteredAchats.length > 0 ? (
-                <Table
-                  dataSource={filteredAchats}
-                  rowKey="_id"
-                  pagination={{ 
-                    pageSize: 10,
-                    current: page,
-                    onChange: (p) => setPage(p),
-                    showSizeChanger: false
-                  }}
-                  className="custom-table"
-                >
-                  <Table.Column 
-                    title="Référence" 
-                    dataIndex="ref" 
-                    key="ref" 
-                    render={(text: string) => (
-                      <Tag color="blue" className="px-2 py-1 rounded-md">{text}</Tag>
-                    )}
-                  />
-                  <Table.Column 
-                    title="Date" 
-                    dataIndex="date" 
-                    key="date" 
-                    render={(date: string) => (
-                      <div className="flex items-center gap-1">
-                        <FaRegCalendarAlt className="text-gray-400" size={12} />
-                        <span>{format(new Date(date), 'dd/MM/yyyy')}</span>
-                      </div>
-                    )}
-                  />
-                  <Table.Column 
-                    title="Fournisseur" 
-                    dataIndex="fournisseur" 
-                    key="fournisseur" 
-                    render={(fournisseur: any) => (
-                      <div className="flex items-center gap-1">
-                        <FaUser className="text-gray-400" size={12} />
-                        <span>{fournisseur?.nom || "N/A"}</span>
-                      </div>
-                    )}
-                  />
-                  <Table.Column 
-                    title="Montant" 
-                    dataIndex="montant" 
-                    key="montant" 
-                    render={(montant: number) => (
-                      <span className="font-medium">{formatN(montant)} FCFA</span>
-                    )}
-                  />
-                  <Table.Column 
-                    title="Remise" 
-                    dataIndex="remise" 
-                    key="remise" 
-                    render={(remise: number) => (
-                      <span className="text-orange-500 font-medium">{formatN(remise)} FCFA</span>
-                    )}
-                  />
-                  <Table.Column 
-                    title="Net à payer" 
-                    dataIndex="net_a_payer" 
-                    key="net_a_payer" 
-                    render={(net_a_payer: number) => (
-                      <span className="text-green-600 font-medium">{formatN(net_a_payer)} FCFA</span>
-                    )}
-                  />
-                  <Table.Column 
-                    title="Produits" 
-                    dataIndex="produits" 
-                    key="produits" 
-                    render={(produits: any[]) => (
-                      <Tag color="orange" className="px-2 py-1 rounded-full">
-                        {produits.length} produits
-                      </Tag>
-                    )}
-                  />
-                  <Table.Column 
-                    title="Actions" 
-                    key="actions" 
-                    render={(record: any) => (
+                <div className="overflow-x-auto">
+                  <ShadcnTable>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Référence</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Fournisseur</TableHead>
+                        <TableHead>Montant</TableHead>
+                        <TableHead>Remise</TableHead>
+                        <TableHead>Net à payer</TableHead>
+                        <TableHead>Produits</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pagedAchats.map((achat: any) => (
+                        <TableRow key={achat._id}>
+                          <TableCell>
+                            <Badge color="blue" variant="light" className="px-2 py-1 rounded-md">{achat.ref}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <FaRegCalendarAlt className="text-gray-400" size={12} />
+                              <span>{format(new Date(achat.date), 'dd/MM/yyyy')}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <FaUser className="text-gray-400" size={12} />
+                              <span>{achat.fournisseur?.nom || "N/A"}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="font-medium">{formatN(achat.montant)} FCFA</span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-orange-500 font-medium">{formatN(achat.remise)} FCFA</span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-green-600 font-medium">{formatN(achat.net_a_payer)} FCFA</span>
+                          </TableCell>
+                          <TableCell>
+                            <Badge color="orange" variant="light" className="px-2 py-1 rounded-full">
+                              {achat.produits.length} produits
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="filled"
+                              size="sm"
+                              leftSection={<FaEye />}
+                              onClick={() => handleViewAchat(achat._id)}
+                              className="bg-gradient-to-r from-primary to-primary/70 hover:from-primary/80 hover:to-primary border-none shadow-sm hover:shadow-md transition-all duration-300"
+                            >
+                              Détails
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </ShadcnTable>
+
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-end gap-2 p-3 border-t border-gc">
                       <Button
-                        type="primary"
-                        icon={<FaEye />}
-                        size="small"
-                        onClick={() => handleViewAchat(record._id)}
-                        className="bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] hover:from-[#9370DB] hover:to-[#8A2BE2] border-none shadow-sm hover:shadow-md transition-all duration-300"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page <= 1}
                       >
-                        Détails
+                        Précédent
                       </Button>
-                    )}
-                  />
-                </Table>
+                      <Text size="sm" className="text-gc-muted">
+                        Page {page} / {totalPages}
+                      </Text>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={page >= totalPages}
+                      >
+                        Suivant
+                      </Button>
+                    </div>
+                  )}
+                </div>
               ) : (
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description={
-                    <span className="text-gray-500">
-                      Aucun achat n'a été enregistré pour ce dépôt
-                    </span>
-                  }
-                  className="py-12"
+                <EmptyState
+                  icon={<FaCartShopping size={26} />}
+                  title="Aucun achat"
+                  hint="Aucun achat n'a été enregistré pour ce dépôt"
                 />
               )}
             </div>
           </>
         ) : (
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={
-              <span className="text-gray-500">
-                Dépôt non trouvé
-              </span>
-            }
-            className="py-12"
+          <EmptyState
+            icon={<FaWarehouse size={26} />}
+            title="Dépôt non trouvé"
           />
         )}
       </Paper>

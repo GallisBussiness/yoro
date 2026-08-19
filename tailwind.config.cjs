@@ -7,6 +7,8 @@ module.exports = {
   theme: {
     fontFamily: {
       satoshi: ['Satoshi', 'sans-serif'],
+      fira: ['Fira Sans', 'sans-serif'],
+      mono: ['Fira Code', 'ui-monospace', 'monospace'],
     },
     screens: {
       '2xsm': '375px',
@@ -15,6 +17,11 @@ module.exports = {
       ...defaultTheme.screens,
     },
     extend: {
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
       colors: {
         current: 'currentColor',
         transparent: 'transparent',
@@ -51,6 +58,54 @@ module.exports = {
         success: '#219653',
         danger: '#D34053',
         warning: '#FFA70B',
+        // GesCom semantic tokens (mirror CSS variables for dark-mode parity)
+        gc: {
+          surface: 'var(--gc-surface)',
+          muted: 'var(--gc-muted)',
+          border: 'var(--gc-border)',
+          text: 'var(--gc-text)',
+          mutedtext: 'var(--gc-text-muted)',
+          primary: 'var(--gc-primary)',
+          accent: 'var(--gc-accent)',
+          pos: 'var(--gc-pos)',
+          neg: 'var(--gc-neg)',
+          warn: 'var(--gc-warn)',
+          info: 'var(--gc-info)',
+        },
+        // shadcn/ui standard tokens (aliased to CSS variables)
+        border: 'var(--border)',
+        input: 'var(--input)',
+        ring: 'var(--ring)',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        primary: {
+          DEFAULT: 'var(--primary)',
+          foreground: 'var(--primary-foreground)',
+        },
+        secondary: {
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
+        },
+        destructive: {
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
+        },
+        popover: {
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
+        },
+        card: {
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
+        },
       },
       fontSize: {
         'title-xxl': ['44px', '55px'],
@@ -240,6 +295,8 @@ module.exports = {
           '0%, 100%': { transform: 'rotate(360deg)' },
           '50%': { transform: 'rotate(0deg)' },
         },
+        'accordion-down': { from: { height: '0' }, to: { height: 'var(--radix-accordion-content-height)' } },
+        'accordion-up': { from: { height: 'var(--radix-accordion-content-height)' }, to: { height: '0' } },
       },
       animation: {
         'ping-once': 'ping 5s cubic-bezier(0, 0, 0.2, 1)',
@@ -247,8 +304,10 @@ module.exports = {
         'spin-1.5': 'spin 1.5s linear infinite',
         'spin-2': 'spin 2s linear infinite',
         'spin-3': 'spin 3s linear infinite',
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-animate')],
 }

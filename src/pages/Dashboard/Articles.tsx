@@ -4,17 +4,17 @@ import { yupResolver } from 'mantine-form-yup-resolver';
 import * as yup from 'yup';
 import { DataTable } from "mantine-datatable";
 import { ActionIcon, Button, Drawer, Group, LoadingOverlay, NumberInput, Text, TextInput, Select, Popover, HoverCard,Tooltip } from "@mantine/core";
-import { FaTrash, FaSearch, FaShoppingBag, FaPlus, FaEdit, FaBoxOpen } from "react-icons/fa";
+import { FaTrash, FaShoppingBag, FaPlus, FaEdit, FaBoxOpen } from "react-icons/fa";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { useForm } from "@mantine/form";
 import { toast } from 'sonner';
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
-import { Input} from "antd";
 import { ArticleService } from "../../services/article.service";
 import { FamilleService } from "../../services/famille.service";
 import { UniteService } from "../../services/unite.service";
 import { authclient } from '../../../lib/auth-client';
 import { formatN } from "../../lib/helpers";
+import { SearchInput } from "../../components/ui";
 
 const schema = yup.object().shape({
   ref: yup.string().required('Invalid Ref'),
@@ -147,16 +147,16 @@ useEffect(() => {
         visible={loadingDelete}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
-        loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+        loaderProps={{ color: 'brand', type: 'dots' }}
       />
       <div className="mt-2">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-1">Gestion des Articles</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Gérez votre catalogue de produits</p>
+            <h1 className="text-2xl font-bold text-gc mb-1">Gestion des Articles</h1>
+            <p className="text-sm text-gc-muted">Gérez votre catalogue de produits</p>
           </div>
           <Button 
-            bg="#8A2BE2" 
+            color="brand" 
             leftSection={<FaPlus size={16} />} 
             onClick={open}
             className="shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
@@ -165,27 +165,23 @@ useEffect(() => {
           </Button>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-6 mb-6">
+        <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-6 mb-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3">
               <div className="bg-orange-50 dark:bg-orange-900/20 p-3 rounded-full">
                 <FaBoxOpen size={24} className="text-orange-500" />
               </div>
               <div>
-                <Text size="xs" className="text-slate-500 dark:text-slate-400">Total des articles</Text>
-                <Text size="xl" fw={700} className="text-slate-800 dark:text-white">{articles?.length || 0}</Text>
+                <Text size="xs" className="text-gc-muted">Total des articles</Text>
+                <Text size="xl" fw={700} className="text-gc">{articles?.length || 0}</Text>
               </div>
             </div>
 
-            <div className="relative w-full md:w-1/3">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaSearch className="text-gray-400 dark:text-gray-600" />
-              </div>
-              <Input 
-                value={query} 
-                onChange={(e) => setQuery(e.currentTarget.value)} 
-                placeholder="Rechercher un article..." 
-                className="pl-10 border-slate-200 dark:border-slate-700 rounded-lg" 
+            <div className="w-full md:w-1/3">
+              <SearchInput
+                value={query}
+                onChange={setQuery}
+                placeholder="Rechercher un article..."
               />
             </div>
           </div>
@@ -197,7 +193,7 @@ useEffect(() => {
           title: <Text fw={600} size="sm">Référence</Text>,
           textAlign: 'center',
           render: (data: any) => (
-            <Text fw={500} className="text-slate-700 dark:text-slate-300">
+            <Text fw={500} className="text-gc">
               {data.ref}
             </Text>
           )
@@ -210,20 +206,20 @@ useEffect(() => {
           render: (data: any) => (
             <HoverCard width={280} shadow="md" withArrow openDelay={200} closeDelay={100}>
               <HoverCard.Target>
-                <Text fw={500} className="text-slate-700 dark:text-slate-300 cursor-pointer hover:text-blue-500 transition-colors duration-200">
+                <Text fw={500} className="text-gc cursor-pointer hover:text-blue-500 transition-colors duration-200">
                   {data.nom}
                 </Text>
               </HoverCard.Target>
-              <HoverCard.Dropdown className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+              <HoverCard.Dropdown className="border-none shadow-none">
                 <div className="p-2">
-                  <Text fw={600} size="sm" className="text-slate-800 dark:text-white mb-2">{data.nom}</Text>
+                  <Text fw={600} size="sm" className="text-gc mb-2">{data.nom}</Text>
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="text-slate-500 dark:text-slate-400">Référence:</div>
-                    <div className="text-slate-700 dark:text-slate-300 font-medium">{data.ref}</div>
-                    <div className="text-slate-500 dark:text-slate-400">Prix:</div>
-                    <div className="text-slate-700 dark:text-slate-300 font-medium">{formatN(data.prix)} FCFA</div>
-                    <div className="text-slate-500 dark:text-slate-400">Stock seuil:</div>
-                    <div className="text-slate-700 dark:text-slate-300 font-medium">{data.stock_seuil}</div>
+                    <div className="text-gc-muted">Référence:</div>
+                    <div className="text-gc font-medium">{data.ref}</div>
+                    <div className="text-gc-muted">Prix:</div>
+                    <div className="text-gc font-medium">{formatN(data.prix)} FCFA</div>
+                    <div className="text-gc-muted">Stock seuil:</div>
+                    <div className="text-gc font-medium">{data.stock_seuil}</div>
                   </div>
                 </div>
               </HoverCard.Dropdown>
@@ -249,7 +245,7 @@ useEffect(() => {
           textAlign: 'center',
           sortable: true,
           render: (data: any) => (
-            <Text size="sm" className="text-slate-600 dark:text-slate-400">
+            <Text size="sm" className="text-gc-muted">
               {data.unite?.nom}
             </Text>
           )
@@ -305,9 +301,9 @@ useEffect(() => {
                     </ActionIcon>
                   </Tooltip>
                 </Popover.Target>
-                <Popover.Dropdown className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                <Popover.Dropdown className="border-none shadow-none">
                   <div className="flex flex-col gap-3">
-                    <Text size="sm" className="text-slate-700 dark:text-slate-300">
+                    <Text size="sm" className="text-gc">
                       Êtes-vous sûr de vouloir supprimer cet article ?
                     </Text>
                     <div className="flex justify-between gap-2">
@@ -352,8 +348,8 @@ useEffect(() => {
       page={page}
       onPageChange={(p) => setPage(p)}
       className="border-none shadow-none"
-      rowClassName={() => "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors duration-150"}
-      paginationActiveBackgroundColor="#8A2BE2"
+      rowClassName={() => "hover:bg-muted/50 transition-colors duration-150"}
+      paginationActiveBackgroundColor="var(--gc-primary)"
     />
         </div>
       </div>
@@ -362,7 +358,7 @@ useEffect(() => {
         opened={opened} 
         onClose={close} 
         title={
-          <Text size="lg" fw={700} className="text-slate-800 dark:text-white">
+          <Text size="lg" fw={700} className="text-gc">
             Nouvel Article
           </Text>
         }
@@ -378,10 +374,10 @@ useEffect(() => {
           visible={loadingCreate}
           zIndex={1000}
           overlayProps={{ radius: 'sm', blur: 2 }}
-          loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+          loaderProps={{ color: 'brand', type: 'dots' }}
         />
         <form onSubmit={form.onSubmit(onCreate)} className="space-y-4">
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+          <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
             <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
               <FaShoppingBag size={14} className="text-orange-500" />
               Informations de l'article
@@ -393,7 +389,7 @@ useEffect(() => {
               required
               {...form.getInputProps('ref')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
             />
@@ -404,7 +400,7 @@ useEffect(() => {
               required
               {...form.getInputProps('nom')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
             />
@@ -415,7 +411,7 @@ useEffect(() => {
               required
               {...form.getInputProps('prix')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
               rightSection={<Text size="xs" color="dimmed">FCFA</Text>}
@@ -427,7 +423,7 @@ useEffect(() => {
               required
               {...form.getInputProps('stock_seuil')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
             />
@@ -439,7 +435,7 @@ useEffect(() => {
                 {...form.getInputProps('famille')}
                 data={familles?.map((f: any) => ({label: f.nom, value: f._id}))}
                 classNames={{
-                  input: "rounded-md border-slate-200 dark:border-slate-700",
+                  input: "rounded-md border-gc",
                   wrapper: "shadow-sm"
                 }}
               />
@@ -450,7 +446,7 @@ useEffect(() => {
                 {...form.getInputProps('unite')}
                 data={unites?.map((f: any) => ({label: f.nom, value: f._id}))}
                 classNames={{
-                  input: "rounded-md border-slate-200 dark:border-slate-700",
+                  input: "rounded-md border-gc",
                   wrapper: "shadow-sm"
                 }}
               />
@@ -458,7 +454,7 @@ useEffect(() => {
 
             <Button 
               type="submit" 
-              bg="#8A2BE2" 
+              color="brand" 
               loading={loadingCreate}
               className="shadow-md hover:shadow-lg transition-all duration-200 mt-4 w-full"
               leftSection={<FaRegCircleCheck size={16} />}
@@ -473,7 +469,7 @@ useEffect(() => {
         opened={openedU} 
         onClose={closeU} 
         title={
-          <Text size="lg" fw={700} className="text-slate-800 dark:text-white">
+          <Text size="lg" fw={700} className="text-gc">
             Modifier l'Article
           </Text>
         }
@@ -489,10 +485,10 @@ useEffect(() => {
           visible={loadingUpdate}
           zIndex={1000}
           overlayProps={{ radius: 'sm', blur: 2 }}
-          loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+          loaderProps={{ color: 'brand', type: 'dots' }}
         />
         <form onSubmit={formU.onSubmit(onUpdate)} className="space-y-4">
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+          <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
             <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
               <FaEdit size={14} className="text-blue-500" />
               Modifier les informations
@@ -504,7 +500,7 @@ useEffect(() => {
               required
               {...formU.getInputProps('ref')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
             />
@@ -515,7 +511,7 @@ useEffect(() => {
               required
               {...formU.getInputProps('nom')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
             />
@@ -526,7 +522,7 @@ useEffect(() => {
               required
               {...formU.getInputProps('prix')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
               rightSection={<Text size="xs" color="dimmed">FCFA</Text>}
@@ -538,7 +534,7 @@ useEffect(() => {
               required
               {...formU.getInputProps('stock_seuil')}
               classNames={{
-                input: "rounded-md border-slate-200 dark:border-slate-700",
+                input: "rounded-md border-gc",
                 wrapper: "shadow-sm mb-3"
               }}
             />
@@ -550,7 +546,7 @@ useEffect(() => {
                 {...formU.getInputProps('famille')}
                 data={familles?.map((f: any) => ({label: f.nom, value: f._id}))}
                 classNames={{
-                  input: "rounded-md border-slate-200 dark:border-slate-700",
+                  input: "rounded-md border-gc",
                   wrapper: "shadow-sm"
                 }}
               />
@@ -561,7 +557,7 @@ useEffect(() => {
                 {...formU.getInputProps('unite')}
                 data={unites?.map((f: any) => ({label: f.nom, value: f._id}))}
                 classNames={{
-                  input: "rounded-md border-slate-200 dark:border-slate-700",
+                  input: "rounded-md border-gc",
                   wrapper: "shadow-sm"
                 }}
               />
@@ -569,7 +565,7 @@ useEffect(() => {
 
             <Button 
               type="submit" 
-              bg="#8A2BE2" 
+              color="brand" 
               loading={loadingUpdate}
               className="shadow-md hover:shadow-lg transition-all duration-200 mt-4 w-full"
               leftSection={<FaRegCircleCheck size={16} />}

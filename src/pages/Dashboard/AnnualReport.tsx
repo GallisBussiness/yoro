@@ -165,7 +165,7 @@ function AnnualReport() {
               y: 0,
               w: 840,
               h: 15,
-              color: '#8A2BE2'
+              color: 'brand'
             }
           ]
         };
@@ -209,7 +209,7 @@ function AnnualReport() {
               x1: 0, y1: 0,
               x2: 760, y2: 0,
               lineWidth: 1,
-              lineColor: '#8A2BE2'
+              lineColor: '#334155'
             }
           ]
         },
@@ -243,8 +243,8 @@ function AnnualReport() {
           layout: {
             hLineWidth: function(i:number, node:any) { return (i === 0 || i === node.table.body.length) ? 2 : 1; },
             vLineWidth: function(i:number, node:any) { return (i === 0 || i === node.table.widths.length) ? 2 : 1; },
-            hLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.body.length) ? '#8A2BE2' : '#aaaaaa'; },
-            vLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.widths.length) ? '#8A2BE2' : '#aaaaaa'; },
+            hLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.body.length) ? '#334155' : '#aaaaaa'; },
+            vLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.widths.length) ? '#334155' : '#aaaaaa'; },
             paddingLeft: function() { return 5; },
             paddingRight: function() { return 5; },
             paddingTop: function() { return 3; },
@@ -259,7 +259,7 @@ function AnnualReport() {
               x1: 0, y1: 0,
               x2: 760, y2: 0,
               lineWidth: 1,
-              lineColor: '#8A2BE2'
+              lineColor: '#334155'
             }
           ]
         },
@@ -289,8 +289,8 @@ function AnnualReport() {
           layout: {
             hLineWidth: function(i:number, node:any) { return (i === 0 || i === node.table.body.length) ? 2 : 1; },
             vLineWidth: function(i:number, node:any) { return (i === 0 || i === node.table.widths.length) ? 2 : 1; },
-            hLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.body.length) ? '#8A2BE2' : '#aaaaaa'; },
-            vLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.widths.length) ? '#8A2BE2' : '#aaaaaa'; },
+            hLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.body.length) ? '#334155' : '#aaaaaa'; },
+            vLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.widths.length) ? '#334155' : '#aaaaaa'; },
             paddingLeft: function() { return 5; },
             paddingRight: function() { return 5; },
             paddingTop: function() { return 3; },
@@ -305,7 +305,7 @@ function AnnualReport() {
               x1: 0, y1: 0,
               x2: 760, y2: 0,
               lineWidth: 1,
-              lineColor: '#8A2BE2'
+              lineColor: '#334155'
             }
           ]
         },
@@ -350,8 +350,8 @@ function AnnualReport() {
           layout: {
             hLineWidth: function(i:number, node:any) { return (i === 0 || i === node.table.body.length) ? 2 : 1; },
             vLineWidth: function(i:number, node:any) { return (i === 0 || i === node.table.widths.length) ? 2 : 1; },
-            hLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.body.length) ? '#8A2BE2' : '#aaaaaa'; },
-            vLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.widths.length) ? '#8A2BE2' : '#aaaaaa'; },
+            hLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.body.length) ? '#334155' : '#aaaaaa'; },
+            vLineColor: function(i:number, node:any) { return (i === 0 || i === node.table.widths.length) ? '#334155' : '#aaaaaa'; },
             paddingLeft: function() { return 5; },
             paddingRight: function() { return 5; },
             paddingTop: function() { return 3; },
@@ -364,7 +364,7 @@ function AnnualReport() {
           fontSize: 20,
           bold: true,
           margin: [0, 0, 0, 10],
-          color: '#8A2BE2'
+          color: 'brand'
         },
         headerCompany: {
           fontSize: 18,
@@ -386,12 +386,12 @@ function AnnualReport() {
           fontSize: 16,
           bold: true,
           margin: [0, 15, 0, 10],
-          color: '#8A2BE2'
+          color: 'brand'
         },
         tableHeader: {
           fontSize: 12,
           bold: true,
-          fillColor: '#8A2BE2',
+          fillColor: '#334155',
           color: '#ffffff',
           alignment: 'center',
           margin: [5, 5, 5, 5]
@@ -437,7 +437,7 @@ function AnnualReport() {
       <Paper 
         p="md" 
         radius="md" 
-        className="bg-white dark:bg-gray-800 shadow-xl mb-4"
+        className="bg-card shadow-xl mb-4"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
           backdropFilter: "blur(10px)"
@@ -475,12 +475,12 @@ function AnnualReport() {
                 styles={{
                   input: {
                     '&:focus': {
-                      borderColor: '#8A2BE2'
+                      borderColor: '#334155'
                     }
                   }
                 }}
                 classNames={{
-                  label: "font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  label: "font-medium text-foreground mb-1"
                 }}
               />
             </div>
@@ -489,7 +489,7 @@ function AnnualReport() {
               <Button
                 onClick={generatePDF}
                 leftSection={<FaPrint size={16} />}
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200"
                 styles={{
                   root: {
                     boxShadow: '0 4px 14px 0 rgba(255, 93, 20, 0.39)'
@@ -510,28 +510,28 @@ function AnnualReport() {
             </Title>
           </Group>
           
-          <Text size="sm" className="text-gray-600 dark:text-gray-400 mb-4">
+          <Text size="sm" className="text-muted-foreground mb-4">
             Le rapport généré contiendra les sections suivantes :
           </Text>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Paper p="sm" radius="md" className="border border-gray-200 dark:border-gray-700">
-              <Text fw={500} className="text-gray-700 dark:text-gray-300 mb-2">Résumé Global</Text>
+            <Paper p="sm" radius="md" className="border border-border">
+              <Text fw={500} className="text-foreground mb-2">Résumé Global</Text>
               <Text size="sm" color="dimmed">Total des ventes, achats, quantités vendues et achetées pour l'année sélectionnée.</Text>
             </Paper>
             
-            <Paper p="sm" radius="md" className="border border-gray-200 dark:border-gray-700">
-              <Text fw={500} className="text-gray-700 dark:text-gray-300 mb-2">Résumé des Remises</Text>
+            <Paper p="sm" radius="md" className="border border-border">
+              <Text fw={500} className="text-foreground mb-2">Résumé des Remises</Text>
               <Text size="sm" color="dimmed">Montant total des remises accordées sur les ventes et les achats.</Text>
             </Paper>
             
-            <Paper p="sm" radius="md" className="border border-gray-200 dark:border-gray-700">
-              <Text fw={500} className="text-gray-700 dark:text-gray-300 mb-2">Détails par Article</Text>
+            <Paper p="sm" radius="md" className="border border-border">
+              <Text fw={500} className="text-foreground mb-2">Détails par Article</Text>
               <Text size="sm" color="dimmed">Analyse détaillée de chaque article avec quantités vendues/achetées et bénéfices.</Text>
             </Paper>
             
-            <Paper p="sm" radius="md" className="border border-gray-200 dark:border-gray-700">
-              <Text fw={500} className="text-gray-700 dark:text-gray-300 mb-2">Informations de l'Entreprise</Text>
+            <Paper p="sm" radius="md" className="border border-border">
+              <Text fw={500} className="text-foreground mb-2">Informations de l'Entreprise</Text>
               <Text size="sm" color="dimmed">En-tête avec les coordonnées de votre entreprise et la date d'édition.</Text>
             </Paper>
           </div>

@@ -136,7 +136,7 @@ export const printInvoice = (selectedVente:any,selectedFormat:any,param:any) => 
               stack: [
                 {
                   margin: [2, 5],
-                  fillColor: "#8A2BE2",
+                  fillColor: "#334155",
                   alignment: 'left',
                   layout: 'noBorders',
                   table: {
@@ -158,7 +158,7 @@ export const printInvoice = (selectedVente:any,selectedFormat:any,param:any) => 
           alignment: 'justify',
           layout: {
             fillColor: function(rowIndex: number) {
-              return (rowIndex === 0) ? '#8A2BE2' : null;
+              return (rowIndex === 0) ? '#334155' : null;
             },
             hLineWidth: function() {
               return 1;
@@ -199,7 +199,7 @@ export const printInvoice = (selectedVente:any,selectedFormat:any,param:any) => 
               stack: [
                 {
                   margin: [2, 5],
-                  fillColor: "#8A2BE2",
+                  fillColor: "#334155",
                   alignment: 'left',
                   layout: 'noBorders',
                   table: {

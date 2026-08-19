@@ -134,16 +134,16 @@ useEffect(() => {
          visible={loadingDelete}
          zIndex={1000}
          overlayProps={{ radius: 'sm', blur: 2 }}
-         loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+         loaderProps={{ color: 'brand', type: 'dots' }}
        />
      <div className="mt-2">
      <div className="mb-6">
         <Group>
           <div>
             <Title order={2} className="text-gray-800 dark:text-gray-200">Gestion des Clients</Title>
-            <Text className="text-gray-600 dark:text-gray-400">Gérez votre portefeuille clients</Text>
+            <Text className="text-muted-foreground">Gérez votre portefeuille clients</Text>
           </div>
-          <Badge size="lg" radius="md" className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2">
+          <Badge size="lg" radius="md" className="bg-primary text-primary-foreground text-white px-4 py-2">
             <Group>
               <FaUsers />
               <Text>{filtered(clients)?.length || 0} clients</Text>
@@ -154,7 +154,7 @@ useEffect(() => {
      <Paper 
         p="md" 
         radius="md" 
-        className="bg-white dark:bg-gray-800 shadow-lg mb-6"
+        className="border-none shadow-none"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8))",
           backdropFilter: "blur(10px)"
@@ -162,7 +162,7 @@ useEffect(() => {
       >
      <WeeklyRevenue add={<div>
        <Button 
-          bg="#8A2BE2" 
+          color="brand" 
           leftSection={<FaUserPlus className="h-5 w-5 text-white"/>} 
           onClick={open} 
           className="hover:bg-orange-700 transition-colors duration-300 shadow-md"
@@ -184,7 +184,7 @@ useEffect(() => {
               styles={() => ({
                 input: {
                   '&:focus-within': {
-                    borderColor: '#8A2BE2',
+                    borderColor: '#334155',
                   },
                 },
               })}
@@ -192,7 +192,7 @@ useEffect(() => {
       </div>
     </div>
     <DataTable
-      withTableBorder={true} 
+      withTableBorder={false} 
       columns={[
         { 
           accessor: 'nom', 
@@ -232,7 +232,7 @@ useEffect(() => {
           ), 
           textAlign: 'center',
           render: (record) => (
-            <Text size="sm" className="text-gray-600 dark:text-gray-400">
+            <Text size="sm" className="text-muted-foreground">
               {record.addr || 'Non spécifiée'}
             </Text>
           )
@@ -241,7 +241,7 @@ useEffect(() => {
           accessor: 'actions',
           title: (
             <Box mr={6}>
-              <Text fw={600} className="text-gray-700 dark:text-gray-300">Actions</Text>
+              <Text fw={600} className="text-foreground">Actions</Text>
             </Box>
           ),
           textAlign: 'center',
@@ -250,7 +250,7 @@ useEffect(() => {
               <Tooltip label="Voir détails">
                 <Button 
                   size="compact-sm" 
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md"
+                  className="bg-blue-600 hover:bg-blue-700 transition-all duration-300 shadow-md"
                   onClick={() => navigate(rowData._id)} 
                   rightSection={<FaEye/>}
                   radius="md"
@@ -261,7 +261,7 @@ useEffect(() => {
               <Tooltip label="Modifier">
                 <ActionIcon 
                   onClick={() => handleUpdate(rowData)} 
-                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 text-white shadow-md"
+                  className="bg-emerald-600 hover:bg-emerald-700 transition-all duration-300 text-white shadow-md"
                   radius="md"
                   size="lg"
                 >
@@ -272,7 +272,7 @@ useEffect(() => {
                 <Popover.Target>
                   <Tooltip label="Supprimer">
                     <ActionIcon 
-                      className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 text-white shadow-md"
+                      className="bg-red-600 hover:bg-red-700 transition-all duration-300 text-white shadow-md"
                       radius="md"
                       size="lg"
                     >
@@ -280,7 +280,7 @@ useEffect(() => {
                     </ActionIcon>
                   </Tooltip>
                 </Popover.Target>
-                <Popover.Dropdown className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                <Popover.Dropdown className="border-none shadow-none">
                   <div className="flex flex-col space-y-4">
                     <Text className="text-gray-800 dark:text-gray-200 font-medium">Êtes-vous sûr de vouloir supprimer ce client?</Text>
                     <Group>
@@ -312,8 +312,7 @@ useEffect(() => {
       ]}
       records={records}
       idAccessor="_id"
-      striped={true}
-      stripedColor="rgba(255, 93, 20, 0.1)"
+      striped={false}
       style={{
         fontWeight: 'normal',
       }}
@@ -321,7 +320,7 @@ useEffect(() => {
       emptyState={
         <div className="flex flex-col items-center justify-center py-10">
           <img src="/img/empty.png" alt="Aucun client" className="w-32 h-32 mb-4" />
-          <Text size="lg" fw={500} className="text-gray-600 dark:text-gray-400">
+          <Text size="lg" fw={500} className="text-muted-foreground">
             Aucun client trouvé
           </Text>
           <Text size="sm" className="text-gray-500 dark:text-gray-500 mb-4">
@@ -330,7 +329,7 @@ useEffect(() => {
           <Button 
             leftSection={<FaUserPlus />} 
             onClick={open} 
-            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
             radius="md"
           >
             Ajouter un client
@@ -344,12 +343,12 @@ useEffect(() => {
       borderRadius="lg"
       shadow="xl"
       horizontalSpacing="md"
-      verticalSpacing="md"
+      verticalSpacing="xs"
       verticalAlign="center"
       highlightOnHover
       className="overflow-hidden"
-      paginationActiveBackgroundColor="#8A2BE2"
-      rowClassName={() => 'hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors duration-200'}
+      paginationActiveBackgroundColor="var(--gc-primary)"
+      rowClassName={() => 'hover:bg-muted/50 transition-colors duration-200'}
     />
      </>
      
@@ -365,7 +364,7 @@ useEffect(() => {
      size="md"
      position="right"
      classNames={{
-       header: 'border-b border-gray-200 dark:border-gray-700 pb-3',
+       header: 'border-b border-border pb-3',
        body: 'pt-6'
      }}
    >
@@ -373,11 +372,11 @@ useEffect(() => {
          visible={loadingCreate}
          zIndex={1000}
          overlayProps={{ radius: 'sm', blur: 2 }}
-         loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+         loaderProps={{ color: 'brand', type: 'dots' }}
        />
      <form onSubmit={form.onSubmit(onCreate)} className="space-y-4">
-       <Paper p="md" radius="md" className="bg-orange-50 dark:bg-gray-800 border border-orange-100 dark:border-gray-700 shadow-sm">
-         <Text size="sm" fw={500} className="text-gray-600 dark:text-gray-400 mb-3">
+       <Paper p="md" radius="md" className="bg-orange-50 dark:bg-gray-800 border border-border shadow-sm">
+         <Text size="sm" fw={500} className="text-muted-foreground mb-3">
            Informations du client
          </Text>
 
@@ -391,7 +390,7 @@ useEffect(() => {
             styles={() => ({
               input: {
                 '&:focus': {
-                  borderColor: '#8A2BE2',
+                  borderColor: '#334155',
                 },
               },
             })}
@@ -405,7 +404,7 @@ useEffect(() => {
             styles={() => ({
               input: {
                 '&:focus': {
-                  borderColor: '#8A2BE2',
+                  borderColor: '#334155',
                 },
               },
             })}
@@ -418,7 +417,7 @@ useEffect(() => {
             styles={() => ({
               input: {
                 '&:focus': {
-                  borderColor: '#8A2BE2',
+                  borderColor: '#334155',
                 },
               },
             })}
@@ -436,7 +435,7 @@ useEffect(() => {
          </Button>
          <Button 
            type="submit" 
-           className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+           className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
            leftSection={<FaUserPlus />}
          >
            Créer le client
@@ -453,7 +452,7 @@ useEffect(() => {
      padding="xl"
      size="md"
      classNames={{
-       header: 'border-b border-gray-200 dark:border-gray-700 pb-3',
+       header: 'border-b border-border pb-3',
        body: 'pt-6'
      }}
    >
@@ -461,11 +460,11 @@ useEffect(() => {
          visible={loadingUpdate}
          zIndex={1000}
          overlayProps={{ radius: 'sm', blur: 2 }}
-         loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+         loaderProps={{ color: 'brand', type: 'dots' }}
        />
   <form onSubmit={formU.onSubmit(onUpdate)} className="space-y-4">
-    <Paper p="md" radius="md" className="bg-green-50 dark:bg-gray-800 border border-green-100 dark:border-gray-700 shadow-sm">
-      <Text size="sm" fw={500} className="text-gray-600 dark:text-gray-400 mb-3">
+    <Paper p="md" radius="md" className="bg-green-50 dark:bg-gray-800 border border-border shadow-sm">
+      <Text size="sm" fw={500} className="text-muted-foreground mb-3">
         Informations du client
       </Text>
 
@@ -479,7 +478,7 @@ useEffect(() => {
         styles={() => ({
           input: {
             '&:focus': {
-              borderColor: '#8A2BE2',
+              borderColor: '#334155',
             },
           },
         })}
@@ -493,7 +492,7 @@ useEffect(() => {
         styles={() => ({
           input: {
             '&:focus': {
-              borderColor: '#8A2BE2',
+              borderColor: '#334155',
             },
           },
         })}
@@ -506,7 +505,7 @@ useEffect(() => {
         styles={() => ({
           input: {
             '&:focus': {
-              borderColor: '#8A2BE2',
+              borderColor: '#334155',
             },
           },
         })}
@@ -524,7 +523,7 @@ useEffect(() => {
       </Button>
       <Button 
         type="submit" 
-        className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md"
+        className="bg-emerald-600 hover:bg-emerald-700 transition-all duration-300 shadow-md"
         leftSection={<FaUserEdit />}
       >
         Mettre à jour

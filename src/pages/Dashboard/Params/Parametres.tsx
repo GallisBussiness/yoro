@@ -4,11 +4,11 @@ import * as yup from 'yup';
 import { ParamService } from '../../../services/paramservice';
 import { useDisclosure } from '@mantine/hooks';
 import { Modal, NumberInput, TextInput, Button, LoadingOverlay, Text, Avatar, Textarea, Paper, Title, Badge, Group, Card, Divider, ActionIcon, Tooltip } from '@mantine/core';
-import { FileCard, FileUploader, Pane } from 'evergreen-ui';
+import { Dropzone } from '@mantine/dropzone';
 import { useForm } from '@mantine/form';
 import { useCallback, useState } from 'react';
 import { authclient } from '../../../../lib/auth-client';
-import { FaBuilding, FaPhone, FaEnvelope, FaMapMarkerAlt, FaEdit, FaFileInvoice, FaInfoCircle, FaUpload, FaPercentage, FaIdCard, FaFileAlt, FaSave, FaCheck } from 'react-icons/fa';
+import { FaBuilding, FaPhone, FaEnvelope, FaMapMarkerAlt, FaEdit, FaFileInvoice, FaInfoCircle, FaUpload, FaPercentage, FaIdCard, FaFileAlt, FaSave, FaCheck, FaTrash } from 'react-icons/fa';
 
 const schema = yup.object().shape({
   nom: yup.string().required('Nom invalide'),
@@ -29,12 +29,9 @@ function Parametres() {
   const [openedU, { open:openU, close:closeU }] = useDisclosure(false);
   const [openedM, { open:openM, close:closeM }] = useDisclosure(false);
   const [files, setFiles] = useState<any>([])
-  const [fileRejections, setFileRejections] = useState<any>([])
   const handleChange = useCallback((files: any[]) => setFiles([files[0]]), [])
-  const handleRejected = useCallback((fileRejections: any[]) => setFileRejections([fileRejections[0]]), [])
   const handleRemove = useCallback(() => {
     setFiles([])
-    setFileRejections([])
   }, [])
   const qc = useQueryClient();
   const key = ['param', session?.user.id];
@@ -129,7 +126,7 @@ function Parametres() {
          visible={isLoading || loadingCreate || loadingUpdate}
          zIndex={1000}
          overlayProps={{ radius: 'sm', blur: 2 }}
-         loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+         loaderProps={{ color: '#334155', type: 'dots' }}
        />
 
   {/* Modal de création de paramètres */}
@@ -150,7 +147,7 @@ function Parametres() {
             leftSection={<FaBuilding />}
             {...form.getInputProps('nom')} 
             className="mb-2"
-            styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+            styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
           />
         </div>
         <TextInput 
@@ -159,7 +156,7 @@ function Parametres() {
           leftSection={<FaEnvelope />}
           {...form.getInputProps('email')} 
           className="mb-2"
-          styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+          styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
         />
         <TextInput 
           label="Téléphone" 
@@ -167,7 +164,7 @@ function Parametres() {
           leftSection={<FaPhone />}
           {...form.getInputProps('tel')} 
           className="mb-2"
-          styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+          styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
         />
         <div className="md:col-span-2">
           <TextInput 
@@ -176,7 +173,7 @@ function Parametres() {
             leftSection={<FaMapMarkerAlt />}
             {...form.getInputProps('addr')} 
             className="mb-2"
-            styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+            styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
           />
         </div>
         <NumberInput 
@@ -185,7 +182,7 @@ function Parametres() {
           leftSection={<FaPercentage />}
           {...form.getInputProps('tva')} 
           className="mb-2"
-          styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+          styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
         />
         <TextInput 
           label="NINEA" 
@@ -193,7 +190,7 @@ function Parametres() {
           leftSection={<FaIdCard />}
           {...form.getInputProps('ninea')} 
           className="mb-2"
-          styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+          styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
         />
         <TextInput 
           label="Numéro SIRET" 
@@ -201,7 +198,7 @@ function Parametres() {
           leftSection={<FaIdCard />}
           {...form.getInputProps('num_siret')} 
           className="mb-2"
-          styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+          styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
         />
         <div className="md:col-span-2">
           <Textarea 
@@ -210,7 +207,7 @@ function Parametres() {
             {...form.getInputProps('desc')} 
             minRows={4}
             className="mb-2"
-            styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+            styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
           />
         </div>
       </div>
@@ -222,7 +219,7 @@ function Parametres() {
         <Button variant="light" onClick={close}>Annuler</Button>
         <Button 
           type="submit" 
-          className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
           leftSection={<FaSave />}
         >
           Enregistrer
@@ -249,7 +246,7 @@ function Parametres() {
             leftSection={<FaBuilding />}
             {...formU.getInputProps('nom')} 
             className="mb-2"
-            styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+            styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
           />
         </div>
         <TextInput 
@@ -258,7 +255,7 @@ function Parametres() {
           leftSection={<FaEnvelope />}
           {...formU.getInputProps('email')} 
           className="mb-2"
-          styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+          styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
         />
         <TextInput 
           label="Téléphone" 
@@ -266,7 +263,7 @@ function Parametres() {
           leftSection={<FaPhone />}
           {...formU.getInputProps('tel')} 
           className="mb-2"
-          styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+          styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
         />
         <div className="md:col-span-2">
           <TextInput 
@@ -275,7 +272,7 @@ function Parametres() {
             leftSection={<FaMapMarkerAlt />}
             {...formU.getInputProps('addr')} 
             className="mb-2"
-            styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+            styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
           />
         </div>
         <NumberInput 
@@ -284,7 +281,7 @@ function Parametres() {
           leftSection={<FaPercentage />}
           {...formU.getInputProps('tva')} 
           className="mb-2"
-          styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+          styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
         />
         <TextInput 
           label="NINEA" 
@@ -292,7 +289,7 @@ function Parametres() {
           leftSection={<FaIdCard />}
           {...formU.getInputProps('ninea')} 
           className="mb-2"
-          styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+          styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
         />
         <TextInput 
           label="Numéro SIRET" 
@@ -300,7 +297,7 @@ function Parametres() {
           leftSection={<FaIdCard />}
           {...formU.getInputProps('num_siret')} 
           className="mb-2"
-          styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+          styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
         />
         <div className="md:col-span-2">
           <Textarea 
@@ -309,7 +306,7 @@ function Parametres() {
             {...formU.getInputProps('desc')} 
             minRows={4}
             className="mb-2"
-            styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+            styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
           />
         </div>
       </div>
@@ -321,7 +318,7 @@ function Parametres() {
         <Button variant="light" onClick={closeU}>Annuler</Button>
         <Button 
           type="submit" 
-          className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
           leftSection={<FaCheck />}
         >
           Mettre à jour
@@ -340,43 +337,52 @@ function Parametres() {
     overlayProps={{ blur: 3 }}
   >
     <div className="flex flex-col space-y-4">
-      <Paper p="md" radius="md" className="bg-blue-50 dark:bg-gray-700 border border-blue-100 dark:border-gray-600">
+      <Paper p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border">
         <Group justify="space-between" mb="xs">
-          <Text fw={600} className="text-gray-700 dark:text-gray-200 flex items-center gap-2">
+          <Text fw={600} className="text-foreground flex items-center gap-2">
             <FaUpload className="text-blue-500" /> Téléchargement du logo
           </Text>
         </Group>
         <Divider mb="md" />
-        <Pane className="bg-white dark:bg-gray-800 p-4 rounded-md">
-          <FileUploader
-            label="Glisser et déposer votre logo ici"
-            description="Limité à 1 fichier. Formats recommandés: PNG, JPG, SVG"
-            maxFiles={1}
-            maxSizeInBytes={50 * 1024 ** 2}
-            onChange={handleChange}
-            onRejected={handleRejected}
-            renderFile={(file) => {
-              const { name, size, type } = file
-              const fileRejection = fileRejections.find(
-                (fileRej: any) => fileRej.file.name === name
-              )
-              const { message } = fileRejection || {}
+        <Dropzone
+          onDrop={(droppedFiles) => handleChange(droppedFiles)}
+          maxSize={50 * 1024 ** 2}
+          maxFiles={1}
+          className="bg-card"
+        >
+          <Group justify="center" gap="xs" style={{ pointerEvents: 'none' }}>
+            <Dropzone.Accept>
+              <FaUpload size={28} className="text-blue-500" />
+            </Dropzone.Accept>
+            <Dropzone.Idle>
+              <FaUpload size={28} className="text-gray-400" />
+            </Dropzone.Idle>
+            <Dropzone.Reject>
+              <FaUpload size={28} className="text-red-500" />
+            </Dropzone.Reject>
+            <div>
+              <Text size="sm" fw={600} className="text-foreground">
+                Glisser et déposer votre logo ici
+              </Text>
+              <Text size="xs" c="dimmed">
+                Limité à 1 fichier. Formats recommandés: PNG, JPG, SVG
+              </Text>
+            </div>
+          </Group>
+        </Dropzone>
 
-              return (
-                <FileCard
-                  key={name}
-                  isInvalid={fileRejection != null}
-                  name={name}
-                  onRemove={handleRemove}
-                  sizeInBytes={size}
-                  type={type}
-                  validationMessage={message}
-                />
-              )
-            }}
-            values={files}
-          />
-        </Pane>
+        {files.length > 0 && (
+          <Paper p="sm" radius="md" mt="sm" className="bg-card">
+            <Group justify="space-between">
+              <Text size="sm" className="text-foreground">
+                {files[0]?.name}
+              </Text>
+              <ActionIcon color="red" variant="subtle" onClick={handleRemove}>
+                <FaTrash size={14} />
+              </ActionIcon>
+            </Group>
+          </Paper>
+        )}
       </Paper>
       <Text size="sm" color="dimmed" className="italic">
         Le logo apparaîtra sur vos documents commerciaux et dans l'interface. Pour un meilleur résultat, utilisez une image carrée avec un fond transparent.  
@@ -385,7 +391,7 @@ function Parametres() {
         <Button variant="light" onClick={closeM}>Annuler</Button>
         <Button 
           onClick={handleLogo} 
-          className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
           leftSection={<FaUpload />}
         >
           Télécharger le logo
@@ -399,7 +405,7 @@ function Parametres() {
       <Paper 
         p="xl" 
         radius="md" 
-        className="bg-white dark:bg-gray-800 shadow-xl"
+        className="bg-card shadow-xl"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
           backdropFilter: "blur(10px)"
@@ -416,7 +422,7 @@ function Parametres() {
                 className="border-4 border-orange-100 shadow-lg dark:border-gray-700"
                 styles={{
                   root: {
-                    background: 'linear-gradient(45deg, #8A2BE2, #FF8A50)',
+                    background: 'linear-gradient(45deg, #334155, #059669)',
                   }
                 }}
               />
@@ -441,14 +447,14 @@ function Parametres() {
               <Title order={2} className="text-gray-800 dark:text-gray-200 mb-2 flex items-center gap-2">
                 <FaBuilding className="text-orange-500" /> {param.nom}
               </Title>
-              <Badge size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 text-white mb-4">
+              <Badge size="lg" className="bg-primary text-primary-foreground text-white mb-4">
                 Paramètres de l'entreprise
               </Badge>
             </div>
             
-            <Card p="md" radius="md" className="bg-blue-50 dark:bg-gray-700 border border-blue-100 dark:border-gray-600 shadow-sm mb-4">
+            <Card p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border shadow-sm mb-4">
               <Group justify="space-between" mb="xs">
-                <Text fw={600} className="text-gray-700 dark:text-gray-200 flex items-center gap-2">
+                <Text fw={600} className="text-foreground flex items-center gap-2">
                   <FaInfoCircle className="text-blue-500" /> Informations Principales
                 </Text>
               </Group>
@@ -478,9 +484,9 @@ function Parametres() {
               </div>
             </Card>
 
-            <Card p="md" radius="md" className="bg-green-50 dark:bg-gray-700 border border-green-100 dark:border-gray-600 shadow-sm mb-4">
+            <Card p="md" radius="md" className="bg-emerald-50 dark:bg-emerald-500/10 border border-border shadow-sm mb-4">
               <Group justify="space-between" mb="xs">
-                <Text fw={600} className="text-gray-700 dark:text-gray-200 flex items-center gap-2">
+                <Text fw={600} className="text-foreground flex items-center gap-2">
                   <FaFileInvoice className="text-green-500" /> Informations Légales
                 </Text>
               </Group>
@@ -510,21 +516,21 @@ function Parametres() {
               </div>
             </Card>
 
-            <Card p="md" radius="md" className="bg-purple-50 dark:bg-gray-700 border border-purple-100 dark:border-gray-600 shadow-sm mb-4">
+            <Card p="md" radius="md" className="bg-violet-50 dark:bg-violet-500/10 border border-border shadow-sm mb-4">
               <Group justify="space-between" mb="xs">
-                <Text fw={600} className="text-gray-700 dark:text-gray-200 flex items-center gap-2">
+                <Text fw={600} className="text-foreground flex items-center gap-2">
                   <FaFileAlt className="text-purple-500" /> Description
                 </Text>
               </Group>
               <Divider mb="md" />
-              <Text size="md" className="text-gray-700 dark:text-gray-300 leading-relaxed p-2 bg-white dark:bg-gray-800 rounded-md">
+              <Text size="md" className="text-foreground leading-relaxed p-2 bg-card rounded-md">
                 {param.desc || 'Aucune description disponible'}
               </Text>
             </Card>
 
             <div className="mt-6">
               <Button 
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
                 leftSection={<FaEdit />}
                 onClick={() => handleUpdate(param)}
               >
@@ -540,7 +546,7 @@ function Parametres() {
       <Paper 
         p="xl" 
         radius="md" 
-        className="bg-white dark:bg-gray-800 shadow-lg"
+        className="bg-card shadow-lg"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8))",
           backdropFilter: "blur(10px)"
@@ -549,11 +555,11 @@ function Parametres() {
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <FaBuilding size={60} className="text-orange-500 mb-4" />
           <Title order={2} className="text-gray-800 dark:text-gray-200 mb-2">Configuration des paramètres</Title>
-          <Text size="lg" className="text-gray-600 dark:text-gray-400 mb-6 max-w-lg">
+          <Text size="lg" className="text-muted-foreground mb-6 max-w-lg">
             Vous n'avez pas encore configuré les paramètres de votre entreprise. Ces informations seront utilisées dans vos documents commerciaux.
           </Text>
           <Button 
-            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
             leftSection={<FaEdit />}
             size="lg"
             onClick={open}
@@ -565,48 +571,6 @@ function Parametres() {
     </div>
   )}
 
-  <Modal opened={openedM} onClose={closeM} title="MIS A JOUR PHOTO">
-  <Pane maxWidth={654}>
-      <FileUploader
-        label="Uploader une Image"
-        description="veuillez uploader une image qui ne depasse pas 5MB !"
-        maxSizeInBytes={5 * 1024 ** 2}
-        maxFiles={1}
-        onChange={handleChange}
-        onRejected={handleRejected}
-        renderFile={(file) => {
-          const { name, size, type } = file
-          const fileRejection = fileRejections.find((fileRejection: { file: File; }) => fileRejection.file === file)
-          const { message } = fileRejection || {}
-          return (
-            <FileCard
-              key={name}
-              isInvalid={fileRejection != null}
-              name={name}
-              onRemove={handleRemove}
-              sizeInBytes={size}
-              type={type}
-              validationMessage={message}
-            />
-          )
-        }}
-        values={files}
-      />
-    </Pane>
-    <Text size="sm" color="dimmed" className="italic">
-      Le logo apparaîtra sur vos documents commerciaux et dans l'interface. Pour un meilleur résultat, utilisez une image carrée avec un fond transparent.  
-    </Text>
-    <div className="flex justify-end gap-3 mt-4">
-      <Button variant="light" onClick={closeM}>Annuler</Button>
-      <Button 
-        onClick={handleLogo} 
-        className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
-        leftSection={<FaUpload />}
-      >
-        Télécharger le logo
-      </Button>
-    </div>
-  </Modal>
   </>
   );
 }

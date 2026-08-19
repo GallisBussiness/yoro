@@ -33,7 +33,7 @@ import { fr } from 'date-fns/locale';
 import { formatN } from '../../lib/helpers';
 import { useDisclosure } from '@mantine/hooks';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import { App } from 'antd';
+import { toast } from 'sonner';
 
 // Interface pour les abonnements
 interface Subscription {
@@ -55,7 +55,6 @@ interface Subscription {
 }
 
 const Abonnements: React.FC = () => {
-  const { message } = App.useApp();
   const { data: session } = authclient.useSession();
   const userId = session?.user?.id;
   const subscriptionService = new SubscriptionService();
@@ -137,11 +136,11 @@ const Abonnements: React.FC = () => {
   const handleRenewSubscription = async (subscriptionId: string) => {
     try {
       await subscriptionService.renewSubscription(subscriptionId);
-      message.success('Demande de renouvellement envoyée avec succès');
+      toast.success('Demande de renouvellement envoyée avec succès');
       refetchSubscriptions();
     } catch (error) {
       console.error('Erreur lors du renouvellement:', error);
-      message.error('Erreur lors du renouvellement de l\'abonnement');
+      toast.error('Erreur lors du renouvellement de l\'abonnement');
     }
   };
   
@@ -149,11 +148,11 @@ const Abonnements: React.FC = () => {
   const handleCancelSubscription = async (subscriptionId: string) => {
     try {
       await subscriptionService.cancelSubscription(subscriptionId);
-      message.success('Abonnement annulé avec succès');
+      toast.success('Abonnement annulé avec succès');
       refetchSubscriptions();
     } catch (error) {
       console.error('Erreur lors de l\'annulation:', error);
-      message.error('Erreur lors de l\'annulation de l\'abonnement');
+      toast.error('Erreur lors de l\'annulation de l\'abonnement');
     }
   };
   
@@ -171,7 +170,7 @@ const Abonnements: React.FC = () => {
         visible={loadingSubscriptions || loadingActiveSubscription}
         zIndex={1000}
         overlayProps={{ radius: 'md', blur: 3 }}
-        loaderProps={{ color: '#8A2BE2', type: 'bars' }}
+        loaderProps={{ color: 'brand', type: 'bars' }}
       />
       
       {/* Abonnement actif */}
@@ -179,7 +178,7 @@ const Abonnements: React.FC = () => {
         <Paper 
           p="md" 
           radius="md" 
-          className="bg-white dark:bg-gray-800 shadow-xl mb-6"
+          className="bg-card shadow-xl mb-6"
           style={{
             backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
             backdropFilter: "blur(10px)"
@@ -297,7 +296,7 @@ const Abonnements: React.FC = () => {
       <Paper 
         p="md" 
         radius="md" 
-        className="bg-white dark:bg-gray-800 shadow-xl"
+        className="bg-card shadow-xl"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
           backdropFilter: "blur(10px)"
@@ -327,7 +326,7 @@ const Abonnements: React.FC = () => {
                 shadow="sm" 
                 padding="md" 
                 radius="md" 
-                className="border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-300"
+                className="border border-border hover:shadow-md transition-shadow duration-300"
               >
                 <Card.Section className="p-3 bg-gradient-to-r from-orange-500 to-orange-600">
                   <Group justify="space-between">
@@ -382,7 +381,7 @@ const Abonnements: React.FC = () => {
         ) : (
           <div className="text-center py-10">
             <FaInfoCircle size={40} className="text-gray-400 mx-auto mb-4" />
-            <Text size="lg" fw={500} className="text-gray-600 dark:text-gray-400">
+            <Text size="lg" fw={500} className="text-muted-foreground">
               Aucun historique d'abonnement
             </Text>
             <Text size="sm" className="text-gray-500 dark:text-gray-500 mt-2">
@@ -419,7 +418,7 @@ const Abonnements: React.FC = () => {
             
             <SimpleGrid cols={2} spacing="md" className="mb-4">
               <div>
-                <Text fw={500} size="sm" className="text-gray-600 dark:text-gray-400">
+                <Text fw={500} size="sm" className="text-muted-foreground">
                   Date de début
                 </Text>
                 <Text>
@@ -430,7 +429,7 @@ const Abonnements: React.FC = () => {
               </div>
               
               <div>
-                <Text fw={500} size="sm" className="text-gray-600 dark:text-gray-400">
+                <Text fw={500} size="sm" className="text-muted-foreground">
                   Date de fin
                 </Text>
                 <Text>
@@ -441,28 +440,28 @@ const Abonnements: React.FC = () => {
               </div>
               
               <div>
-                <Text fw={500} size="sm" className="text-gray-600 dark:text-gray-400">
+                <Text fw={500} size="sm" className="text-muted-foreground">
                   Montant
                 </Text>
                 <Text>{formatN(selectedSubscription.pack?.prix || 0)} FCFA</Text>
               </div>
               
               <div>
-                <Text fw={500} size="sm" className="text-gray-600 dark:text-gray-400">
+                <Text fw={500} size="sm" className="text-muted-foreground">
                   Durée
                 </Text>
                 <Text>{selectedSubscription.pack?.duree_mois || 0} mois</Text>
               </div>
               
               <div>
-                <Text fw={500} size="sm" className="text-gray-600 dark:text-gray-400">
+                <Text fw={500} size="sm" className="text-muted-foreground">
                   Méthode de paiement
                 </Text>
                 <Text>{selectedSubscription.paymentMethod || 'N/A'}</Text>
               </div>
               
               <div>
-                <Text fw={500} size="sm" className="text-gray-600 dark:text-gray-400">
+                <Text fw={500} size="sm" className="text-muted-foreground">
                   ID de transaction
                 </Text>
                 <Text className="font-mono text-sm">

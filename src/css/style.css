@@ -2,13 +2,173 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   GesCom Design System — tokens
+   (Fonts are loaded via <link> in index.html for preconnect.)
+   ============================================================ */
+:root {
+  --gc-font-sans: 'Fira Sans', ui-sans-serif, system-ui, sans-serif;
+  --gc-font-mono: 'Fira Code', ui-monospace, monospace;
+
+  /* Light tokens */
+  --gc-surface: #ffffff;
+  --gc-muted: #f8fafc;
+  --gc-border: #e2e8f0;
+  --gc-text: #0f172a;
+  --gc-text-muted: #64748b;
+  --gc-primary: #334155;
+  --gc-accent: #059669;
+  --gc-pos: #059669;
+  --gc-neg: #dc2626;
+  --gc-warn: #d97706;
+  --gc-info: #2563eb;
+  --gc-ring: rgba(51, 65, 85, 0.28);
+
+  /* shadcn/ui standard tokens (aliased to GesCom tokens) */
+  --background: var(--gc-muted);
+  --foreground: var(--gc-text);
+  --card: var(--gc-surface);
+  --card-foreground: var(--gc-text);
+  --popover: var(--gc-surface);
+  --popover-foreground: var(--gc-text);
+  --primary: #334155;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: var(--gc-text-muted);
+  --accent: #059669;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: var(--gc-border);
+  --input: var(--gc-border);
+  --ring: #334155;
+  --radius: 0.5rem;
+}
+
+[data-mantine-color-scheme='dark'] {
+  --gc-surface: #0f172a;
+  --gc-muted: #1e293b;
+  --gc-border: #334155;
+  --gc-text: #f1f5f9;
+  --gc-text-muted: #94a3b8;
+  --gc-primary: #cbd5e1;
+  --gc-accent: #34d399;
+  --gc-pos: #34d399;
+  --gc-neg: #f87171;
+  --gc-warn: #fbbf24;
+  --gc-info: #60a5fa;
+  --gc-ring: rgba(148, 163, 184, 0.35);
+
+  /* shadcn/ui standard tokens (dark) */
+  --background: var(--gc-muted);
+  --foreground: var(--gc-text);
+  --card: var(--gc-surface);
+  --card-foreground: var(--gc-text);
+  --popover: var(--gc-surface);
+  --popover-foreground: var(--gc-text);
+  --primary: #cbd5e1;
+  --primary-foreground: #0f172a;
+  --secondary: #1e293b;
+  --secondary-foreground: #f1f5f9;
+  --muted: #1e293b;
+  --muted-foreground: var(--gc-text-muted);
+  --accent: #34d399;
+  --accent-foreground: #052e1a;
+  --destructive: #f87171;
+  --destructive-foreground: #1c0606;
+  --border: var(--gc-border);
+  --input: var(--gc-border);
+  --ring: #94a3b8;
+}
+
 @layer base {
+  html {
+    font-family: var(--gc-font-sans);
+  }
   body {
-    @apply font-satoshi font-normal text-base text-body bg-whiten relative z-1;
+    @apply font-normal text-base relative z-1;
+    font-family: var(--gc-font-sans);
+    background-color: var(--gc-muted);
+    color: var(--gc-text);
   }
 }
 
 @layer components {
+  /* Tabular numeric values (FCFA amounts, quantities, KPIs) */
+  .num {
+    font-family: var(--gc-font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* Standard surface card */
+  .gc-card {
+    background-color: var(--gc-surface);
+    border: 1px solid var(--gc-border);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: box-shadow 200ms ease, border-color 200ms ease;
+  }
+  .gc-card-hover:hover {
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  }
+
+  /* Page header */
+  .gc-page-title {
+    color: var(--gc-text);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .gc-page-subtitle {
+    color: var(--gc-text-muted);
+  }
+
+  /* Icon chip */
+  .gc-icon-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+  }
+}
+
+@layer utilities {
+  .text-gc-muted { color: var(--gc-text-muted); }
+  .text-gc { color: var(--gc-text); }
+  .bg-gc-surface { background-color: var(--gc-surface); }
+  .bg-gc-muted { background-color: var(--gc-muted); }
+  .border-gc { border-color: var(--gc-border); }
+  .ring-gc:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--gc-ring); }
+
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .chat-height {
+    @apply h-[calc(100vh_-_8.125rem)] lg:h-[calc(100vh_-_5.625rem)];
+  }
+  .inbox-height {
+    @apply h-[calc(100vh_-_8.125rem)] lg:h-[calc(100vh_-_5.625rem)];
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer utilities {

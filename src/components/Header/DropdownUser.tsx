@@ -1,148 +1,82 @@
-import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Avatar, Badge } from 'antd';
-import { FiSettings, FiLogOut, FiChevronDown, FiCreditCard } from 'react-icons/fi';
+import { Settings, LogOut, CreditCard, ChevronDown } from 'lucide-react';
 import { authclient } from '../../../lib/auth-client';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from '../shadcn/dropdown-menu';
 
 const DropdownUser = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const trigger = useRef<any>(null);
-  const dropdown = useRef<any>(null);
-  const { data: session } = authclient.useSession() 
+  const { data: session } = authclient.useSession();
   const { signOut } = authclient;
-
-  // close on click outside
-  useEffect(() => {
-    const clickHandler = ({ target }: MouseEvent) => {
-      if (!dropdown.current) return;
-      if (
-        !dropdownOpen ||
-        dropdown.current.contains(target) ||
-        trigger.current.contains(target)
-      )
-        return;
-      setDropdownOpen(false);
-    };
-    document.addEventListener('click', clickHandler);
-    return () => document.removeEventListener('click', clickHandler);
-  });
-
-  // close if the esc key is pressed
-  useEffect(() => {
-    const keyHandler = ({ keyCode }: KeyboardEvent) => {
-      if (!dropdownOpen || keyCode !== 27) return;
-      setDropdownOpen(false);
-    };
-    document.addEventListener('keydown', keyHandler);
-    return () => document.removeEventListener('keydown', keyHandler);
-  });
+  const initials = (session?.user.name ?? '').slice(0, 2).toUpperCase();
 
   return (
-    <div className="relative">
-      <Link
-        ref={trigger}
-        onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-300"
-        to="#"
-      >
-        <Badge dot color="#10B981" offset={[-4, 4]}>
-          <span className="h-10 w-10 overflow-hidden rounded-full ring-2 ring-white/10 transition-all duration-300 hover:ring-[#8A2BE2]/50">
-            <Avatar 
-              size={40} 
-              className="bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] shadow-md"
-              style={{ fontWeight: 'bold', fontSize: '1rem' }}
-            >
-              {session?.user.name.slice(0, 2).toUpperCase()}
-            </Avatar>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors duration-200 hover:bg-muted"
+        >
+          <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-xs font-bold text-primary-foreground shadow-sm ring-2 ring-background">
+            {initials}
+            <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-background" />
           </span>
-        </Badge>
-        
-        <div className="hidden flex-col items-start md:flex">
-          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-            {`${session?.user.name}`}
-          </span>
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            Administrateur
-          </span>
-        </div>
-
-        <FiChevronDown 
-          className={`text-slate-400 transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : ''}`} 
-          size={16} 
-        />
-      </Link>
-
-      {/* <!-- Dropdown Start --> */}
-      <div
-        ref={dropdown}
-        onFocus={() => setDropdownOpen(true)}
-        onBlur={() => setDropdownOpen(false)}
-        className={`absolute right-0 mt-2 flex w-64 flex-col rounded-xl border border-slate-100 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800 z-50 overflow-hidden transition-all duration-300 ${dropdownOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
-      >
-        <div className="p-4 border-b border-slate-100 dark:border-slate-700">
-          <div className="flex items-center gap-3">
-            <Avatar 
-              size={40} 
-              className="bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] shadow-md"
-              style={{ fontWeight: 'bold', fontSize: '1rem' }}
-            >
-              {session?.user.name.slice(0, 2).toUpperCase()}
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-slate-700 dark:text-white">
-                {session?.user.name}
-              </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                {session?.user.email}
-              </span>
-            </div>
+          <div className="hidden flex-col items-start md:flex">
+            <span className="text-sm font-semibold text-foreground">{session?.user.name}</span>
+            <span className="text-xs text-muted-foreground">Administrateur</span>
           </div>
-        </div>
-        
-        <ul className="flex flex-col py-2">
-          <li>
-            <Link
-              to="settings"
-              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-colors duration-200"
-            >
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-50 text-[#8A2BE2] dark:bg-slate-700">
-                <FiSettings size={16} />
-              </div>
-              <span>Paramètres</span>
-            </Link>
-          </li>
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </DropdownMenuTrigger>
 
-          <li>
-            <Link
-              to="abonnements"
-              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-colors duration-200"
-            >
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-50 text-[#8A2BE2] dark:bg-slate-700">
-                <FiCreditCard size={16} />
-              </div>
-              <span>Mes abonnements</span>
-            </Link>
-          </li>
-          
-          <li className="px-4 py-2">
-            <div className="h-px w-full bg-slate-100 dark:bg-slate-700"></div>
-          </li>
-          
-          <li>
-            <button 
-            onClick={() => signOut()}
-              className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-colors duration-200"
-            >
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 text-red-500 dark:bg-slate-700">
-                <FiLogOut size={16} />
-              </div>
-              <span>Déconnexion</span>
-            </button>
-          </li>
-        </ul>
-      </div>
-      {/* <!-- Dropdown End --> */}
-    </div>
+      <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuLabel className="flex items-center gap-3 py-2.5">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-xs font-bold text-primary-foreground shadow-sm">
+            {initials}
+          </span>
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-foreground">{session?.user.name}</span>
+            <span className="text-xs font-normal text-muted-foreground">{session?.user.email}</span>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem asChild>
+          <Link to="/dashboard/settings" className="gap-3">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-primary">
+              <Settings className="h-4 w-4" />
+            </span>
+            Paramètres
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link to="/dashboard/abonnements" className="gap-3">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-primary">
+              <CreditCard className="h-4 w-4" />
+            </span>
+            Mes abonnements
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          className="gap-3 text-destructive focus:text-destructive"
+          onClick={() => signOut()}
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
+            <LogOut className="h-4 w-4" />
+          </span>
+          Déconnexion
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

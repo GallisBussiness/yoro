@@ -11,6 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
+design-system
+.windsurf
+*.md
 
 # Editor directories and files
 .vscode/*

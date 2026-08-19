@@ -367,7 +367,7 @@ function Fournisseur() {
         visible={isLoadingFournisseur}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
-        loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+        loaderProps={{ color: 'brand', type: 'dots' }}
       />
       <div className="mb-6 flex items-center">
         <Button 
@@ -386,7 +386,7 @@ function Fournisseur() {
           <Paper 
             p="xl" 
             radius="md" 
-            className="bg-white dark:bg-gray-800 shadow-lg mb-6"
+            className="border-none shadow-none"
             style={{
               backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8))",
               backdropFilter: "blur(10px)"
@@ -398,13 +398,13 @@ function Fournisseur() {
                   size="xl" 
                   radius="xl" 
                   color="orange"
-                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-md"
+                  className="bg-primary text-primary-foreground text-white shadow-md"
                 >
                   {fournisseur?.nom?.charAt(0) || 'F'}
                 </Avatar>
                 <div>
                   <Title order={2} className="text-gray-800 dark:text-gray-200">{fournisseur?.nom}</Title>
-                  <Badge size="lg" radius="md" className="bg-gradient-to-r from-orange-500 to-red-500 text-white mt-1">
+                  <Badge size="lg" radius="md" className="bg-primary text-primary-foreground text-white mt-1">
                     Fournisseur
                   </Badge>
                 </div>
@@ -414,26 +414,26 @@ function Fournisseur() {
             <Divider className="my-4" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              <Card p="md" radius="md" className="bg-blue-50 dark:bg-gray-700 border border-blue-100 dark:border-gray-600 shadow-sm">
+              <Card p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <FaPhone className="text-blue-500" />
-                  <Text fw={600} className="text-gray-700 dark:text-gray-200">Téléphone</Text>
+                  <Text fw={600} className="text-foreground">Téléphone</Text>
                 </div>
                 <Text size="lg" className="text-gray-800 dark:text-gray-100 pl-7">{fournisseur?.tel || 'Non renseigné'}</Text>
               </Card>
               
-              <Card p="md" radius="md" className="bg-green-50 dark:bg-gray-700 border border-green-100 dark:border-gray-600 shadow-sm">
+              <Card p="md" radius="md" className="bg-emerald-50 dark:bg-emerald-500/10 border border-border shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <FaEnvelope className="text-green-500" />
-                  <Text fw={600} className="text-gray-700 dark:text-gray-200">Email</Text>
+                  <Text fw={600} className="text-foreground">Email</Text>
                 </div>
                 <Text size="lg" className="text-gray-800 dark:text-gray-100 pl-7">{fournisseur?.email || 'Non renseigné'}</Text>
               </Card>
               
-              <Card p="md" radius="md" className="bg-purple-50 dark:bg-gray-700 border border-purple-100 dark:border-gray-600 shadow-sm md:col-span-2">
+              <Card p="md" radius="md" className="bg-violet-50 dark:bg-violet-500/10 border border-border shadow-sm md:col-span-2">
                 <div className="flex items-center gap-3 mb-2">
                   <FaMapMarkerAlt className="text-purple-500" />
-                  <Text fw={600} className="text-gray-700 dark:text-gray-200">Adresse</Text>
+                  <Text fw={600} className="text-foreground">Adresse</Text>
                 </div>
                 <Text size="lg" className="text-gray-800 dark:text-gray-100 pl-7">{fournisseur?.addr || 'Non renseignée'}</Text>
               </Card>
@@ -460,7 +460,7 @@ function Fournisseur() {
                     <FaFileInvoiceDollar className="text-orange-500" /> 
                     Factures du fournisseur
                   </Title>
-                  <Text className="text-gray-600 dark:text-gray-400">Historique des factures et paiements</Text>
+                  <Text className="text-muted-foreground">Historique des factures et paiements</Text>
                 </div>
                 <Badge size="lg" radius="md" className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2">
                   {filtered(achats)?.length || 0} factures
@@ -471,7 +471,7 @@ function Fournisseur() {
               <Paper 
                 p="md" 
                 radius="md" 
-                className="bg-white dark:bg-gray-800 shadow-md mb-6"
+                className="border-none shadow-none"
               >
                 <div className="flex justify-between items-center w-full md:w-1/2 my-2">
                   <div className="w-full relative">
@@ -485,7 +485,7 @@ function Fournisseur() {
                       styles={() => ({
                         input: {
                           '&:focus-within': {
-                            borderColor: '#8A2BE2',
+                            borderColor: '#334155',
                           },
                         },
                       })}
@@ -496,7 +496,7 @@ function Fournisseur() {
 
               {/* Table des factures */}
               <DataTable
-            withTableBorder={true}
+            withTableBorder={false}
             columns={[
               { 
                 accessor: 'ref', 
@@ -523,7 +523,7 @@ function Fournisseur() {
                 ),
                 textAlign: 'center',
                 render: (row) => (
-                  <Text className="text-gray-700 dark:text-gray-300">
+                  <Text className="text-foreground">
                     {format(new Date(row.date), 'dd MMMM yyyy', { locale: fr })}
                   </Text>
                 )
@@ -553,7 +553,7 @@ function Fournisseur() {
                 ),
                 textAlign: 'center',
                 render: (row) => (
-                  <Text className="text-gray-700 dark:text-gray-300">
+                  <Text className="text-foreground">
                     {formatN(row.remise || 0)} FCFA
                   </Text>
                 )
@@ -577,7 +577,7 @@ function Fournisseur() {
                 accessor: 'actions',
                 title: (
                   <Box mr={6}>
-                    <Text fw={600} className="text-gray-700 dark:text-gray-300">Actions</Text>
+                    <Text fw={600} className="text-foreground">Actions</Text>
                   </Box>
                 ),
                 textAlign: 'center',
@@ -586,7 +586,7 @@ function Fournisseur() {
                     <Tooltip label="Voir les paiements">
                       <Button
                         size="compact-sm"
-                        className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
                         onClick={() => addPaiement(row)}
                         leftSection={<FaEye />}
                         radius="md"
@@ -600,13 +600,12 @@ function Fournisseur() {
             ]}
             records={records}
             idAccessor="_id"
-            striped={true}
-            stripedColor="rgba(255, 93, 20, 0.1)"
+            striped={false}
             fetching={isLoadingachats}
             emptyState={
               <div className="flex flex-col items-center justify-center py-10">
                 <img src="/img/empty.png" alt="Aucune facture" className="w-32 h-32 mb-4" />
-                <Text size="lg" fw={500} className="text-gray-600 dark:text-gray-400">
+                <Text size="lg" fw={500} className="text-muted-foreground">
                   Aucune facture trouvée
                 </Text>
                 <Text size="sm" className="text-gray-500 dark:text-gray-500 mb-4">
@@ -622,11 +621,11 @@ function Fournisseur() {
             borderRadius="lg"
             shadow="xl"
             horizontalSpacing="md"
-            verticalSpacing="md"
+            verticalSpacing="xs"
             verticalAlign="center"
             className="overflow-hidden"
-                paginationActiveBackgroundColor="#8A2BE2"
-                rowClassName={() => 'hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors duration-200'}
+                paginationActiveBackgroundColor="var(--gc-primary)"
+                rowClassName={() => 'hover:bg-muted/50 transition-colors duration-200'}
               />
             </Tabs.Panel>
 
@@ -639,7 +638,7 @@ function Fournisseur() {
                     <FaMoneyBillWave className="text-red-500" /> 
                     Dettes du fournisseur
                   </Title>
-                  <Text className="text-gray-600 dark:text-gray-400">Historique des dettes et paiements</Text>
+                  <Text className="text-muted-foreground">Historique des dettes et paiements</Text>
                 </div>
                 <div className="flex items-center gap-3">
                   <Badge size="lg" radius="md" className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2">
@@ -653,7 +652,7 @@ function Fournisseur() {
                   </Badge>
                   <Button
                     onClick={openAddDetteModal}
-                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md"
+                    className="bg-emerald-600 hover:bg-emerald-700 transition-all duration-300 shadow-md"
                     leftSection={<FaPlus />}
                     radius="md"
                   >
@@ -666,7 +665,7 @@ function Fournisseur() {
               <Paper 
                 p="md" 
                 radius="md" 
-                className="bg-white dark:bg-gray-800 shadow-md mb-6"
+                className="border-none shadow-none"
               >
                 <div className="flex justify-between items-center w-full md:w-1/2 my-2">
                   <div className="w-full relative">
@@ -680,7 +679,7 @@ function Fournisseur() {
                       styles={() => ({
                         input: {
                           '&:focus-within': {
-                            borderColor: '#8A2BE2',
+                            borderColor: '#334155',
                           },
                         },
                       })}
@@ -691,7 +690,7 @@ function Fournisseur() {
 
               {/* Table des dettes */}
               <DataTable
-                withTableBorder={true}
+                withTableBorder={false}
                 columns={[
                   { 
                     accessor: 'date', 
@@ -703,7 +702,7 @@ function Fournisseur() {
                     ),
                     textAlign: 'center',
                     render: (row) => (
-                      <Text className="text-gray-700 dark:text-gray-300">
+                      <Text className="text-foreground">
                         {format(new Date(row.date), 'dd MMMM yyyy', { locale: fr })}
                       </Text>
                     )
@@ -767,7 +766,7 @@ function Fournisseur() {
                     accessor: 'actions',
                     title: (
                       <Box mr={6}>
-                        <Text fw={600} className="text-gray-700 dark:text-gray-300">Actions</Text>
+                        <Text fw={600} className="text-foreground">Actions</Text>
                       </Box>
                     ),
                     textAlign: 'center',
@@ -776,7 +775,7 @@ function Fournisseur() {
                         <Tooltip label="Voir les paiements">
                           <Button
                             size="compact-sm"
-                            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
                             onClick={() => openPaiementsDette(row)}
                             leftSection={<FaEye />}
                             radius="md"
@@ -787,7 +786,7 @@ function Fournisseur() {
                         <Tooltip label="Modifier">
                           <ActionIcon
                             onClick={() => openEditDetteModal(row)}
-                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-white shadow-sm"
+                            className="bg-blue-600 hover:bg-blue-700 transition-all duration-300 text-white shadow-sm"
                             radius="md"
                             size="md"
                           >
@@ -797,7 +796,7 @@ function Fournisseur() {
                         <Tooltip label="Supprimer">
                           <ActionIcon
                             onClick={() => handleDeleteDette(row._id)}
-                            className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 text-white shadow-sm"
+                            className="bg-red-600 hover:bg-red-700 transition-all duration-300 text-white shadow-sm"
                             radius="md"
                             size="md"
                           >
@@ -810,13 +809,12 @@ function Fournisseur() {
                 ]}
                 records={detteRecords}
                 idAccessor="_id"
-                striped={true}
-                stripedColor="rgba(255, 93, 20, 0.1)"
+                striped={false}
                 fetching={isLoadingDettes}
                 emptyState={
                   <div className="flex flex-col items-center justify-center py-10">
                     <img src="/img/empty.png" alt="Aucune dette" className="w-32 h-32 mb-4" />
-                    <Text size="lg" fw={500} className="text-gray-600 dark:text-gray-400">
+                    <Text size="lg" fw={500} className="text-muted-foreground">
                       Aucune dette trouvée
                     </Text>
                     <Text size="sm" className="text-gray-500 dark:text-gray-500 mb-4">
@@ -832,11 +830,11 @@ function Fournisseur() {
                 borderRadius="lg"
                 shadow="xl"
                 horizontalSpacing="md"
-                verticalSpacing="md"
+                verticalSpacing="xs"
                 verticalAlign="center"
                 className="overflow-hidden"
-                paginationActiveBackgroundColor="#8A2BE2"
-                rowClassName={() => 'hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors duration-200'}
+                paginationActiveBackgroundColor="var(--gc-primary)"
+                rowClassName={() => 'hover:bg-muted/50 transition-colors duration-200'}
               />
             </Tabs.Panel>
           </Tabs>
@@ -856,28 +854,28 @@ function Fournisseur() {
             centered
             padding="xl"
             classNames={{
-              header: 'border-b border-gray-200 dark:border-gray-700 pb-3',
+              header: 'border-b border-border pb-3',
               body: 'pt-6'
             }}
           >
             {selectedAchat && (
               <div className="space-y-6">
                 {/* Informations de la achat */}
-                <Paper p="md" radius="md" className="bg-blue-50 dark:bg-gray-800 border border-blue-100 dark:border-gray-700 shadow-sm">
+                <Paper p="md" radius="md" className="bg-blue-50 dark:bg-gray-800 border border-border shadow-sm">
                   <div className="flex items-center gap-2 mb-3">
                     <FaFileInvoiceDollar className="text-blue-500" />
-                    <Text fw={600} className="text-gray-700 dark:text-gray-200">Détails de la facture</Text>
+                    <Text fw={600} className="text-foreground">Détails de la facture</Text>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card p="sm" radius="md" className="bg-white dark:bg-gray-700 shadow-sm">
+                    <Card p="sm" radius="md" className="bg-card shadow-sm">
                       <Text size="sm" c="dimmed" className="mb-1">Référence</Text>
                       <Badge color="blue" size="lg" radius="sm" className="w-full flex justify-center">
                         {selectedAchat.ref}
                       </Badge>
                     </Card>
                     
-                    <Card p="sm" radius="md" className="bg-white dark:bg-gray-700 shadow-sm">
+                    <Card p="sm" radius="md" className="bg-card shadow-sm">
                       <Text size="sm" c="dimmed" className="mb-1">Date</Text>
                       <Text fw={500} className="flex items-center gap-2">
                         <FaCalendarAlt className="text-green-500" />
@@ -885,21 +883,21 @@ function Fournisseur() {
                       </Text>
                     </Card>
                     
-                    <Card p="sm" radius="md" className="bg-white dark:bg-gray-700 shadow-sm">
+                    <Card p="sm" radius="md" className="bg-card shadow-sm">
                       <Text size="sm" c="dimmed" className="mb-1">Montant Total</Text>
                       <Text fw={500} className="text-gray-800 dark:text-gray-200">
                         {formatN(selectedAchat.montant)} FCFA
                       </Text>
                     </Card>
                     
-                    <Card p="sm" radius="md" className="bg-white dark:bg-gray-700 shadow-sm">
+                    <Card p="sm" radius="md" className="bg-card shadow-sm">
                       <Text size="sm" c="dimmed" className="mb-1">Net à Payer</Text>
                       <Text fw={500} className="text-gray-800 dark:text-gray-200">
                         {formatN(selectedAchat.net_a_payer)} FCFA
                       </Text>
                     </Card>
                     
-                    <Card p="sm" radius="md" className="bg-white dark:bg-gray-700 shadow-sm md:col-span-2">
+                    <Card p="sm" radius="md" className="bg-card shadow-sm md:col-span-2">
                       <Text size="sm" c="dimmed" className="mb-1">Reste à Payer</Text>
                       <Text 
                         fw={700} 
@@ -913,41 +911,41 @@ function Fournisseur() {
                 </Paper>
 
                 {/* Liste des paiements */}
-                <Paper p="md" radius="md" className="bg-white dark:bg-gray-800 shadow-md">
+                <Paper p="md" radius="md" className="border-none shadow-none">
                   <div className="flex items-center gap-2 mb-4">
                     <FaMoneyBillWave className="text-green-500" />
-                    <Text fw={600} className="text-gray-700 dark:text-gray-200">Historique des paiements</Text>
+                    <Text fw={600} className="text-foreground">Historique des paiements</Text>
                   </div>
                   
                   {paiements.length > 0 ? (
-                    <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="overflow-hidden rounded-lg border border-border">
                       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead className="bg-gray-50 dark:bg-gray-800">
                           <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                               <div className="flex items-center gap-2">
                                 <FaCalendarAlt className="text-orange-500" />
                                 Date
                               </div>
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                               <div className="flex items-center gap-2">
                                 <FaMoneyBillWave className="text-green-500" />
                                 Montant
                               </div>
                             </th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                               Actions
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                        <tbody className="bg-card divide-y divide-gray-200 dark:divide-gray-600">
                           {paiements.map((paiement) => (
                             <tr key={paiement._id} className="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-150">
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-700 dark:text-gray-300">
+                              <td className="px-6 py-4 whitespace-nowrap text-foreground">
                                 {format(new Date(paiement.date), 'dd MMMM yyyy', { locale: fr })}
                               </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-700 dark:text-gray-300">
+                              <td className="px-6 py-4 whitespace-nowrap text-foreground">
                                 <Badge color="green" variant="light" size="lg">
                                   {formatN(paiement.montant)} FCFA
                                 </Badge>
@@ -957,7 +955,7 @@ function Fournisseur() {
                                   <Tooltip label="Modifier">
                                     <ActionIcon 
                                       onClick={() => handleEditPaiement(paiement)}
-                                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-white shadow-sm"
+                                      className="bg-blue-600 hover:bg-blue-700 transition-all duration-300 text-white shadow-sm"
                                       radius="md"
                                       size="md"
                                     >
@@ -967,7 +965,7 @@ function Fournisseur() {
                                   <Tooltip label="Supprimer">
                                     <ActionIcon 
                                       onClick={() => handleDeletePaiement(paiement._id)}
-                                      className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 text-white shadow-sm"
+                                      className="bg-red-600 hover:bg-red-700 transition-all duration-300 text-white shadow-sm"
                                       radius="md"
                                       size="md"
                                     >
@@ -982,17 +980,17 @@ function Fournisseur() {
                       </table>
                     </div>
                   ) : (
-                    <div className="text-center py-6 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
+                    <div className="text-center py-6 bg-gray-50 dark:bg-gray-700 rounded-md border border-border">
                       <Text c="dimmed" className="italic">Aucun paiement enregistré pour cette facture</Text>
                     </div>
                   )}
                 </Paper>
 
                 {/* Formulaire d'ajout/édition de paiement */}
-                <Paper p="md" radius="md" className="bg-white dark:bg-gray-800 shadow-md">
+                <Paper p="md" radius="md" className="border-none shadow-none">
                   <div className="flex items-center gap-2 mb-4">
                     <FaPlus className="text-orange-500" />
-                    <Text fw={600} className="text-gray-700 dark:text-gray-200">
+                    <Text fw={600} className="text-foreground">
                       {isEditing ? "Modifier le paiement" : "Ajouter un paiement"}
                     </Text>
                   </div>
@@ -1012,7 +1010,7 @@ function Fournisseur() {
                       styles={() => ({
                         input: {
                           '&:focus': {
-                            borderColor: '#8A2BE2',
+                            borderColor: '#334155',
                           },
                         },
                       })}
@@ -1034,7 +1032,7 @@ function Fournisseur() {
                       styles={() => ({
                         input: {
                           '&:focus': {
-                            borderColor: '#8A2BE2',
+                            borderColor: '#334155',
                           },
                         },
                       })}
@@ -1062,7 +1060,7 @@ function Fournisseur() {
                       )}
                       <Button 
                         onClick={handleSavePaiement} 
-                        className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
                         leftSection={isEditing ? <FaEdit /> : <FaPlus />}
                       >
                         {isEditing ? "Mettre à jour" : "Ajouter le paiement"}
@@ -1089,7 +1087,7 @@ function Fournisseur() {
             centered
             padding="xl"
             classNames={{
-              header: 'border-b border-gray-200 dark:border-gray-700 pb-3',
+              header: 'border-b border-border pb-3',
               body: 'pt-6'
             }}
           >
@@ -1108,7 +1106,7 @@ function Fournisseur() {
                 styles={() => ({
                   input: {
                     '&:focus': {
-                      borderColor: '#8A2BE2',
+                      borderColor: '#334155',
                     },
                   },
                 })}
@@ -1128,7 +1126,7 @@ function Fournisseur() {
                 styles={() => ({
                   input: {
                     '&:focus': {
-                      borderColor: '#8A2BE2',
+                      borderColor: '#334155',
                     },
                   },
                 })}
@@ -1146,7 +1144,7 @@ function Fournisseur() {
                 </Button>
                 <Button 
                   onClick={handleSaveDette} 
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
                   leftSection={isEditingDette ? <FaSave /> : <FaPlus />}
                 >
                   {isEditingDette ? "Mettre à jour" : "Ajouter la dette"}
@@ -1170,21 +1168,21 @@ function Fournisseur() {
             centered
             padding="xl"
             classNames={{
-              header: 'border-b border-gray-200 dark:border-gray-700 pb-3',
+              header: 'border-b border-border pb-3',
               body: 'pt-6'
             }}
           >
             {selectedDette && (
               <div className="space-y-6">
                 {/* Informations de la dette */}
-                <Paper p="md" radius="md" className="bg-blue-50 dark:bg-gray-800 border border-blue-100 dark:border-gray-700 shadow-sm">
+                <Paper p="md" radius="md" className="bg-blue-50 dark:bg-gray-800 border border-border shadow-sm">
                   <div className="flex items-center gap-2 mb-3">
                     <FaFileInvoiceDollar className="text-blue-500" />
-                    <Text fw={600} className="text-gray-700 dark:text-gray-200">Détails de la dette</Text>
+                    <Text fw={600} className="text-foreground">Détails de la dette</Text>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">        
-                    <Card p="sm" radius="md" className="bg-white dark:bg-gray-700 shadow-sm">
+                    <Card p="sm" radius="md" className="bg-card shadow-sm">
                       <Text size="sm" c="dimmed" className="mb-1">Date</Text>
                       <Text fw={500} className="flex items-center gap-2">
                         <FaCalendarAlt className="text-green-500" />
@@ -1192,14 +1190,14 @@ function Fournisseur() {
                       </Text>
                     </Card>
                     
-                    <Card p="sm" radius="md" className="bg-white dark:bg-gray-700 shadow-sm">
+                    <Card p="sm" radius="md" className="bg-card shadow-sm">
                       <Text size="sm" c="dimmed" className="mb-1">Montant Total</Text>
                       <Text fw={500} className="text-gray-800 dark:text-gray-200">
                         {formatN(selectedDette.montant)} FCFA
                       </Text>
                     </Card>
                      
-                    <Card p="sm" radius="md" className="bg-white dark:bg-gray-700 shadow-sm">
+                    <Card p="sm" radius="md" className="bg-card shadow-sm">
                       <Text size="sm" c="dimmed" className="mb-1">Reste à Payer</Text>
                       <Text 
                         fw={700} 
@@ -1213,41 +1211,41 @@ function Fournisseur() {
                 </Paper>
 
                 {/* Liste des paiements */}
-                <Paper p="md" radius="md" className="bg-white dark:bg-gray-800 shadow-md">
+                <Paper p="md" radius="md" className="border-none shadow-none">
                   <div className="flex items-center gap-2 mb-4">
                     <FaMoneyBillWave className="text-green-500" />
-                    <Text fw={600} className="text-gray-700 dark:text-gray-200">Historique des paiements</Text>
+                    <Text fw={600} className="text-foreground">Historique des paiements</Text>
                   </div>
                   
                   {paiementsDette.length > 0 ? (
-                    <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="overflow-hidden rounded-lg border border-border">
                       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead className="bg-gray-50 dark:bg-gray-800">
                           <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                               <div className="flex items-center gap-2">
                                 <FaCalendarAlt className="text-orange-500" />
                                 Date
                               </div>
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                               <div className="flex items-center gap-2">
                                 <FaMoneyBillWave className="text-green-500" />
                                 Montant
                               </div>
                             </th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                               Actions
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                        <tbody className="bg-card divide-y divide-gray-200 dark:divide-gray-600">
                           {paiementsDette.map((paiement) => (
                             <tr key={paiement._id} className="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-150">
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-700 dark:text-gray-300">
+                              <td className="px-6 py-4 whitespace-nowrap text-foreground">
                                 {format(new Date(paiement.date), 'dd MMMM yyyy', { locale: fr })}
                               </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-700 dark:text-gray-300">
+                              <td className="px-6 py-4 whitespace-nowrap text-foreground">
                                 <Badge color="green" variant="light" size="lg">
                                   {formatN(paiement.montant)} FCFA
                                 </Badge>
@@ -1257,7 +1255,7 @@ function Fournisseur() {
                                   <Tooltip label="Modifier">
                                     <ActionIcon 
                                       onClick={() => handleEditPaiementDette(paiement)}
-                                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-white shadow-sm"
+                                      className="bg-blue-600 hover:bg-blue-700 transition-all duration-300 text-white shadow-sm"
                                       radius="md"
                                       size="md"
                                     >
@@ -1267,7 +1265,7 @@ function Fournisseur() {
                                   <Tooltip label="Supprimer">
                                     <ActionIcon 
                                       onClick={() => handleDeletePaiementDette(paiement._id)}
-                                      className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 text-white shadow-sm"
+                                      className="bg-red-600 hover:bg-red-700 transition-all duration-300 text-white shadow-sm"
                                       radius="md"
                                       size="md"
                                     >
@@ -1282,17 +1280,17 @@ function Fournisseur() {
                       </table>
                     </div>
                   ) : (
-                    <div className="text-center py-6 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
+                    <div className="text-center py-6 bg-gray-50 dark:bg-gray-700 rounded-md border border-border">
                       <Text c="dimmed" className="italic">Aucun paiement enregistré pour cette dette</Text>
                     </div>
                   )}
                 </Paper>
 
                 {/* Formulaire d'ajout/édition de paiement */}
-                <Paper p="md" radius="md" className="bg-white dark:bg-gray-800 shadow-md">
+                <Paper p="md" radius="md" className="border-none shadow-none">
                   <div className="flex items-center gap-2 mb-4">
                     <FaPlus className="text-orange-500" />
-                    <Text fw={600} className="text-gray-700 dark:text-gray-200">
+                    <Text fw={600} className="text-foreground">
                       {isEditingPaiementDette ? "Modifier le paiement" : "Ajouter un paiement"}
                     </Text>
                   </div>
@@ -1312,7 +1310,7 @@ function Fournisseur() {
                       styles={() => ({
                         input: {
                           '&:focus': {
-                            borderColor: '#8A2BE2',
+                            borderColor: '#334155',
                           },
                         },
                       })}
@@ -1334,7 +1332,7 @@ function Fournisseur() {
                       styles={() => ({
                         input: {
                           '&:focus': {
-                            borderColor: '#8A2BE2',
+                            borderColor: '#334155',
                           },
                         },
                       })}
@@ -1361,7 +1359,7 @@ function Fournisseur() {
                       )}
                       <Button 
                         onClick={handleSavePaiementDette} 
-                        className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
                         leftSection={isEditingPaiementDette ? <FaEdit /> : <FaPlus />}
                       >
                         {isEditingPaiementDette ? "Mettre à jour" : "Ajouter le paiement"}

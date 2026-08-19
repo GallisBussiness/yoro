@@ -120,13 +120,13 @@ useEffect(() => {
          visible={loadingDelete}
          zIndex={1000}
          overlayProps={{ radius: 'sm', blur: 2 }}
-         loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+         loaderProps={{ color: 'brand', type: 'dots' }}
        />
      <div className="mt-5">
      
      <WeeklyRevenue add={<div>
        <Button 
-          className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
           leftSection={<FaPlus className="h-5 w-5 text-white"/>} 
           onClick={open}
         >
@@ -137,17 +137,17 @@ useEffect(() => {
      <Paper 
         p="md" 
         radius="md" 
-        className="bg-white dark:bg-gray-800 shadow-sm mb-4"
+        className="border-none shadow-none"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
           backdropFilter: "blur(10px)"
         }}
       >
         <Group mb="xs">
-          <Text fw={600} className="text-gray-700 dark:text-gray-200 flex items-center gap-2">
+          <Text fw={600} className="text-foreground flex items-center gap-2">
             <FaTags className="text-orange-500" /> Gestion des familles
           </Text>
-          <Badge size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+          <Badge size="lg" className="bg-primary text-primary-foreground text-white">
             {filtered(familles)?.length || 0} famille(s)
           </Badge>
         </Group>
@@ -161,16 +161,16 @@ useEffect(() => {
               placeholder="Rechercher une famille..."
               leftSection={<FaSearch className="text-gray-400" />}
               className="w-full"
-              styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+              styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
             />
           </div>
         </div>
     <DataTable
-      withTableBorder={true} 
+      withTableBorder={false} 
       columns={[
         { 
           accessor: 'nom', 
-          title: <Text fw={600} className="text-gray-700 dark:text-gray-200">Nom de la famille</Text>,
+          title: <Text fw={600} className="text-foreground">Nom de la famille</Text>,
           textAlign: 'left',
           render: (rowData: any) => (
             <div className="flex items-center gap-2">
@@ -181,14 +181,14 @@ useEffect(() => {
         },
         {
           accessor: 'actions',
-          title: <Text fw={600} className="text-gray-700 dark:text-gray-200 text-center">Actions</Text>,
+          title: <Text fw={600} className="text-foreground text-center">Actions</Text>,
           textAlign: 'center',
           render: (rowData:any) => (
             <div className="flex items-center justify-center space-x-2">
                 <Tooltip label="Modifier">
                   <ActionIcon 
                     onClick={() => handleUpdate(rowData)} 
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-sm text-white"
+                    className="bg-blue-600 hover:bg-blue-700 transition-all duration-300 shadow-sm text-white"
                     radius="xl"
                     size="md"
                   >
@@ -199,7 +199,7 @@ useEffect(() => {
                   <Popover.Target>
                     <Tooltip label="Supprimer">
                       <ActionIcon 
-                        className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-sm text-white"
+                        className="bg-red-600 hover:bg-red-700 transition-all duration-300 shadow-sm text-white"
                         radius="xl"
                         size="md"
                       >
@@ -211,13 +211,13 @@ useEffect(() => {
                     <div className="flex flex-col space-y-3">
                       <Text fw={500} className="text-gray-800 dark:text-gray-200">Confirmation de suppression</Text>
                       <Divider />
-                      <Text size="sm" className="text-gray-600 dark:text-gray-400">
+                      <Text size="sm" className="text-muted-foreground">
                         Êtes-vous sûr de vouloir supprimer cette famille ? Cette action est irréversible.
                       </Text>
                       <div className="flex justify-end gap-2 mt-2">
                         <Button variant="light" onClick={cancel} size="xs">Annuler</Button>
                         <Button 
-                          className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
+                          className="bg-red-600 hover:bg-red-700"
                           onClick={() => confirm(rowData?._id)} 
                           size="xs"
                         >
@@ -234,8 +234,7 @@ useEffect(() => {
       records={records}
       idAccessor="_id"
       fetching={isLoading}
-      striped={true}
-      stripedColor="rgba(255, 93, 20, 0.1)"
+      striped={false}
       highlightOnHover={true}
       className="rounded-lg overflow-hidden"
       styles={{
@@ -246,7 +245,7 @@ useEffect(() => {
       emptyState={
         <div className="flex flex-col items-center justify-center py-10">
           <img src="/img/empty.png" alt="Aucune donnée" className="w-32 h-32 mb-4 opacity-70" />
-          <Text size="lg" fw={500} className="text-gray-500 dark:text-gray-400">Aucune famille trouvée</Text>
+          <Text size="lg" fw={500} className="text-muted-foreground">Aucune famille trouvée</Text>
           <Text size="sm" className="text-gray-400 dark:text-gray-500 mt-1 max-w-md text-center">
             Vous n'avez pas encore créé de famille ou votre recherche ne correspond à aucun résultat.
           </Text>
@@ -259,9 +258,9 @@ useEffect(() => {
       borderRadius="lg"
       shadow="lg"
       horizontalSpacing="md"
-      verticalSpacing="md"
+      verticalSpacing="xs"
       verticalAlign="top"
-      paginationActiveBackgroundColor="#8A2BE2"
+      paginationActiveBackgroundColor="var(--gc-primary)"
     />
      </Paper>
      </>
@@ -278,23 +277,23 @@ useEffect(() => {
       size="md"
       classNames={{
         title: "text-lg font-medium text-gray-800 dark:text-gray-200",
-        header: "border-b border-gray-200 dark:border-gray-700 pb-2"
+        header: "border-b border-border pb-2"
       }}
     >
       <LoadingOverlay
         visible={loadingCreate}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
-        loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+        loaderProps={{ color: 'brand', type: 'dots' }}
       />
       <div className="mt-4">
         <Paper 
           p="md" 
           radius="md" 
-          className="bg-white dark:bg-gray-800 shadow-sm mb-4 border border-gray-100 dark:border-gray-700"
+          className="border-none shadow-none"
         >
           <Group mb="xs">
-            <Text fw={600} className="text-gray-700 dark:text-gray-200 flex items-center gap-2">
+            <Text fw={600} className="text-foreground flex items-center gap-2">
               <FaTags className="text-orange-500" /> Informations de la famille
             </Text>
           </Group>
@@ -307,7 +306,7 @@ useEffect(() => {
               placeholder="Saisissez le nom de la famille"
               leftSection={<FaTags size={16} />}
               {...form.getInputProps('nom')}
-              styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+              styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
             />
             
             <Text size="sm" color="dimmed" className="mt-2">
@@ -318,7 +317,7 @@ useEffect(() => {
               <Button variant="light" onClick={close}>Annuler</Button>
               <Button 
                 type="submit" 
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
                 leftSection={<FaSave size={16} />}
               >
                 Enregistrer
@@ -338,23 +337,23 @@ useEffect(() => {
       size="md"
       classNames={{
         title: "text-lg font-medium text-gray-800 dark:text-gray-200",
-        header: "border-b border-gray-200 dark:border-gray-700 pb-2"
+        header: "border-b border-border pb-2"
       }}
     >
       <LoadingOverlay
         visible={loadingUpdate}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
-        loaderProps={{ color: '#8A2BE2', type: 'dots' }}
+        loaderProps={{ color: 'brand', type: 'dots' }}
       />
       <div className="mt-4">
         <Paper 
           p="md" 
           radius="md" 
-          className="bg-white dark:bg-gray-800 shadow-sm mb-4 border border-gray-100 dark:border-gray-700"
+          className="border-none shadow-none"
         >
           <Group mb="xs">
-            <Text fw={600} className="text-gray-700 dark:text-gray-200 flex items-center gap-2">
+            <Text fw={600} className="text-foreground flex items-center gap-2">
               <FaTags className="text-orange-500" /> Modifier les informations
             </Text>
           </Group>
@@ -367,14 +366,14 @@ useEffect(() => {
               placeholder="Saisissez le nom de la famille"
               leftSection={<FaTags size={16} />}
               {...formU.getInputProps('nom')}
-              styles={{ input: { '&:focus': { borderColor: '#8A2BE2' } } }}
+              styles={{ input: { '&:focus': { borderColor: '#334155' } } }}
             />
             
             <div className="flex justify-end gap-3 mt-6">
               <Button variant="light" onClick={closeU}>Annuler</Button>
               <Button 
                 type="submit" 
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 shadow-md"
                 leftSection={<FaSave size={16} />}
               >
                 Mettre à jour

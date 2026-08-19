@@ -1,28 +1,84 @@
-import { App, Button, Checkbox, Form, Input } from "antd";
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { authclient } from "../../../lib/auth-client";
-import { RegisterInterface } from "../../interfaces/register.interface";
-import { Title, Divider, Paper, Text } from "@mantine/core";
-import { FaLock, FaEnvelope, FaUser, FaArrowRight, FaCloud, FaChartLine, FaLaptopCode } from "react-icons/fa";
-import { FaShield } from "react-icons/fa6";
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { toast } from 'sonner';
+import {
+  User,
+  Mail,
+  Lock,
+  KeyRound,
+  ArrowRight,
+  ArrowLeft,
+  Cloud,
+  BarChart3,
+  Code2,
+  Quote,
+} from 'lucide-react';
+import { authclient } from '../../../lib/auth-client';
+import { Card, CardContent } from '../../components/shadcn/card';
+import { Input } from '../../components/shadcn/input';
+import { Button } from '../../components/shadcn/button';
+import { Label } from '../../components/shadcn/label';
+import { Checkbox } from '../../components/shadcn/checkbox';
 
+const schema = z
+  .object({
+    name: z.string().min(1, 'Veuillez entrer votre nom'),
+    email: z
+      .string()
+      .min(1, 'Veuillez entrer votre email')
+      .email('Veuillez entrer un email valide'),
+    password: z
+      .string()
+      .min(1, 'Veuillez entrer votre mot de passe')
+      .min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
+    confirmPassword: z.string().min(1, 'Veuillez confirmer votre mot de passe'),
+    terms: z.boolean().refine((v) => v, "Veuillez accepter les conditions d'utilisation"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Les mots de passe ne correspondent pas',
+    path: ['confirmPassword'],
+  });
+
+type FormValues = z.infer<typeof schema>;
+
+const FEATURES = [
+  { icon: Code2, title: 'Interface intuitive', desc: 'Une expérience utilisateur moderne et fluide' },
+  { icon: BarChart3, title: 'Tableaux de bord', desc: 'Suivez vos performances commerciales' },
+  { icon: Cloud, title: 'Sauvegarde cloud', desc: 'Accédez à vos données depuis n’importe où' },
+];
 
 const SignUp: React.FC = () => {
-  const { message } = App.useApp();
   const [isPending, setIsPending] = useState(false);
   const navigate = useNavigate();
 
-  const {data: session,isPending:isPendingSession } = authclient.useSession();
-  
+  const { data: session, isPending: isPendingSession } = authclient.useSession();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      terms: false,
+    },
+  });
+
   useEffect(() => {
-   if(isPendingSession) return;
-  if (session) {
+    if (isPendingSession) return;
+    if (session) {
       navigate('/dashboard', { replace: true });
     }
-  }, [session,isPendingSession]);
+  }, [session, isPendingSession]);
 
-  const onRegister = async (values: RegisterInterface) => {
+  const onRegister = async (values: FormValues) => {
     setIsPending(true);
     try {
       const res = await authclient.signUp.email({
@@ -31,231 +87,173 @@ const SignUp: React.FC = () => {
         name: values.name,
       });
       if (res?.error) {
-        message.error(res.error.message);
+        toast.error(res.error.message);
       } else {
-        message.warning("Votre email n'a pas été vérifié. Vous allez être redirigé pour demander un nouvel email de vérification.");
+        toast.warning(
+          "Votre email n'a pas été vérifié. Vous allez être redirigé pour demander un nouvel email de vérification.",
+        );
         navigate(`/auth/verify-email?email=${encodeURIComponent(values.email)}`);
       }
     } catch (error: any) {
       console.error(error);
-      message.error(error?.message || "Une erreur s'est produite lors de l'inscription");
+      toast.error(error?.message || "Une erreur s'est produite lors de l'inscription");
     } finally {
       setIsPending(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="flex flex-col justify-center flex-1 px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-        <div className="w-full max-w-md mx-auto">
-          <Paper 
-            p="xl" 
-            radius="lg" 
-            className="bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700"
-            style={{
-              backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
-              backdropFilter: "blur(10px)"
-            }}
-          >
-            <div className="text-center mb-6">
-              <img
-                className="w-auto h-16 mx-auto mb-4"
-                src="/img/logo.png"
-                alt="YORO"
-              />
-              <Title order={2} className="text-gray-800 dark:text-white font-bold tracking-tight">
-                Créez votre compte
-              </Title>
-              <Text size="sm" className="text-gray-600 dark:text-gray-400 mt-2">
-                Ou{" "}
-                <Link
-                  to="/auth/signin"
-                  className="font-medium text-[#8A2BE2] hover:text-orange-600 transition-colors duration-300"
-                >
-                  connectez-vous à votre compte existant
-                </Link>
-              </Text>
-            </div>
+    <div className="flex min-h-screen bg-muted">
+      {/* Left — form */}
+      <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+        <div className="mx-auto w-full max-w-md">
+          <Card className="border-border bg-card shadow-xl">
+            <CardContent className="p-6 md:p-8">
+              <div className="mb-6 text-center">
+                <img className="mx-auto mb-4 h-16 w-auto" src="/img/logo.png" alt="YORO" />
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">Créez votre compte</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Ou{' '}
+                  <Link to="/auth/signin" className="font-medium text-primary hover:text-accent transition-colors">
+                    connectez-vous à votre compte existant
+                  </Link>
+                </p>
+              </div>
 
-            <Divider className="my-6" />
+              <form onSubmit={handleSubmit(onRegister)} className="space-y-4" autoComplete="off">
+                <div className="space-y-1.5">
+                  <Label htmlFor="name">Nom</Label>
+                  <div className="relative">
+                    <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="name"
+                      placeholder="Entrez votre nom"
+                      className="pl-9"
+                      aria-invalid={!!errors.name}
+                      {...register('name')}
+                    />
+                  </div>
+                  {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                </div>
 
-            <Form
-              name="register"
-              layout="vertical"
-              onFinish={(values) => {
-                // Utiliser directement les valeurs d'Ant Design au lieu de passer par Mantine
-                onRegister(values);
-              }}
-              autoComplete="off"
-              className="space-y-4"
-            >
-              <Form.Item
-                label={<span className="text-gray-700 dark:text-gray-300 font-medium">Nom</span>}
-                name="name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Veuillez entrer votre nom",
-                  },
-                ]}
-              >
-                <Input
-                  prefix={<FaUser className="text-[#8A2BE2]" />}
-                  placeholder="Entrez votre nom"
-                  size="large"
-                  className="rounded-md border-gray-300 dark:border-gray-600 focus:border-[#8A2BE2] focus:shadow-md transition-all duration-300"
-                  name="name"
-                />
-              </Form.Item>
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">Email</Label>
+                  <div className="relative">
+                    <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Entrez votre email"
+                      className="pl-9"
+                      aria-invalid={!!errors.email}
+                      {...register('email')}
+                    />
+                  </div>
+                  {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+                </div>
 
-              <Form.Item
-                label={<span className="text-gray-700 dark:text-gray-300 font-medium">Email</span>}
-                name="email"
-                rules={[
-                  {
-                    required: true,
-                    message: "Veuillez entrer votre email",
-                  },
-                  {
-                    type: "email",
-                    message: "Veuillez entrer un email valide",
-                  },
-                ]}
-              >
-                <Input
-                  prefix={<FaEnvelope className="text-[#8A2BE2]" />}
-                  placeholder="Entrez votre email"
-                  size="large"
-                  className="rounded-md border-gray-300 dark:border-gray-600 focus:border-[#8A2BE2] focus:shadow-md transition-all duration-300"
-                  name="email"
-                />
-              </Form.Item>
+                <div className="space-y-1.5">
+                  <Label htmlFor="password">Mot de passe</Label>
+                  <div className="relative">
+                    <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Entrez votre mot de passe"
+                      className="pl-9"
+                      aria-invalid={!!errors.password}
+                      {...register('password')}
+                    />
+                  </div>
+                  {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+                </div>
 
-              <Form.Item
-                label={<span className="text-gray-700 dark:text-gray-300 font-medium">Mot de passe</span>}
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: "Veuillez entrer votre mot de passe",
-                  },
-                  {
-                    min: 8,
-                    message: "Le mot de passe doit contenir au moins 8 caractères",
-                  },
-                ]}
-              >
-                <Input.Password
-                  prefix={<FaLock className="text-[#8A2BE2]" />}
-                  placeholder="Entrez votre mot de passe"
-                  size="large"
-                  className="rounded-md border-gray-300 dark:border-gray-600 focus:border-[#8A2BE2] focus:shadow-md transition-all duration-300"
-                  name="password"
-                />
-              </Form.Item>
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                  <div className="relative">
+                    <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="Confirmez votre mot de passe"
+                      className="pl-9"
+                      aria-invalid={!!errors.confirmPassword}
+                      {...register('confirmPassword')}
+                    />
+                  </div>
+                  {errors.confirmPassword && (
+                    <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
+                  )}
+                </div>
 
-              <Form.Item
-                label={<span className="text-gray-700 dark:text-gray-300 font-medium">Confirmer le mot de passe</span>}
-                name="confirmPassword"
-                rules={[
-                  {
-                    required: true,
-                    message: "Veuillez confirmer votre mot de passe",
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || getFieldValue("password") === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error("Les mots de passe ne correspondent pas")
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <Input.Password
-                  prefix={<FaShield className="text-[#8A2BE2]" />}
-                  placeholder="Confirmez votre mot de passe"
-                  size="large"
-                  className="rounded-md border-gray-300 dark:border-gray-600 focus:border-[#8A2BE2] focus:shadow-md transition-all duration-300"
-                  name="confirmPassword"
-                />
-              </Form.Item>
+                <div className="space-y-1.5">
+                  <div className="flex items-start gap-2">
+                    <Checkbox id="terms" {...register('terms')} />
+                    <Label
+                      htmlFor="terms"
+                      className="text-sm font-normal text-muted-foreground cursor-pointer"
+                    >
+                      J'accepte les{' '}
+                      <Link to="/auth/terms" className="text-primary hover:text-accent transition-colors">
+                        conditions d'utilisation
+                      </Link>
+                    </Label>
+                  </div>
+                  {errors.terms && <p className="text-xs text-destructive">{errors.terms.message}</p>}
+                </div>
 
-              <Form.Item
-                name="terms"
-                valuePropName="checked"
-                rules={[
-                  {
-                    validator: (_, value) =>
-                      value
-                        ? Promise.resolve()
-                        : Promise.reject(new Error('Veuillez accepter les conditions d\'utilisation')),
-                  },
-                ]}
-              >
-                <Checkbox className="text-gray-700 dark:text-gray-300">
-                  J'accepte les <Link to="/auth/terms" className="text-[#8A2BE2] hover:text-orange-600 transition-colors duration-300">conditions d'utilisation</Link>
-                </Checkbox>
-              </Form.Item>
-              <Form.Item>
-                <Button
-                  htmlType="submit"
-                  className="w-full h-12 flex items-center justify-center bg-gradient-to-r from-[#8A2BE2] to-[#9370DB] hover:from-[#9370DB] hover:to-[#8A2BE2] border-none rounded-md shadow-md hover:shadow-lg transition-all duration-300 text-base font-medium text-white"
-                  loading={isPending}
-                >
-                  <span className="mr-2">S'inscrire</span>
-                  {!isPending && <FaArrowRight />}
+                <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+                  {isPending ? (
+                    <span className="flex items-center gap-2">
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+                      Inscription…
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      S'inscrire
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  )}
                 </Button>
-              </Form.Item>
-            </Form>
-          </Paper>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      <div className="relative flex-1 hidden w-0 lg:block">
-        <div className="absolute inset-0 object-cover w-full h-full bg-gradient-to-br from-[#8A2BE2] to-[#9370DB]">
-          <div className="flex flex-col justify-center h-full p-12 text-white">
-            <Title order={1} className="text-4xl font-bold mb-6 text-white">YORO HAIR</Title>
-            <Text size="xl" className="mb-10 text-white opacity-90">Gérez efficacement votre activité commerciale</Text>
+      {/* Right — marketing panel */}
+      <div className="relative hidden w-0 flex-1 lg:block">
+        <div className="absolute inset-0 h-full w-full bg-gradient-to-br from-[#1E293B] to-[#0F172A]">
+          <div className="flex h-full flex-col justify-center p-12 text-white">
+            <h1 className="mb-2 text-4xl font-bold">YORO HAIR</h1>
+            <p className="mb-10 text-xl text-white/80">Gérez efficacement votre activité commerciale</p>
 
-            <div className="space-y-8">
-              <div className="flex items-start gap-6 transform transition-transform duration-300 hover:translate-x-2">
-                <div className="p-4 bg-white/20 backdrop-blur-md rounded-xl shadow-lg">
-                  <FaLaptopCode className="text-white text-2xl" />
-                </div>
-                <div>
-                  <Title order={3} className="font-semibold text-white mb-1">Interface intuitive</Title>
-                  <Text className="text-white/80">Une expérience utilisateur moderne et fluide</Text>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-6 transform transition-transform duration-300 hover:translate-x-2">
-                <div className="p-4 bg-white/20 backdrop-blur-md rounded-xl shadow-lg">
-                  <FaChartLine className="text-white text-2xl" />
-                </div>
-                <div>
-                  <Title order={3} className="font-semibold text-white mb-1">Tableaux de bord</Title>
-                  <Text className="text-white/80">Suivez vos performances commerciales</Text>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-6 transform transition-transform duration-300 hover:translate-x-2">
-                <div className="p-4 bg-white/20 backdrop-blur-md rounded-xl shadow-lg">
-                  <FaCloud className="text-white text-2xl" />
-                </div>
-                <div>
-                  <Title order={3} className="font-semibold text-white mb-1">Sauvegarde cloud</Title>
-                  <Text className="text-white/80">Accédez à vos données depuis n'importe où</Text>
-                </div>
-              </div>
+            <div className="space-y-6">
+              {FEATURES.map((f) => {
+                const Icon = f.icon;
+                return (
+                  <div
+                    key={f.title}
+                    className="flex items-start gap-5 transition-transform duration-300 hover:translate-x-1"
+                  >
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 shadow-lg backdrop-blur-md">
+                      <Icon className="h-6 w-6 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h3 className="mb-1 text-lg font-semibold">{f.title}</h3>
+                      <p className="text-white/70">{f.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            <div className="mt-12 p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
-              <Text className="text-white/90 italic">
-                "Rejoignez notre communauté d'entrepreneurs et simplifiez votre gestion commerciale dès aujourd'hui."
-              </Text>
+            <div className="mt-10 flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+              <Quote className="h-5 w-5 shrink-0 text-emerald-400" />
+              <p className="text-sm italic text-white/80">
+                « Rejoignez notre communauté d’entrepreneurs et simplifiez votre gestion commerciale dès
+                aujourd’hui. »
+              </p>
             </div>
           </div>
         </div>
