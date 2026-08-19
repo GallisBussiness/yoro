@@ -6,19 +6,20 @@ import {
   ActionIcon, Badge, Button, Group, LoadingOverlay, Modal,
   NumberInput, Text, Textarea, Tooltip, SegmentedControl,
 } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { DataTable } from "mantine-datatable";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import { toast } from 'sonner';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, startOfMonth, endOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, Cell,
 } from 'recharts';
-import { FaTrash, FaEdit, FaEye, FaBolt, FaBoxOpen } from "react-icons/fa";
+import { FaTrash, FaEdit, FaEye, FaBolt, FaBoxOpen, FaPrint } from "react-icons/fa";
 import { TbSum, TbCalendarWeek, TbCalendarMonth } from "react-icons/tb";
 import { AiOutlinePlus } from "react-icons/ai";
 import { VenteSimpleService } from "../../services/vente-simple.service";
@@ -26,6 +27,7 @@ import { VenteSimple, TotauxResultat } from "../../types/vente-simple.types";
 import { useIsVenteDuJour } from "../../hooks/useIsVenteDuJour";
 import { PageHeader, SearchInput, EmptyState, Money } from "../../components/ui";
 import { Card, CardContent } from "../../components/shadcn/card";
+import { printVentesSimplesRecap } from "../../utils/venteSimpleRecapPdf";
 
 const PAGE_SIZE = 10;
 const service = new VenteSimpleService();
@@ -56,6 +58,21 @@ function VentesSimples() {
 
   // Segmented control pour la période du chart
   const [periode, setPeriode] = useState<PeriodeKey>('semaine');
+
+  // Sélection d'intervalle pour impression
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
+    startOfMonth(new Date()),
+    endOfMonth(new Date()),
+  ]);
+
+  // Ventes filtrées par l'intervalle sélectionné (pour impression)
+  const fromISO = dateRange[0]?.toISOString();
+  const toISO = dateRange[1]?.toISOString();
+  const { data: ventesInRange, isFetching: loadingRange } = useQuery<VenteSimple[]>({
+    queryKey: ['vente-simple-range', fromISO, toISO],
+    queryFn: () => service.findAllByRange(fromISO, toISO),
+    enabled: !!fromISO && !!toISO,
+  });
 
   // ===== Queries =====
   const key = ['vente-simple'];
@@ -209,14 +226,46 @@ function VentesSimples() {
         subtitle="Enregistrez et suivez vos ventes rapides (montant seul)"
         icon={<FaBolt size={18} />}
         actions={
-          <Button
-            color="brand"
-            leftSection={<AiOutlinePlus className="h-4 w-4" />}
-            onClick={() => navigate('/dashboard/ventes-simples/nouvelle')}
-            className="shadow-sm hover:shadow-md transition-shadow"
-          >
-            Nouvelle Vente Rapide
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <DatePickerInput
+              type="range"
+              label="Intervalle"
+              placeholder="Sélectionner un intervalle"
+              value={dateRange}
+              onChange={setDateRange}
+              size="sm"
+              radius={8}
+              clearable
+              valueFormat="dd/MM/yyyy"
+              style={{ width: 240 }}
+            />
+            <Button
+              variant="outline"
+              color="brand"
+              leftSection={<FaPrint size={14} />}
+              loading={loadingRange}
+              disabled={!dateRange[0] || !dateRange[1] || !ventesInRange?.length}
+              onClick={() => {
+                if (dateRange[0] && dateRange[1] && ventesInRange?.length) {
+                  printVentesSimplesRecap(ventesInRange, dateRange[0], dateRange[1]);
+                  toast.success('Reçu PDF généré');
+                } else {
+                  toast.error('Aucune vente dans cet intervalle');
+                }
+              }}
+              className="mt-5"
+            >
+              Imprimer
+            </Button>
+            <Button
+              color="brand"
+              leftSection={<AiOutlinePlus className="h-4 w-4" />}
+              onClick={() => navigate('/dashboard/ventes-simples/nouvelle')}
+              className="shadow-sm hover:shadow-md transition-shadow mt-5"
+            >
+              Nouvelle Vente Rapide
+            </Button>
+          </div>
         }
       />
 

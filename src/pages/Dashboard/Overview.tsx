@@ -1,4 +1,3 @@
-import { Grid, Text, SimpleGrid, RingProgress, Progress, Divider, Badge } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { VenteService } from '../../services/vente.service';
 import { AchatService } from '../../services/achat.service';
@@ -16,7 +15,7 @@ import { Separator } from '../../components/shadcn/separator';
 import { PageHeader } from '../../components/ui';
 import {
   TrendingUp, TrendingDown, ArrowUp, ArrowDown, Scale,
-  ShoppingCart, Wallet, Package, BarChart3, PieChart as PieIcon,
+  ShoppingCart, Wallet, BarChart3, PieChart as PieIcon,
   AlertTriangle, CheckCircle2, Calendar, Boxes,
 } from 'lucide-react';
 

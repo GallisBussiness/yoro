@@ -2,224 +2,213 @@ import { format } from "date-fns";
 import { formatN } from "../../lib/helpers";
 import pdfMake from "pdfmake/build/pdfmake";
 import { font } from "../../vfs_fonts";
-pdfMake.vfs = font; 
+pdfMake.vfs = font;
 
-export const printInvoice = (selectedVente:any,selectedFormat:any,param:any) => {
-    if (!selectedVente) return;
-    
-    // Ajuster les dimensions en fonction du format sélectionné
-    const pageSize = selectedFormat;
-    const fontSize = selectedFormat === 'A4' ? {
-      title: 12,
-      subtitle: 10,
-      normal: 8,
-      small: 6,
-      table: 8
-    } : {
-      title: 10,
-      subtitle: 8,
-      normal: 6,
-      small: 4,
-      table: 6
-    };
-    
-    const margins = selectedFormat === 'A4' ? [40, 40, 40, 40] : [20, 20, 20, 20];
-    const tableWidths = selectedFormat === 'A4' ? ['8%', '7%','15%', '25%', '20%', '20%'] : ['8%', '7%', '15%', '25%', '20%', '20%'];
-    
-    const docDefinition: any = {
-      pageSize: pageSize,
-      pageMargins: margins,
-      footer: {text: `Merci d'avoir choisi ${param.nom} à bientôt !!!`, fontSize: fontSize.normal, alignment: 'center'},
-      styles: {
-        entete: {
-          bold: true,
-          alignment: 'center',
-          fontSize: fontSize.normal,
-          color: 'white'
-        },
-        center: {
-          alignment: 'center',
-        },
-        left: {
-          alignment: 'left',
-        },
-        right: {
-          alignment: 'right',
-        },
-        nombre: {
-          alignment: 'right',
-          fontSize: fontSize.normal,
-          bold: true
-        },
-        tword: {
-          fontSize: fontSize.normal,
-          italics: true
-        },
-        tword1: {
-          fontSize: fontSize.normal,
-          margin: [0, 10, 0, 10]
-        },
-        info: {
-          fontSize: fontSize.normal,
-        },
-        header3: {
-          color: "white",
-          fillColor: '#73BFBA',
-          bold: true,
-          alignment: 'center',
-          fontSize: fontSize.small,
-        },
-        header4: {
-          color: "white",
-          fillColor: '#73BFBA',
-          bold: true,
-          alignment: 'right',
-          fontSize: fontSize.small
-        },
-        total: {
-          color: "white",
-          bold: true,
-          fontSize: fontSize.normal,
-          fillColor: '#73BFBA',
-          alignment: 'center'
-        },
-        anotherStyle: {
-          italics: true,
-          alignment: 'right'
-        }
-      },
-      content: [
+// Palette GesCom (cohérente avec le design system)
+const COLOR = {
+  primary: '#334155',      // slate-700
+  primaryDark: '#1E293B',  // slate-800
+  accent: '#059669',       // emerald-600
+  accentLight: '#ECFDF5',  // emerald-50
+  muted: '#64748B',        // slate-500
+  border: '#E2E8F0',       // slate-200
+  bgLight: '#F8FAFC',      // slate-50
+  white: '#FFFFFF',
+  text: '#0F172A',         // slate-900
+};
+
+export const printInvoice = (selectedVente: any, selectedFormat: any, param: any) => {
+  if (!selectedVente) return;
+
+  const pageSize = selectedFormat;
+  const isA4 = selectedFormat === 'A4';
+  const fs = isA4
+    ? { title: 16, h2: 12, normal: 9, small: 7, table: 9, xsmall: 6 }
+    : { title: 13, h2: 10, normal: 7, small: 5, table: 7, xsmall: 4 };
+
+  const margins = isA4 ? [40, 50, 40, 50] : [20, 25, 20, 25];
+  const tableWidths = isA4
+    ? ['8%', '8%', '14%', '30%', '20%', '20%']
+    : ['8%', '8%', '14%', '30%', '20%', '20%'];
+
+  const docDefinition: any = {
+    pageSize,
+    pageMargins: margins,
+    footer: (currentPage: number, pageCount: number) => ({
+      stack: [
+        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: COLOR.border }] },
         {
-          columnGap: selectedFormat === 'A4' ? 200 : 150,
           columns: [
-            {
-              alignment: 'left',
-              stack: [
-                {image: 'logo', width: selectedFormat === 'A4' ? 80 : 60, alignment: "right"},
-                {text: `FACTURE`, fontSize: fontSize.title, bold: true, alignment: "right", margin: [0, 4]},
-              ]
-            },
-            {
-              alignment: 'right',
-              width: selectedFormat === 'A4' ? 200 : 150,
-              table: {
-                widths: ['*'],
-                body: [
-                  [{
-                    stack: [
-                      {text: `${param?.nom}`, fontSize: fontSize.normal, bold: true, alignment: "justify", margin: [0, 2]},
-                      {text: `${param?.desc}`, fontSize: fontSize.normal, bold: true, alignment: "justify", margin: [0, 2]},
-                      {text: `${param?.tel}`, fontSize: fontSize.normal, bold: true, alignment: "justify", margin: [0, 2]},
-                    ]
-                  }],
-                ]
-              }
-            },
+            { text: `Merci d'avoir choisi ${param?.nom ?? ''}`, fontSize: fs.small, color: COLOR.muted, alignment: 'left', margin: [0, 4, 0, 0] },
+            { text: `Page ${currentPage} / ${pageCount}`, fontSize: fs.small, color: COLOR.muted, alignment: 'right', margin: [0, 4, 0, 0] },
           ],
-        },
-        {
-          columnGap: selectedFormat === 'A4' ? 120 : 80,
-          columns: [
-            {
-              alignment: 'left',
-              width: selectedFormat === 'A4' ? 200 : 150,
-              stack: [
-                {text: `CLIENT : `, fontSize: fontSize.normal, bold: true, alignment: "left", margin: [0, 2]},
-                {text: `Nom: ${selectedVente?.client.nom}`, fontSize: fontSize.normal, alignment: "left", margin: [0, 2]},
-                {text: `Tel: ${selectedVente?.client?.tel}`, fontSize: fontSize.normal, alignment: "left", margin: [0, 2]},
-                {text: `Addr: ${selectedVente?.client.addr}`, fontSize: fontSize.normal, alignment: "left", margin: [0, 2]},
-              ]
-            },
-            {
-              alignment: 'right',
-              width: selectedFormat === 'A4' ? 200 : 150,
-              stack: [
-                {
-                  margin: [2, 5],
-                  fillColor: "#334155",
-                  alignment: 'left',
-                  layout: 'noBorders',
-                  table: {
-                    widths: ['100%'],
-                    body: [
-                      [{text: `N°: ${selectedVente?.ref}`, fontSize: fontSize.subtitle, bold: true, color: 'white', margin: [2, 1]}],
-                      [{text: `DATE : ${format(new Date(), 'dd-MM-yyyy')}`, fontSize: fontSize.normal, bold: true, margin: [2, 1], fillColor: '#F1F5F9'}],
-                      [{text: `ECHEANCE : ${format(selectedVente.date, 'dd-MM-yyyy')}`, fontSize: fontSize.normal, margin: [2, 1], bold: true, fillColor: '#F1F5F9'}],
-                    ]
-                  }
-                },
-              ]
-            },
-          ],
-        },
-        {
-          margin: [0, 10],
-          width: '100%',
-          alignment: 'justify',
-          layout: {
-            fillColor: function(rowIndex: number) {
-              return (rowIndex === 0) ? '#334155' : null;
-            },
-            hLineWidth: function() {
-              return 1;
-            },
-            vLineWidth: function() {
-              return 1;
-            },
-            hLineColor: function() {
-              return 'black';
-            },
-            vLineColor: function() {
-              return 'black';
-            },
-          },
-          table: {
-            widths: tableWidths,
-            body: [
-              [{text: '#REF', style: 'entete'}, {text: 'Q', style: 'entete'},{text: 'Unit', style: 'entete'}, {text: 'Desc', style: 'entete'},{text: 'Pu', style: 'entete'},  {text: 'Total', style: 'entete'}],
-              ...selectedVente?.produits?.map((k: any) => (
-                [{text: `${k.ref}`, style: 'info'},
-                 {text: `${formatN(k.qte)}`, style: 'nombre'},
-                 {text: `${k.unite}`, style: 'info'},
-                 {text: `${k.nom}`, style: 'info'},
-                 {text: `${formatN(k.pu)}`, style: 'nombre'},
-                 {text: `${formatN(k.pu * k.qte)}`, style: 'nombre'}
-                ]
-              )),
-            ],
-          }
-        },
-        {
-          columnGap: selectedFormat === 'A4' ? 120 : 80,
-          columns: [
-            {},
-            {
-              alignment: 'right',
-              width: selectedFormat === 'A4' ? 300 : 250,
-              stack: [
-                {
-                  margin: [2, 5],
-                  fillColor: "#334155",
-                  alignment: 'left',
-                  layout: 'noBorders',
-                  table: {
-                    widths: ['100%'],
-                    body: [
-                      [{text: `MONTANT : ${formatN(selectedVente?.montant)}`, fontSize: fontSize.normal, bold: true, margin: [2, 1], fillColor: '#F1F5F9'}],
-                      [{text: `REMISE : ${formatN(selectedVente?.remise)}`, fontSize: fontSize.normal, bold: true, margin: [2, 1], fillColor: '#F1F5F9'}],
-                      [{text: `NET A PAYER : ${formatN(selectedVente?.net_a_payer)}`, fontSize: fontSize.subtitle, color: 'white', margin: [2, 1], bold: true}],
-                    ]
-                  }
-                },
-              ]
-            },
-          ],
+          margin: [0, 2, 0, 0],
         },
       ],
-      images: {
-        logo: `${import.meta.env.VITE_BACKURL}/uploads/${param?.logo}`,
-      }
-    }
-  
-    pdfMake.createPdf(docDefinition).open();
-}
+      margin: [margins[0], 0, margins[2], 10],
+    }),
+    styles: {
+      company: { fontSize: fs.h2, bold: true, color: COLOR.primaryDark },
+      companyInfo: { fontSize: fs.small, color: COLOR.muted },
+      invoiceTitle: { fontSize: fs.title, bold: true, color: COLOR.accent },
+      invoiceLabel: { fontSize: fs.small, color: COLOR.muted, bold: true },
+      invoiceValue: { fontSize: fs.normal, color: COLOR.text, bold: true },
+      sectionLabel: { fontSize: fs.normal, bold: true, color: COLOR.primary },
+      clientInfo: { fontSize: fs.normal, color: COLOR.text },
+      th: { fontSize: fs.table, bold: true, color: COLOR.white, alignment: 'center' },
+      thRight: { fontSize: fs.table, bold: true, color: COLOR.white, alignment: 'right' },
+      td: { fontSize: fs.table, color: COLOR.text },
+      tdCenter: { fontSize: fs.table, color: COLOR.text, alignment: 'center' },
+      tdRight: { fontSize: fs.table, color: COLOR.text, alignment: 'right' },
+      tdNum: { fontSize: fs.table, color: COLOR.text, alignment: 'right' },
+      totalLabel: { fontSize: fs.normal, color: COLOR.text, alignment: 'right', margin: [0, 3] },
+      totalValue: { fontSize: fs.normal, color: COLOR.text, alignment: 'right', bold: true, margin: [0, 3] },
+      netLabel: { fontSize: fs.h2, color: COLOR.white, alignment: 'right', bold: true, margin: [0, 4] },
+      netValue: { fontSize: fs.h2, color: COLOR.white, alignment: 'right', bold: true, margin: [0, 4] },
+      footerText: { fontSize: fs.small, color: COLOR.muted },
+    },
+    content: [
+      // ====== EN-TÊTE : entreprise à gauche, FACTURE à droite ======
+      {
+        columns: [
+          {
+            width: '*',
+            stack: [
+              { text: param?.nom ?? '', style: 'company' },
+              { text: param?.desc ?? '', style: 'companyInfo', margin: [0, 2, 0, 0] },
+              { text: param?.tel ?? '', style: 'companyInfo', margin: [0, 1, 0, 0] },
+            ],
+          },
+          {
+            width: 'auto',
+            stack: [
+              { text: 'FACTURE', style: 'invoiceTitle' },
+              { text: `N° ${selectedVente?.ref ?? ''}`, style: 'invoiceValue', margin: [0, 2, 0, 0] },
+              { text: `Date : ${format(new Date(selectedVente.date), 'dd/MM/yyyy')}`, style: 'companyInfo', margin: [0, 1, 0, 0] },
+            ],
+          },
+        ],
+        margin: [0, 0, 0, 15],
+      },
+      // Séparateur
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 2, lineColor: COLOR.accent }] },
+      { canvas: [{ type: 'line', x1: 0, y1: 3, x2: 515, y2: 3, lineWidth: 0.5, lineColor: COLOR.border }] },
+
+      // ====== INFOS CLIENT ======
+      {
+        columns: [
+          {
+            width: '*',
+            stack: [
+              { text: 'CLIENT', style: 'sectionLabel', margin: [0, 15, 0, 5] },
+              { text: selectedVente?.client?.nom ?? '—', style: 'clientInfo', margin: [0, 1] },
+              ...(selectedVente?.client?.tel ? [{ text: `Tél : ${selectedVente.client.tel}`, style: 'clientInfo', margin: [0, 1] }] : []),
+              ...(selectedVente?.client?.addr ? [{ text: `Adresse : ${selectedVente.client.addr}`, style: 'clientInfo', margin: [0, 1] }] : []),
+            ],
+          },
+        ],
+      },
+
+      // ====== TABLE PRODUITS ======
+      {
+        margin: [0, 15, 0, 0],
+        layout: {
+          fillColor: (rowIndex: number) => (rowIndex === 0 ? COLOR.primary : null),
+          hLineColor: () => COLOR.border,
+          vLineColor: () => COLOR.border,
+          hLineWidth: () => 0.5,
+          vLineWidth: () => 0.5,
+          paddingTop: () => 5,
+          paddingBottom: () => 5,
+        },
+        table: {
+          widths: tableWidths,
+          headerRow: 1,
+          body: [
+            [
+              { text: '#REF', style: 'th' },
+              { text: 'Qté', style: 'th' },
+              { text: 'Unité', style: 'th' },
+              { text: 'Désignation', style: 'th' },
+              { text: 'P.U.', style: 'thRight' },
+              { text: 'Total', style: 'thRight' },
+            ],
+            ...(selectedVente?.produits?.map((k: any) => [
+              { text: k.ref ?? '', style: 'tdCenter' },
+              { text: formatN(k.qte), style: 'tdCenter' },
+              { text: k.unite ?? '', style: 'tdCenter' },
+              { text: k.nom ?? '', style: 'td' },
+              { text: formatN(k.pu), style: 'tdNum' },
+              { text: formatN(k.pu * k.qte), style: 'tdNum' },
+            ]) ?? []),
+          ],
+        },
+      },
+
+      // ====== TOTAUX ======
+      {
+        margin: [0, 12, 0, 0],
+        columns: [
+          {},
+          {
+            width: isA4 ? 250 : 200,
+            layout: {
+              hLineColor: () => COLOR.border,
+              vLineWidth: () => 0,
+              hLineWidth: (i: number, node: any) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
+              paddingTop: () => 4,
+              paddingBottom: () => 4,
+            },
+            table: {
+              widths: ['50%', '50%'],
+              body: [
+                [
+                  { text: 'Montant', style: 'totalLabel' },
+                  { text: `${formatN(selectedVente?.montant ?? 0)} FCFA`, style: 'totalValue' },
+                ],
+                [
+                  { text: 'Remise', style: 'totalLabel' },
+                  { text: `- ${formatN(selectedVente?.remise ?? 0)} FCFA`, style: 'totalValue' },
+                ],
+                [
+                  {
+                    text: 'NET À PAYER',
+                    style: 'netLabel',
+                    fillColor: COLOR.accent,
+                  },
+                  {
+                    text: `${formatN(selectedVente?.net_a_payer ?? 0)} FCFA`,
+                    style: 'netValue',
+                    fillColor: COLOR.accent,
+                  },
+                ],
+              ],
+            },
+          },
+        ],
+      },
+
+      // ====== PIED DE PAGE DOCUMENT ======
+      {
+        margin: [0, 30, 0, 0],
+        stack: [
+          { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: COLOR.border }] },
+          {
+            text: param?.desc ?? '',
+            style: 'footerText',
+            alignment: 'center',
+            margin: [0, 6, 0, 0],
+          },
+          {
+            text: `${param?.nom ?? ''} — ${param?.tel ?? ''}`,
+            style: 'footerText',
+            alignment: 'center',
+            margin: [0, 1, 0, 0],
+          },
+        ],
+      },
+    ],
+  };
+
+  pdfMake.createPdf(docDefinition).open();
+};
