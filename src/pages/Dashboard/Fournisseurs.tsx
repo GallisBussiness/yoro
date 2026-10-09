@@ -150,10 +150,10 @@ useEffect(() => {
           </Badge>
         </Group>
       </div>
-     <Paper 
-        p="md" 
-        radius="md" 
-        className="border-none shadow-none"
+     <Paper
+        p="md"
+        radius="md"
+        className="gc-fade-up border-none shadow-none"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8))",
           backdropFilter: "blur(10px)"
@@ -373,7 +373,7 @@ useEffect(() => {
        loaderProps={{ color: 'brand', type: 'dots' }}
      />
    <form onSubmit={form.onSubmit(onCreate)} className="space-y-4">
-     <Paper p="md" radius="md" className="bg-blue-50 dark:bg-gray-800 border border-border shadow-sm">
+     <Paper p="md" radius="md" className="gc-fade-up bg-blue-50 dark:bg-gray-800 border border-border shadow-sm">
        <Text size="sm" fw={500} className="text-muted-foreground mb-3">
          Informations du fournisseur
        </Text>
@@ -461,7 +461,7 @@ useEffect(() => {
        loaderProps={{ color: 'brand', type: 'dots' }}
      />
 <form onSubmit={formU.onSubmit(onUpdate)} className="space-y-4">
-  <Paper p="md" radius="md" className="bg-green-50 dark:bg-gray-800 border border-border shadow-sm">
+  <Paper p="md" radius="md" className="gc-fade-up bg-green-50 dark:bg-gray-800 border border-border shadow-sm">
     <Text size="sm" fw={500} className="text-muted-foreground mb-3">
       Informations du fournisseur
     </Text>

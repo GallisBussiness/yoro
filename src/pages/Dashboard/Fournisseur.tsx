@@ -383,10 +383,10 @@ function Fournisseur() {
       <WeeklyRevenue add={''}>
         <>
           {/* Informations du client */}
-          <Paper 
-            p="xl" 
-            radius="md" 
-            className="border-none shadow-none"
+          <Paper
+            p="xl"
+            radius="md"
+            className="gc-fade-up border-none shadow-none"
             style={{
               backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8))",
               backdropFilter: "blur(10px)"
@@ -413,8 +413,8 @@ function Fournisseur() {
 
             <Divider className="my-4" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              <Card p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border shadow-sm">
+            <div className="gc-stagger grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+              <Card p="md" radius="md" className="gc-lift bg-blue-50 dark:bg-blue-500/10 border border-border shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <FaPhone className="text-blue-500" />
                   <Text fw={600} className="text-foreground">Téléphone</Text>
@@ -422,7 +422,7 @@ function Fournisseur() {
                 <Text size="lg" className="text-gray-800 dark:text-gray-100 pl-7">{fournisseur?.tel || 'Non renseigné'}</Text>
               </Card>
               
-              <Card p="md" radius="md" className="bg-emerald-50 dark:bg-emerald-500/10 border border-border shadow-sm">
+              <Card p="md" radius="md" className="gc-lift bg-emerald-50 dark:bg-emerald-500/10 border border-border shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <FaEnvelope className="text-green-500" />
                   <Text fw={600} className="text-foreground">Email</Text>
@@ -430,7 +430,7 @@ function Fournisseur() {
                 <Text size="lg" className="text-gray-800 dark:text-gray-100 pl-7">{fournisseur?.email || 'Non renseigné'}</Text>
               </Card>
               
-              <Card p="md" radius="md" className="bg-violet-50 dark:bg-violet-500/10 border border-border shadow-sm md:col-span-2">
+              <Card p="md" radius="md" className="gc-lift bg-violet-50 dark:bg-violet-500/10 border border-border shadow-sm md:col-span-2">
                 <div className="flex items-center gap-3 mb-2">
                   <FaMapMarkerAlt className="text-purple-500" />
                   <Text fw={600} className="text-foreground">Adresse</Text>

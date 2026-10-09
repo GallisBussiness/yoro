@@ -57,7 +57,7 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted px-4 py-12">
+    <div className="gc-fade-up flex min-h-screen items-center justify-center bg-muted px-4 py-12">
       <div className="w-full max-w-md">
         <Card className="border-border bg-card shadow-xl">
           <CardContent className="p-6 md:p-8">

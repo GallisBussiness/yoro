@@ -159,9 +159,9 @@ function PaiementClient() {
       <WeeklyRevenue add={''}>
         <>
           {/* Informations de la vente */}
-          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+          <div className="bg-white p-6 rounded-lg shadow-md mb-6 gc-fade-up">
             <h2 className="text-2xl font-bold mb-4 text-gray-800">Informations de la Vente</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 gc-stagger">
               <div>
                 <Text size="sm" c="dimmed">Référence</Text>
                 <Text size="lg" fw={500}>{vente?.ref}</Text>
@@ -230,6 +230,7 @@ function PaiementClient() {
                       variant="subtle"
                       color="blue"
                       onClick={() => handleEditPaiement(row)}
+                      className="transition-colors duration-150"
                     >
                       <FaEdit />
                     </ActionIcon>
@@ -237,6 +238,7 @@ function PaiementClient() {
                       variant="subtle"
                       color="red"
                       onClick={() => handleDeletePaiement(row._id)}
+                      className="transition-colors duration-150"
                     >
                       <FaTrash />
                     </ActionIcon>
@@ -265,6 +267,7 @@ function PaiementClient() {
             horizontalSpacing="md"
             verticalAlign="top"
             paginationActiveBackgroundColor="var(--gc-primary)"
+            className="gc-fade-up"
           />
 
           {/* Modal pour ajouter/éditer un paiement */}

@@ -242,7 +242,7 @@ function Overview() {
       neutral: { chip: 'bg-muted text-foreground', val: 'text-foreground' },
     }[tone];
     return (
-      <Card className="transition-shadow hover:shadow-md">
+      <Card className="gc-lift transition-shadow hover:shadow-md">
         <CardContent className="p-4 md:p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -309,7 +309,7 @@ function Overview() {
       />
 
       {/* ===== RÉSUMÉ FINANCIER GLOBAL ===== */}
-      <Card className="mb-6 border-border bg-gradient-to-br from-[#1E293B] to-[#0F172A] text-white shadow-lg">
+      <Card className="gc-fade-up mb-6 border-border bg-gradient-to-br from-[#1E293B] to-[#0F172A] text-white shadow-lg">
         <CardContent className="p-5 md:p-6">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/10">
@@ -321,7 +321,7 @@ function Overview() {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="gc-stagger grid gap-4 sm:grid-cols-3">
             {/* GAINS */}
             <div className="rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-5 shadow-lg">
               <div className="mb-3 flex items-center justify-between">
@@ -387,7 +387,7 @@ function Overview() {
       </Card>
 
       {/* ===== PERFOMANCE DU MOIS ===== */}
-      <Card className="mb-6">
+      <Card className="gc-fade-up mb-6">
         <CardContent className="p-5 md:p-6">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400">
@@ -399,7 +399,7 @@ function Overview() {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+          <div className="gc-stagger grid gap-4 sm:grid-cols-2 md:grid-cols-4">
             <MonthStat label="Ventes" value={`${formatN(ventesMoisCourant)} F`} evol={`${evolutionVentes >= 0 ? '+' : ''}${evolutionVentes.toFixed(1)}%`} evolDir={evolutionVentes >= 0 ? 'up' : 'down'} compare={`vs ${formatN(ventesMoisDernier)} F le mois dernier`} tone="pos" />
             <MonthStat label="Achats" value={`${formatN(achatsMoisCourant)} F`} evol={`${evolutionAchats >= 0 ? '+' : ''}${evolutionAchats.toFixed(1)}%`} evolDir={evolutionAchats <= 0 ? 'up' : 'down'} compare={`vs ${formatN(achatsMoisDernier)} F le mois dernier`} tone="neg" />
             <MonthStat label="Bénéfice" value={`${beneficeMoisCourant >= 0 ? '+' : ''}${formatN(beneficeMoisCourant)} F`} evol={`${evolutionBenefice >= 0 ? '+' : ''}${evolutionBenefice.toFixed(1)}%`} evolDir={evolutionBenefice >= 0 ? 'up' : 'down'} compare={`vs ${beneficeMoisDernier >= 0 ? '+' : ''}${formatN(beneficeMoisDernier)} F`} tone={beneficeMoisCourant >= 0 ? 'info' : 'neg'} />
@@ -415,7 +415,7 @@ function Overview() {
       </Card>
 
       {/* ===== KPI CARDS ===== */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+      <div className="gc-stagger mb-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
         <KpiCard icon={TrendingUp} label="Ventes totales" value={`${formatN(totalVentes)} FCFA`} tone="info"
           delta={`${pourcentageCroissance >= 0 ? '+' : ''}${pourcentageCroissance}% vs mois précédent`} deltaDir={pourcentageCroissance >= 0 ? 'up' : 'down'} />
         <KpiCard icon={ShoppingCart} label="Achats totaux" value={`${formatN(totalAchats)} FCFA`} tone="neg"
@@ -425,7 +425,7 @@ function Overview() {
       </div>
 
       {/* ===== GRAPHIQUES ===== */}
-      <div className="mb-6 grid gap-4 lg:grid-cols-2">
+      <div className="gc-stagger mb-6 grid gap-4 lg:grid-cols-2">
         {/* Évolution des ventes */}
         <Card>
           <CardContent className="p-5">
@@ -477,7 +477,7 @@ function Overview() {
       </div>
 
       {/* ===== PRODUITS PAR FAMILLE ===== */}
-      <Card className="mb-6">
+      <Card className="gc-fade-up mb-6">
         <CardContent className="p-5">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-sm font-bold text-foreground">Répartition des produits par famille</h3>
@@ -519,7 +519,7 @@ function Overview() {
       </Card>
 
       {/* ===== ANALYSE DE STOCK ===== */}
-      <Card>
+      <Card className="gc-fade-up">
         <CardContent className="p-5">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -530,7 +530,7 @@ function Overview() {
           </div>
           <Separator className="mb-4" />
 
-          <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="gc-stagger mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/20 dark:bg-amber-500/5">
               <p className="mb-1 text-xs font-semibold uppercase text-amber-600 dark:text-amber-400">Total articles</p>
               <p className="num text-xl font-bold text-amber-700 dark:text-amber-300">{formatN(totalStock)}</p>

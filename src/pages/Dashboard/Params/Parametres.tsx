@@ -337,7 +337,7 @@ function Parametres() {
     overlayProps={{ blur: 3 }}
   >
     <div className="flex flex-col space-y-4">
-      <Paper p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border">
+      <Paper p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border gc-fade-up">
         <Group justify="space-between" mb="xs">
           <Text fw={600} className="text-foreground flex items-center gap-2">
             <FaUpload className="text-blue-500" /> Téléchargement du logo
@@ -405,7 +405,7 @@ function Parametres() {
       <Paper 
         p="xl" 
         radius="md" 
-        className="bg-card shadow-xl"
+        className="bg-card shadow-xl gc-fade-up"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
           backdropFilter: "blur(10px)"
@@ -452,7 +452,7 @@ function Parametres() {
               </Badge>
             </div>
             
-            <Card p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border shadow-sm mb-4">
+            <Card p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border shadow-sm mb-4 gc-fade-up">
               <Group justify="space-between" mb="xs">
                 <Text fw={600} className="text-foreground flex items-center gap-2">
                   <FaInfoCircle className="text-blue-500" /> Informations Principales
@@ -484,7 +484,7 @@ function Parametres() {
               </div>
             </Card>
 
-            <Card p="md" radius="md" className="bg-emerald-50 dark:bg-emerald-500/10 border border-border shadow-sm mb-4">
+            <Card p="md" radius="md" className="bg-emerald-50 dark:bg-emerald-500/10 border border-border shadow-sm mb-4 gc-fade-up">
               <Group justify="space-between" mb="xs">
                 <Text fw={600} className="text-foreground flex items-center gap-2">
                   <FaFileInvoice className="text-green-500" /> Informations Légales
@@ -516,7 +516,7 @@ function Parametres() {
               </div>
             </Card>
 
-            <Card p="md" radius="md" className="bg-violet-50 dark:bg-violet-500/10 border border-border shadow-sm mb-4">
+            <Card p="md" radius="md" className="bg-violet-50 dark:bg-violet-500/10 border border-border shadow-sm mb-4 gc-fade-up">
               <Group justify="space-between" mb="xs">
                 <Text fw={600} className="text-foreground flex items-center gap-2">
                   <FaFileAlt className="text-purple-500" /> Description
@@ -546,7 +546,7 @@ function Parametres() {
       <Paper 
         p="xl" 
         radius="md" 
-        className="bg-card shadow-lg"
+        className="bg-card shadow-lg gc-fade-up"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8))",
           backdropFilter: "blur(10px)"

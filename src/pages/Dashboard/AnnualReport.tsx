@@ -437,7 +437,7 @@ function AnnualReport() {
       <Paper 
         p="md" 
         radius="md" 
-        className="bg-card shadow-xl mb-4"
+        className="bg-card shadow-xl mb-4 gc-fade-up"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
           backdropFilter: "blur(10px)"
@@ -453,7 +453,7 @@ function AnnualReport() {
           <Divider className="my-3" />
         </div>
         
-        <Box className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md mb-4">
+        <Box className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md mb-4 gc-fade-up">
           <Group align="end" className="flex-wrap gap-6">
             <div>
               <DatePickerInput
@@ -502,7 +502,7 @@ function AnnualReport() {
           </Group>
         </Box>
         
-        <Box className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md">
+        <Box className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-md gc-fade-up">
           <Group className="mb-3">
             <FaFileInvoiceDollar className="text-orange-500" size={20} />
             <Title order={4} className="text-gray-800 dark:text-gray-200">
@@ -514,23 +514,23 @@ function AnnualReport() {
             Le rapport généré contiendra les sections suivantes :
           </Text>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Paper p="sm" radius="md" className="border border-border">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gc-stagger">
+            <Paper p="sm" radius="md" className="border border-border gc-lift">
               <Text fw={500} className="text-foreground mb-2">Résumé Global</Text>
               <Text size="sm" color="dimmed">Total des ventes, achats, quantités vendues et achetées pour l'année sélectionnée.</Text>
             </Paper>
             
-            <Paper p="sm" radius="md" className="border border-border">
+            <Paper p="sm" radius="md" className="border border-border gc-lift">
               <Text fw={500} className="text-foreground mb-2">Résumé des Remises</Text>
               <Text size="sm" color="dimmed">Montant total des remises accordées sur les ventes et les achats.</Text>
             </Paper>
             
-            <Paper p="sm" radius="md" className="border border-border">
+            <Paper p="sm" radius="md" className="border border-border gc-lift">
               <Text fw={500} className="text-foreground mb-2">Détails par Article</Text>
               <Text size="sm" color="dimmed">Analyse détaillée de chaque article avec quantités vendues/achetées et bénéfices.</Text>
             </Paper>
             
-            <Paper p="sm" radius="md" className="border border-border">
+            <Paper p="sm" radius="md" className="border border-border gc-lift">
               <Text fw={500} className="text-foreground mb-2">Informations de l'Entreprise</Text>
               <Text size="sm" color="dimmed">En-tête avec les coordonnées de votre entreprise et la date d'édition.</Text>
             </Paper>

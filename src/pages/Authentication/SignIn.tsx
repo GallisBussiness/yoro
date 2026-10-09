@@ -76,7 +76,7 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-muted">
+    <div className="gc-fade-up flex min-h-screen bg-muted">
       {/* Left — form */}
       <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-md">
@@ -163,7 +163,7 @@ const SignIn: React.FC = () => {
             <h1 className="mb-2 text-4xl font-bold">YORO HAIR</h1>
             <p className="mb-10 text-xl text-white/80">Gérez efficacement votre activité commerciale</p>
 
-            <div className="space-y-6">
+            <div className="gc-stagger space-y-6">
               {FEATURES.map((f) => {
                 const Icon = f.icon;
                 return (

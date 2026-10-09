@@ -132,7 +132,7 @@ const Subscription: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-muted py-12 px-4 sm:px-6 lg:px-8">
+    <div className="gc-fade-up min-h-screen bg-muted py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <Card className="mb-10 shadow-xl">
           <CardContent className="p-6 md:p-10">
@@ -147,7 +147,7 @@ const Subscription: React.FC = () => {
             <Separator className="my-6" />
 
             {/* Subscription Packs */}
-            <div className="mb-12 grid gap-6 md:grid-cols-3">
+            <div className="gc-stagger mb-12 grid gap-6 md:grid-cols-3">
               {packs &&
                 packs.map((pack: Pack) => {
                   const tier = getTier(pack.nom);
@@ -159,7 +159,7 @@ const Subscription: React.FC = () => {
                     <Card
                       key={pack._id}
                       className={`relative overflow-hidden transition-all duration-300 ${
-                        selected ? `ring-2 ${ts.ring} shadow-xl` : 'hover:shadow-lg'
+                        selected ? `ring-2 ${ts.ring} shadow-xl` : 'hover:shadow-lg hover:-translate-y-1'
                       }`}
                     >
                       {/* Header band */}
@@ -212,7 +212,7 @@ const Subscription: React.FC = () => {
 
             {/* Payment Section */}
             {selectedPack && (
-              <Card className="mx-auto max-w-2xl overflow-hidden shadow-lg">
+              <Card className="gc-scale-in mx-auto max-w-2xl overflow-hidden shadow-lg">
                 <div className="h-1.5 bg-gradient-to-r from-primary to-accent" />
                 <CardContent className="p-6 md:p-8">
                   <div className="mb-6 flex items-center gap-3">
@@ -288,7 +288,7 @@ const Subscription: React.FC = () => {
 
             {/* Trust badges */}
             <div className="mt-12 mb-6 text-center">
-              <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-6 md:flex-row">
+              <div className="gc-stagger mx-auto flex max-w-4xl flex-col items-center justify-center gap-6 md:flex-row">
                 {[
                   { icon: Headset, title: 'Support client', desc: 'Nous sommes là pour vous aider', tone: 'text-blue-600 bg-blue-100 dark:bg-blue-500/15 dark:text-blue-400' },
                   { icon: Users, title: 'Communauté', desc: 'Rejoignez nos utilisateurs', tone: 'text-purple-600 bg-purple-100 dark:bg-purple-500/15 dark:text-purple-400' },

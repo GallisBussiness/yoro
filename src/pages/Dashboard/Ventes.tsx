@@ -795,7 +795,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
 
      <WeeklyRevenue add={null}>
      <>
-     <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-4 mb-6">
+     <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-4 mb-6 gc-fade-up">
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
          <div className="w-full md:w-1/3">
             <SearchInput
@@ -806,19 +806,19 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
             />
          </div>
          <div className="flex flex-wrap gap-2">
-           <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-lg">
+           <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-lg gc-lift">
              <FaRegCalendarAlt size={14} className="text-blue-500" />
              <Text size="xs" className="text-blue-600 dark:text-blue-300">
                {format(new Date(), 'dd MMMM yyyy')}
              </Text>
            </div>
-           <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 px-3 py-2 rounded-lg">
+           <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 px-3 py-2 rounded-lg gc-lift">
              <FaShoppingBag size={14} className="text-green-500" />
              <Text size="xs" className="text-green-600 dark:text-green-300">
                {ventes?.length || 0} ventes
              </Text>
            </div>
-           <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/30 px-3 py-2 rounded-lg">
+           <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/30 px-3 py-2 rounded-lg gc-lift">
              <FaMoneyBillWave size={14} className="text-orange-500" />
              <Text size="xs" className="text-orange-600 dark:text-orange-300">
                 {formatN(ventes?.reduce((acc: number, cur: { net_a_payer: number }) => acc + cur.net_a_payer, 0) || 0)} FCFA
@@ -977,7 +977,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
                     </Table.Thead>
                     <Table.Tbody>
                       {data.produits.map((el:any, i: number) => (
-                        <Table.Tr key={el.ref} className={i % 2 === 0 ? 'bg-gc-surface' : 'bg-slate-50 dark:bg-slate-700'}>
+                        <Table.Tr key={el.ref} className={`${i % 2 === 0 ? 'bg-gc-surface' : 'bg-slate-50 dark:bg-slate-700'} transition-colors`}>
                           <Table.Td>{i+1}</Table.Td>
                           <Table.Td>
                             <div className="bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-md text-blue-600 dark:text-blue-300 text-xs">
@@ -1119,7 +1119,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
       paginationActiveBackgroundColor="var(--gc-primary)"
       paginationSize="sm"
       bodyRef={bodyRef}
-      className="border-none shadow-none"
+      className="border-none shadow-none gc-fade-up"
     />
      </>
      
@@ -1149,7 +1149,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
          loaderProps={{ color: 'brand', type: 'dots' }}
        />
        <form onSubmit={form.onSubmit(onCreate)} className="space-y-2">
-       <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-2">
+       <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-2 gc-fade-up">
         <div className="flex flex-col md:flex-row items-start justify-between gap-6">
        <div className="bg-gc-muted/60 p-2 rounded-lg">
         <div className="flex items-center justify-between mb-4">
@@ -1351,22 +1351,22 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
             </Text>
           </div>
           
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-1 rounded-lg">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2 gc-stagger">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-1 rounded-lg gc-lift">
               <Text size="xs" className="text-blue-600 dark:text-blue-300 mb-1">MONTANT TOTAL</Text>
               <Text fw={700} size="sm" className="text-blue-700 dark:text-blue-300">
                 {formatN(total)} FCFA
               </Text>
             </div>
             
-            <div className="bg-orange-50 dark:bg-orange-900/20 p-1 rounded-lg">
+            <div className="bg-orange-50 dark:bg-orange-900/20 p-1 rounded-lg gc-lift">
               <Text size="xs" className="text-orange-600 dark:text-orange-300 mb-1">REMISE</Text>
               <Text fw={700} size="sm" className="text-orange-700 dark:text-orange-300">
                 {formatN(remise)} FCFA
               </Text>
             </div>
             
-            <div className="bg-teal-50 dark:bg-teal-900/20 p-1 rounded-lg">
+            <div className="bg-teal-50 dark:bg-teal-900/20 p-1 rounded-lg gc-lift">
               <Text size="xs" className="text-teal-600 dark:text-teal-300 mb-1">NET À PAYER</Text>
               <Text fw={700} size="sm" className="text-teal-700 dark:text-teal-300">
                 {formatN(total-remise)} FCFA
@@ -1413,7 +1413,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
      className="quantity-modal"
    >
      {selectedProduct && (
-       <div className="space-y-4">
+       <div className="space-y-4 gc-fade-up">
          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
            <div className="flex items-center justify-between">
              <Text fw={600} size="sm" className="text-gc">
@@ -1535,7 +1535,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
      />
      
      <form onSubmit={formC.onSubmit(onCreateC)} className="space-y-4">
-       <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
+       <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc gc-fade-up">
          <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
            <FaUser size={14} className="text-orange-500" />
            Informations du client
@@ -1634,7 +1634,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
            Annuler
          </Button>
          <Button 
-           className="bg-orange-500 hover:bg-orange-600"
+           className="bg-orange-500 hover:bg-orange-600 transition-colors duration-200"
            onClick={Invoice}
            leftSection={<FaPrint size={14} />}
          >
@@ -1666,7 +1666,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
           loaderProps={{ color: 'brand', type: 'dots' }}
         />
         <form onSubmit={formArticle.onSubmit(onCreateArticle)} className="space-y-4">
-          <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
+          <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc gc-fade-up">
             <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
               <FaShoppingBag size={14} className="text-orange-500" />
               Informations de l'article

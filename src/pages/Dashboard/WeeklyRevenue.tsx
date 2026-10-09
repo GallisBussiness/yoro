@@ -8,7 +8,7 @@ type Props =  PropsWithChildren<{
 
 export const WeeklyRevenue = ({add,children}: Props) => {
   return (
-    <Card extra="flex flex-col bg-white w-full rounded-3xl py-6 px-2 text-center">
+    <Card extra="flex flex-col bg-white w-full rounded-3xl py-6 px-2 text-center gc-fade-up">
       <div className="mb-auto flex items-center justify-between px-6">
         {add}
       </div>

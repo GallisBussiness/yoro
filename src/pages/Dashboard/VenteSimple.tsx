@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { yupResolver } from 'mantine-form-yup-resolver';
@@ -12,12 +11,15 @@ import { useDisclosure } from "@mantine/hooks";
 import { toast } from 'sonner';
 import { format, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
-import { FaArrowLeft, FaEdit, FaTrash, FaRegCheckCircle, FaLock } from "react-icons/fa";
+import { FaArrowLeft, FaEdit, FaTrash, FaRegCheckCircle, FaLock, FaReceipt } from "react-icons/fa";
 import { VenteSimpleService } from "../../services/vente-simple.service";
+import { ParamService } from "../../services/paramservice";
 import { VenteSimple } from "../../types/vente-simple.types";
 import { useIsVenteDuJour } from "../../hooks/useIsVenteDuJour";
+import { authclient } from "../../../lib/auth-client";
 import { PageHeader, Money } from "../../components/ui";
 import { Card, CardContent } from "../../components/shadcn/card";
+import { printVenteSimpleTicket } from "../../utils/venteSimpleTicketPdf";
 
 const service = new VenteSimpleService();
 
@@ -38,6 +40,14 @@ function VenteSimplePage() {
     queryKey: ['vente-simple', id],
     queryFn: () => service.getOne(id!),
     enabled: !!id,
+  });
+
+  const { data: session } = authclient.useSession();
+  const paramService = new ParamService();
+  const { data: param } = useQuery({
+    queryKey: ['param', session?.user.id],
+    queryFn: () => paramService.getByUser(session!.user.id),
+    enabled: !!session,
   });
 
   const duJour = useIsVenteDuJour(vente?.date ?? '');
@@ -123,7 +133,7 @@ function VenteSimplePage() {
       <div className="mx-auto max-w-2xl space-y-4">
         {/* Statut verrouillage */}
         {!duJour && (
-          <Card className="border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/5">
+          <Card className="border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/5 gc-fade-up">
             <CardContent className="flex items-center gap-3 p-4">
               <FaLock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
               <div>
@@ -137,7 +147,7 @@ function VenteSimplePage() {
         )}
 
         {/* Carte détail */}
-        <Card>
+        <Card className="gc-fade-up">
           <CardContent className="p-6 space-y-5">
             <div className="flex items-center justify-between">
               <Badge color="brand" variant="light" size="lg">{vente.ref}</Badge>
@@ -188,16 +198,21 @@ function VenteSimplePage() {
         </Card>
 
         {/* Actions */}
-        {duJour && (
-          <div className="flex gap-3">
-            <Button variant="outline" leftSection={<FaEdit />} onClick={openEdit} className="flex-1">
-              Modifier
-            </Button>
-            <Button variant="filled" color="red" leftSection={<FaTrash />} onClick={() => deleteVente()} className="flex-1">
-              Supprimer
-            </Button>
-          </div>
-        )}
+        <div className="flex gap-3">
+          <Button variant="outline" color="teal" leftSection={<FaReceipt />} onClick={() => printVenteSimpleTicket(vente, param)} className="flex-1 transition-all duration-200">
+            Imprimer le ticket
+          </Button>
+          {duJour && (
+            <>
+              <Button variant="outline" leftSection={<FaEdit />} onClick={openEdit} className="flex-1 transition-all duration-200">
+                Modifier
+              </Button>
+              <Button variant="filled" color="red" leftSection={<FaTrash />} onClick={() => deleteVente()} className="flex-1 transition-all duration-200">
+                Supprimer
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Modal édition */}

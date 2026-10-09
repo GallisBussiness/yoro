@@ -7,7 +7,7 @@ const Terms: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="gc-fade-up min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <Button 
           variant="subtle" 
@@ -38,7 +38,7 @@ const Terms: React.FC = () => {
 
           <Divider className="my-6" />
 
-          <div className="space-y-8">
+          <div className="gc-stagger space-y-8">
             {/* Section 1 */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">

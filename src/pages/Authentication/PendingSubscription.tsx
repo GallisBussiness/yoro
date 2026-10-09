@@ -18,11 +18,11 @@ const PendingSubscription: React.FC = () => {
     }, [session,isPending]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="gc-fade-up flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <Paper 
         p="xl" 
         radius="lg" 
-        className="w-full max-w-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700"
+        className="gc-scale-in w-full max-w-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
           backdropFilter: "blur(10px)"
@@ -50,7 +50,7 @@ const PendingSubscription: React.FC = () => {
           </Text>
         </div>
         
-        <div className="space-y-4 mt-8">
+        <div className="gc-stagger space-y-4 mt-8">
           <div className="flex items-start gap-3">
             <FaCheckCircle className="text-green-500 mt-1 flex-shrink-0" />
             <Text className="text-gray-700 dark:text-gray-300">

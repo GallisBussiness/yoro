@@ -87,8 +87,8 @@ function Inventory() {
       />
 
       {/* KPI band */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="gc-card flex items-center gap-4 p-4 md:p-5">
+      <div className="gc-stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="gc-card gc-lift flex items-center gap-4 p-4 md:p-5">
           <div className="gc-icon-chip h-11 w-11 bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
             <FaArrowDown size={18} />
           </div>
@@ -97,7 +97,7 @@ function Inventory() {
             <p className="num mt-1 text-lg font-bold text-gc-pos"><Money value={totalIn} /></p>
           </div>
         </div>
-        <div className="gc-card flex items-center gap-4 p-4 md:p-5">
+        <div className="gc-card gc-lift flex items-center gap-4 p-4 md:p-5">
           <div className="gc-icon-chip h-11 w-11 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400">
             <FaArrowUp size={18} />
           </div>
@@ -106,7 +106,7 @@ function Inventory() {
             <p className="num mt-1 text-lg font-bold text-gc-neg"><Money value={totalOut} /></p>
           </div>
         </div>
-        <div className="gc-card flex items-center gap-4 p-4 md:p-5">
+        <div className="gc-card gc-lift flex items-center gap-4 p-4 md:p-5">
           <div className="gc-icon-chip h-11 w-11 bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
             <TbSum size={18} />
           </div>
@@ -117,7 +117,7 @@ function Inventory() {
         </div>
       </div>
 
-      <div className="gc-card p-4 md:p-5">
+      <div className="gc-card gc-fade-up p-4 md:p-5">
         <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
             <div className="gc-icon-chip h-10 w-10 bg-gc-muted text-gc-primary">

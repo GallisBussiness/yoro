@@ -165,7 +165,7 @@ useEffect(() => {
           </Button>
         </div>
 
-        <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-6 mb-6">
+        <div className="gc-fade-up bg-gc-surface rounded-xl shadow-sm border border-gc p-6 mb-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3">
               <div className="bg-orange-50 dark:bg-orange-900/20 p-3 rounded-full">
@@ -377,7 +377,7 @@ useEffect(() => {
           loaderProps={{ color: 'brand', type: 'dots' }}
         />
         <form onSubmit={form.onSubmit(onCreate)} className="space-y-4">
-          <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
+          <div className="gc-fade-up bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
             <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
               <FaShoppingBag size={14} className="text-orange-500" />
               Informations de l'article
@@ -488,7 +488,7 @@ useEffect(() => {
           loaderProps={{ color: 'brand', type: 'dots' }}
         />
         <form onSubmit={formU.onSubmit(onUpdate)} className="space-y-4">
-          <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
+          <div className="gc-fade-up bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
             <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
               <FaEdit size={14} className="text-blue-500" />
               Modifier les informations

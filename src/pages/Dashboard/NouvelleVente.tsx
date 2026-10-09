@@ -384,7 +384,7 @@ function NouvelleVente() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
             {/* Colonne gauche - Informations client et date */}
-            <div className="space-y-4">
+            <div className="space-y-4 gc-stagger">
               {/* Informations client */}
               <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface">
                 <div className="flex items-center justify-between mb-3">
@@ -501,7 +501,7 @@ function NouvelleVente() {
 
             {/* Colonne droite - Lignes de facture */}
             <div className="lg:col-span-3">
-              <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface">
+              <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface gc-fade-up">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <ThemeIcon size="lg" radius="md" color="orange" variant="light">
@@ -536,7 +536,7 @@ function NouvelleVente() {
                     </Table.Thead>
                     <Table.Tbody>
                       {form.getValues().produits.map((item: any, index: number) => (
-                        <Table.Tr key={index}>
+                        <Table.Tr key={index} className="transition-colors">
                           <Table.Td className="text-center font-medium text-slate-500">
                             {index + 1}
                           </Table.Td>
@@ -621,7 +621,7 @@ function NouvelleVente() {
                     mt="md"
                     leftSection={<FaPlus />}
                     onClick={addEmptyLine}
-                    className="border-2 border-dashed border-orange-300 hover:border-orange-400"
+                    className="border-2 border-dashed border-orange-300 hover:border-orange-400 transition-colors duration-200"
                   >
                     Ajouter une ligne
                   </Button>

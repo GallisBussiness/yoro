@@ -60,7 +60,7 @@ function Vente() {
           <Paper 
             p="md" 
             radius="md" 
-            className="bg-card shadow-xl mb-4"
+            className="bg-card shadow-xl mb-4 gc-fade-up"
             style={{
               backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
               backdropFilter: "blur(10px)"
@@ -115,9 +115,9 @@ function Vente() {
               <Divider className="my-4" />
               
               {/* Informations de la vente */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 gc-stagger">
                 <div>
-                  <Box className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+                  <Box className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md gc-lift">
                     <Group gap="xs">
                       <FaCalendarAlt className="text-blue-500" />
                       <Text size="sm" fw={500} className="text-blue-700 dark:text-blue-300">Date</Text>
@@ -129,7 +129,7 @@ function Vente() {
                 </div>
                 
                 <div>
-                  <Box className="p-3 bg-green-50 dark:bg-green-900/20 rounded-md">
+                  <Box className="p-3 bg-green-50 dark:bg-green-900/20 rounded-md gc-lift">
                     <Group gap="xs">
                       <FaUser className="text-green-500" />
                       <Text size="sm" fw={500} className="text-green-700 dark:text-green-300">Client</Text>
@@ -141,7 +141,7 @@ function Vente() {
                 </div>
                 
                 <div>
-                  <Box className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-md">
+                  <Box className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-md gc-lift">
                     <Group gap="xs">
                       <FaBoxes className="text-purple-500" />
                       <Text size="sm" fw={500} className="text-purple-700 dark:text-purple-300">Articles</Text>
@@ -153,7 +153,7 @@ function Vente() {
                 </div>
                 
                 <div>
-                  <Box className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-md">
+                  <Box className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-md gc-lift">
                     <Group gap="xs">
                       <FaTag className="text-amber-500" />
                       <Text size="sm" fw={500} className="text-amber-700 dark:text-amber-300">Remise</Text>

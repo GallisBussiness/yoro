@@ -9,7 +9,7 @@ const Profile = () => {
     <DefaultLayout>
       <Breadcrumb pageName="Profile" />
 
-      <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="gc-fade-up overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="relative z-20 h-35 md:h-65">
           <img
             src={CoverOne}
@@ -130,10 +130,10 @@ const Profile = () => {
               <h4 className="mb-3.5 font-medium text-black dark:text-white">
                 Follow me on
               </h4>
-              <div className="flex items-center justify-center gap-3.5">
+              <div className="gc-stagger flex items-center justify-center gap-3.5">
                 <Link
                   to="#"
-                  className="hover:text-primary"
+                  className="hover:text-primary transition-colors"
                   aria-label="social-icon"
                 >
                   <svg
@@ -159,7 +159,7 @@ const Profile = () => {
                 </Link>
                 <Link
                   to="#"
-                  className="hover:text-primary"
+                  className="hover:text-primary transition-colors"
                   aria-label="social-icon"
                 >
                   <svg
@@ -190,7 +190,7 @@ const Profile = () => {
                 </Link>
                 <Link
                   to="#"
-                  className="hover:text-primary"
+                  className="hover:text-primary transition-colors"
                   aria-label="social-icon"
                 >
                   <svg
@@ -221,7 +221,7 @@ const Profile = () => {
                 </Link>
                 <Link
                   to="#"
-                  className="hover:text-primary"
+                  className="hover:text-primary transition-colors"
                   aria-label="social-icon"
                 >
                   <svg
@@ -247,7 +247,7 @@ const Profile = () => {
                 </Link>
                 <Link
                   to="#"
-                  className="hover:text-primary"
+                  className="hover:text-primary transition-colors"
                   aria-label="social-icon"
                 >
                   <svg

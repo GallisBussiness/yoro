@@ -468,7 +468,7 @@ const DepotDetails: React.FC = () => {
       <Paper
         p="xl"
         radius="lg"
-        className="bg-card shadow-xl border border-border"
+        className="gc-fade-up bg-card shadow-xl border border-border"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
           backdropFilter: "blur(10px)"
@@ -533,7 +533,7 @@ const DepotDetails: React.FC = () => {
         ) : depot ? (
           <>
             {/* Informations du dépôt */}
-            <div className="bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl p-6 mb-8 border border-orange-200 dark:border-orange-900/30 shadow-sm">
+            <div className="gc-fade-up bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl p-6 mb-8 border border-orange-200 dark:border-orange-900/30 shadow-sm">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2 mb-2">
@@ -573,9 +573,9 @@ const DepotDetails: React.FC = () => {
             </div>
 
             {/* Statistiques des achats */}
-            <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-4 mb-6">
+            <div className="gc-fade-up bg-gc-surface rounded-xl shadow-sm border border-gc p-4 mb-6">
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-4 py-3 rounded-lg">
+                <div className="gc-lift flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-4 py-3 rounded-lg">
                   <FaCartShopping size={16} className="text-blue-500" />
                   <div>
                     <Text size="xs" className="text-blue-600 dark:text-blue-300">TOTAL ACHATS</Text>
@@ -585,7 +585,7 @@ const DepotDetails: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 px-4 py-3 rounded-lg">
+                <div className="gc-lift flex items-center gap-2 bg-green-50 dark:bg-green-900/30 px-4 py-3 rounded-lg">
                   <FaShoppingBag size={16} className="text-green-500" />
                   <div>
                     <Text size="xs" className="text-green-600 dark:text-green-300">PRODUITS</Text>
@@ -595,7 +595,7 @@ const DepotDetails: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/30 px-4 py-3 rounded-lg">
+                <div className="gc-lift flex items-center gap-2 bg-orange-50 dark:bg-orange-900/30 px-4 py-3 rounded-lg">
                   <FaMoneyBillWave size={16} className="text-orange-500" />
                   <div>
                     <Text size="xs" className="text-orange-600 dark:text-orange-300">MONTANT TOTAL</Text>
@@ -618,7 +618,7 @@ const DepotDetails: React.FC = () => {
             </div>
 
             {/* Liste des achats */}
-            <div className="bg-gc-surface rounded-xl shadow-sm border border-gc overflow-hidden">
+            <div className="gc-fade-up bg-gc-surface rounded-xl shadow-sm border border-gc overflow-hidden">
               <div className="p-4 bg-gradient-to-r from-orange-500 to-orange-600">
                 <div className="flex items-center gap-2">
                   <FaCartShopping className="text-white" />
@@ -652,7 +652,7 @@ const DepotDetails: React.FC = () => {
                     </TableHeader>
                     <TableBody>
                       {pagedAchats.map((achat: any) => (
-                        <TableRow key={achat._id}>
+                        <TableRow key={achat._id} className="transition-colors">
                           <TableCell>
                             <Badge color="blue" variant="light" className="px-2 py-1 rounded-md">{achat.ref}</Badge>
                           </TableCell>

@@ -373,3 +373,67 @@ span.flatpickr-weekday,
 [x-cloak] {
   display: none !important;
 }
+/* ====== Animations & transitions GesCom ====== */
+@keyframes gc-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes gc-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes gc-scale-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.gc-fade-up {
+  animation: gc-fade-up 0.35s cubic-bezier(0.21, 0.61, 0.35, 1) both;
+}
+.gc-fade-in {
+  animation: gc-fade-in 0.3s ease-out both;
+}
+.gc-scale-in {
+  animation: gc-scale-in 0.25s cubic-bezier(0.21, 0.61, 0.35, 1) both;
+}
+
+/* Entree en cascade : enfants directs d'un conteneur .gc-stagger */
+.gc-stagger > * {
+  animation: gc-fade-up 0.4s cubic-bezier(0.21, 0.61, 0.35, 1) both;
+}
+.gc-stagger > *:nth-child(1) { animation-delay: 0.02s; }
+.gc-stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.gc-stagger > *:nth-child(3) { animation-delay: 0.10s; }
+.gc-stagger > *:nth-child(4) { animation-delay: 0.14s; }
+.gc-stagger > *:nth-child(5) { animation-delay: 0.18s; }
+.gc-stagger > *:nth-child(6) { animation-delay: 0.22s; }
+.gc-stagger > *:nth-child(7) { animation-delay: 0.26s; }
+.gc-stagger > *:nth-child(8) { animation-delay: 0.30s; }
+.gc-stagger > *:nth-child(9) { animation-delay: 0.34s; }
+.gc-stagger > *:nth-child(n+10) { animation-delay: 0.38s; }
+
+/* Survol doux pour cards/elements interactifs */
+.gc-lift {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.gc-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -8px rgba(15, 23, 42, 0.18);
+}
+
+/* Transitions douces globales sur les elements interactifs natifs */
+button, a, input, select, textarea, [role="button"] {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gc-fade-up, .gc-fade-in, .gc-scale-in, .gc-stagger > * {
+    animation: none !important;
+  }
+  .gc-lift, .gc-lift:hover {
+    transition: none !important;
+    transform: none !important;
+  }
+}

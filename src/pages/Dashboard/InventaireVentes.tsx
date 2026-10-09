@@ -303,7 +303,7 @@ export default function InventaireVentes() {
       <LoadingOverlay visible={isLoading} />
       
       {/* En-tête */}
-      <Card shadow="sm" mb="lg">
+      <Card shadow="sm" mb="lg" className="gc-fade-up">
         <Group justify="space-between" align="center">
           <div>
             <Title order={2} c="blue">
@@ -341,7 +341,7 @@ export default function InventaireVentes() {
       </Card>
 
       {/* Filtres */}
-      <Card shadow="sm" mb="lg">
+      <Card shadow="sm" mb="lg" className="gc-fade-up">
         <Title order={4} mb="md">
           <FaCalendar style={{ marginRight: 8 }} />
           Filtrer par période
@@ -359,8 +359,8 @@ export default function InventaireVentes() {
       </Card>
 
       {/* Statistiques */}
-      <SimpleGrid cols={{ base: 2, md: 4 }} mb="lg">
-        <Paper shadow="sm" p="md" withBorder>
+      <SimpleGrid cols={{ base: 2, md: 4 }} mb="lg" className="gc-stagger">
+        <Paper shadow="sm" p="md" withBorder className="gc-lift">
           <Group>
             <ActionIcon size="lg" variant="light" color="blue">
               <FaShoppingBag />
@@ -376,7 +376,7 @@ export default function InventaireVentes() {
           </Group>
         </Paper>
 
-        <Paper shadow="sm" p="md" withBorder>
+        <Paper shadow="sm" p="md" withBorder className="gc-lift">
           <Group>
             <ActionIcon size="lg" variant="light" color="green">
               <FaMoneyBillWave />
@@ -396,7 +396,7 @@ export default function InventaireVentes() {
           </Group>
         </Paper>
 
-        <Paper shadow="sm" p="md" withBorder>
+        <Paper shadow="sm" p="md" withBorder className="gc-lift">
           <Group>
             <ActionIcon size="lg" variant="light" color="orange">
               <FaUser />
@@ -412,7 +412,7 @@ export default function InventaireVentes() {
           </Group>
         </Paper>
 
-        <Paper shadow="sm" p="md" withBorder>
+        <Paper shadow="sm" p="md" withBorder className="gc-lift">
           <Group>
             <ActionIcon size="lg" variant="light" color="violet">
               <FaShoppingBag />
@@ -430,7 +430,7 @@ export default function InventaireVentes() {
       </SimpleGrid>
 
       {/* Tableau des ventes */}
-      <Card shadow="sm">
+      <Card shadow="sm" className="gc-fade-up">
         <DataTable
           withTableBorder={false}
           withColumnBorders

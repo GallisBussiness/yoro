@@ -134,10 +134,10 @@ useEffect(() => {
         </Button>
      </div>}>
      <>
-     <Paper 
-        p="md" 
-        radius="md" 
-        className="border-none shadow-none"
+     <Paper
+        p="md"
+        radius="md"
+        className="gc-fade-up border-none shadow-none"
         style={{
           backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
           backdropFilter: "blur(10px)"
@@ -261,6 +261,7 @@ useEffect(() => {
       verticalSpacing="xs"
       verticalAlign="top"
       paginationActiveBackgroundColor="var(--gc-primary)"
+      rowClassName={() => "transition-colors duration-150"}
     />
      </Paper>
      </>
@@ -287,10 +288,10 @@ useEffect(() => {
         loaderProps={{ color: 'brand', type: 'dots' }}
       />
       <div className="mt-4">
-        <Paper 
-          p="md" 
-          radius="md" 
-          className="border-none shadow-none"
+        <Paper
+          p="md"
+          radius="md"
+          className="gc-fade-up border-none shadow-none"
         >
           <Group mb="xs">
             <Text fw={600} className="text-foreground flex items-center gap-2">
@@ -347,10 +348,10 @@ useEffect(() => {
         loaderProps={{ color: 'brand', type: 'dots' }}
       />
       <div className="mt-4">
-        <Paper 
-          p="md" 
-          radius="md" 
-          className="border-none shadow-none"
+        <Paper
+          p="md"
+          radius="md"
+          className="gc-fade-up border-none shadow-none"
         >
           <Group mb="xs">
             <Text fw={600} className="text-foreground flex items-center gap-2">

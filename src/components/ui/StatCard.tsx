@@ -26,13 +26,13 @@ const toneStyles: Record<NonNullable<StatCardProps['tone']>, { chip: string; tex
 /**
  * Carte KPI standard GesCom (shadcn) : icône en chip + libellé + valeur tabulaire + delta.
  */
-export function StatCard({ label, value, money = true, suffix, icon, tone = 'neutral', delta, rawValue }: StatCardProps) {
+export function StatCard({ label, value, suffix, icon, tone = 'neutral', delta, rawValue }: StatCardProps) {
   const ts = toneStyles[tone];
   const deltaColor =
     delta?.direction === 'up' ? 'text-gc-pos' : delta?.direction === 'down' ? 'text-gc-neg' : 'text-gc-muted';
 
   return (
-    <Card className="p-4 md:p-5 transition-shadow hover:shadow-md">
+    <Card className="gc-lift p-4 md:p-5 hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="gc-page-subtitle truncate text-xs font-medium uppercase tracking-wide">{label}</p>

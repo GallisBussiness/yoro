@@ -117,7 +117,7 @@ function Inventori() {
       />
 
       {/* Ventes history */}
-      <div className="gc-card mb-6 p-4 md:p-5">
+      <div className="gc-card gc-fade-up mb-6 p-4 md:p-5">
         <div className="mb-4 flex items-center gap-3">
           <div className="gc-icon-chip h-10 w-10 bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
             <FaShoppingCart size={18} />
@@ -217,7 +217,7 @@ function Inventori() {
       </div>
 
       {/* Approvisionnements history */}
-      <div className="gc-card mt-6 p-4 md:p-5">
+      <div className="gc-card gc-fade-up mt-6 p-4 md:p-5">
         <div className="mb-4 flex items-center gap-3">
           <div className="gc-icon-chip h-10 w-10 bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
             <FaBoxes size={18} />

@@ -27,9 +27,11 @@ const COLOR = {
   white: '#FFFFFF',
 };
 
-// Largeur du ticket 58mm en points (1mm = 2.83465 points)
-const TICKET_WIDTH = 58 * 2.83465; // ~164 points
-const CONTENT_WIDTH = TICKET_WIDTH - 10; // moins les marges
+// Largeur du ticket en points (1mm = 2.83465 points)
+// Xprinter 58mm (XP-58IIH...) : 58mm ~164pt. Pour un modele 80mm, passer a 80.
+const TICKET_WIDTH_MM = 58;
+const TICKET_WIDTH = TICKET_WIDTH_MM * 2.83465; // ~164 points
+const CONTENT_WIDTH = TICKET_WIDTH - 10; // moins les marges [5,5]
 
 interface TicketConfig {
   nomBoutique?: string;
@@ -68,7 +70,7 @@ export const generateTicketPdf = (vente: VenteCaisse, config: TicketConfig = def
         bold: true,
         color: COLOR.primary,
         alignment: 'center',
-        margin: [0, 0, 0, 2]
+        margin: [0, 0, 0, 3]
       },
       {
         text: adresse ?? '',

@@ -19,15 +19,18 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, Cell,
 } from 'recharts';
-import { FaTrash, FaEdit, FaEye, FaBolt, FaBoxOpen, FaPrint } from "react-icons/fa";
+import { FaTrash, FaEdit, FaEye, FaBolt, FaBoxOpen, FaPrint, FaReceipt } from "react-icons/fa";
 import { TbSum, TbCalendarWeek, TbCalendarMonth } from "react-icons/tb";
 import { AiOutlinePlus } from "react-icons/ai";
 import { VenteSimpleService } from "../../services/vente-simple.service";
+import { ParamService } from "../../services/paramservice";
 import { VenteSimple, TotauxResultat } from "../../types/vente-simple.types";
 import { useIsVenteDuJour } from "../../hooks/useIsVenteDuJour";
+import { authclient } from "../../../lib/auth-client";
 import { PageHeader, SearchInput, EmptyState, Money } from "../../components/ui";
 import { Card, CardContent } from "../../components/shadcn/card";
 import { printVentesSimplesRecap } from "../../utils/venteSimpleRecapPdf";
+import { printVenteSimpleTicket } from "../../utils/venteSimpleTicketPdf";
 
 const PAGE_SIZE = 10;
 const service = new VenteSimpleService();
@@ -44,6 +47,14 @@ function VentesSimples() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [bodyRef] = useAutoAnimate();
+  const { data: session } = authclient.useSession();
+  const paramService = new ParamService();
+
+  const { data: param } = useQuery({
+    queryKey: ['param', session?.user.id],
+    queryFn: () => paramService.getByUser(session!.user.id),
+    enabled: !!session,
+  });
 
   const [query, setQuery] = useState('');
   const [debouncedQuery] = useDebouncedValue(query, 200);
@@ -270,7 +281,7 @@ function VentesSimples() {
       />
 
       {/* KPIs */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3 gc-stagger">
         {kpis.map((k) => {
           const Icon = k.icon;
           const toneCfg = {
@@ -279,7 +290,7 @@ function VentesSimples() {
             neutral: { chip: 'bg-muted text-foreground', val: 'text-foreground' },
           }[k.tone];
           return (
-            <Card key={k.label} className="transition-shadow hover:shadow-md">
+            <Card key={k.label} className="transition-shadow hover:shadow-md gc-lift">
               <CardContent className="p-4 md:p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -300,7 +311,7 @@ function VentesSimples() {
       </div>
 
       {/* Chart */}
-      <Card className="mb-6">
+      <Card className="mb-6 gc-fade-up">
         <CardContent className="p-4 md:p-5">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-sm font-bold text-foreground">Évolution des ventes rapides</h3>
@@ -335,7 +346,7 @@ function VentesSimples() {
       </Card>
 
       {/* Table */}
-      <Card>
+      <Card className="gc-fade-up">
         <CardContent className="p-4 md:p-5">
           <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
@@ -407,19 +418,24 @@ function VentesSimples() {
                   return (
                     <Group gap={4} justify="center">
                       <Tooltip label="Voir le détail" position="top" withArrow>
-                        <ActionIcon variant="subtle" color="brand" onClick={() => navigate(v._id)}>
+                        <ActionIcon variant="subtle" color="brand" onClick={() => navigate(v._id)} className="transition-colors duration-150">
                           <FaEye size={14} />
+                        </ActionIcon>
+                      </Tooltip>
+                      <Tooltip label="Imprimer le ticket" position="top" withArrow>
+                        <ActionIcon variant="subtle" color="teal" onClick={() => printVenteSimpleTicket(v, param)} className="transition-colors duration-150">
+                          <FaReceipt size={14} />
                         </ActionIcon>
                       </Tooltip>
                       {duJour ? (
                         <>
                           <Tooltip label="Modifier" position="top" withArrow>
-                            <ActionIcon variant="subtle" color="blue" onClick={() => openEdit(v)}>
+                            <ActionIcon variant="subtle" color="blue" onClick={() => openEdit(v)} className="transition-colors duration-150">
                               <FaEdit size={14} />
                             </ActionIcon>
                           </Tooltip>
                           <Tooltip label="Supprimer" position="top" withArrow>
-                            <ActionIcon variant="subtle" color="red" onClick={() => deleteVente(v._id)}>
+                            <ActionIcon variant="subtle" color="red" onClick={() => deleteVente(v._id)} className="transition-colors duration-150">
                               <FaTrash size={14} />
                             </ActionIcon>
                           </Tooltip>

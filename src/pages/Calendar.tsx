@@ -7,7 +7,7 @@ const Calendar = () => {
       <Breadcrumb pageName="Calendar" />
 
       {/* <!-- ====== Calendar Section Start ====== --> */}
-      <div className="w-full max-w-full rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="gc-fade-up w-full max-w-full rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <table className="w-full">
           <thead>
             <tr className="grid grid-cols-7 rounded-t-sm bg-primary text-white">

@@ -1,6 +1,4 @@
 import { ReactNode } from 'react';
-import { Button } from '../shadcn/button';
-import { cn } from '../../lib/utils';
 
 interface PageHeaderProps {
   title: string;
@@ -16,7 +14,7 @@ interface PageHeaderProps {
  */
 export function PageHeader({ title, subtitle, actions, icon }: PageHeaderProps) {
   return (
-    <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="gc-fade-up mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="flex items-center gap-3">
         {icon && (
           <div className="gc-icon-chip h-11 w-11 border border-border bg-muted text-primary">

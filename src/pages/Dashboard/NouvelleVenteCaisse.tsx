@@ -21,7 +21,6 @@ import { printTicket } from "../../utils/ticketPdf";
 import { Card, CardContent } from '../../components/shadcn/card';
 import { Button } from '../../components/shadcn/button';
 import { Badge } from '../../components/shadcn/badge';
-import { Separator } from '../../components/shadcn/separator';
 import { formatN } from '../../lib/helpers';
 
 const formatToday = () => {
@@ -182,7 +181,7 @@ function NouvelleVenteCaisse() {
         {/* Section Gauche — Recherche + Panier */}
         <div className="space-y-4 lg:col-span-2">
           {/* Recherche */}
-          <Card>
+          <Card className="gc-fade-up">
             <CardContent className="p-4 md:p-5">
               <div className="mb-3 flex items-center gap-2">
                 <ScanLine className="h-5 w-5 text-primary" />
@@ -229,7 +228,7 @@ function NouvelleVenteCaisse() {
           </Card>
 
           {/* Panier */}
-          <Card>
+          <Card className="gc-fade-up">
             <CardContent className="p-4 md:p-5">
               <div className="mb-4 flex items-center justify-between">
                 <Text fw={600} size="sm" className="text-foreground">
@@ -301,7 +300,7 @@ function NouvelleVenteCaisse() {
         {/* Section Droite — Récapitulatif + Actions */}
         <div className="space-y-4">
           {/* Récapitulatif */}
-          <Card className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] text-white">
+          <Card className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] text-white gc-fade-up">
             <CardContent className="p-4 md:p-5">
               <h4 className="mb-4 flex items-center gap-2 text-sm font-bold text-white">
                 <Receipt className="h-4 w-4 text-emerald-400" />
@@ -357,7 +356,7 @@ function NouvelleVenteCaisse() {
           </div>
 
           {/* Raccourcis clavier */}
-          <Card>
+          <Card className="gc-fade-up">
             <CardContent className="p-4">
               <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                 <Keyboard className="h-3.5 w-3.5" />

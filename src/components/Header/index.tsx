@@ -18,7 +18,7 @@ const Header = (props: {
               e.stopPropagation();
               props.setSidebarOpen(!props.sidebarOpen);
             }}
-            className="z-50 flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-muted text-foreground transition-colors hover:bg-border lg:hidden"
+            className="z-50 flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-muted text-foreground transition-colors duration-200 hover:bg-border lg:hidden"
           >
             <Menu className="h-5 w-5" />
           </button>

@@ -11,7 +11,7 @@ const Settings = () => {
     <div className="mx-auto p-4">
       <Breadcrumb pageName="Paramétrage" />
 
-      <Card className="mb-4 p-4 md:p-5 shadow-md">
+      <Card className="mb-4 p-4 md:p-5 shadow-md gc-fade-up">
         <div className="mb-4">
           <Text fw={600} size="lg" className="text-foreground flex items-center gap-2">
             <FaCog className="text-primary" /> Configuration du système
@@ -59,15 +59,15 @@ const Settings = () => {
             </Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel value="parametres">
+          <Tabs.Panel value="parametres" className="gc-fade-in">
             <Parametres />
           </Tabs.Panel>
 
-          <Tabs.Panel value="unites">
+          <Tabs.Panel value="unites" className="gc-fade-in">
             <Unites />
           </Tabs.Panel>
 
-          <Tabs.Panel value="familles">
+          <Tabs.Panel value="familles" className="gc-fade-in">
             <Familles />
           </Tabs.Panel>
         </Tabs>

@@ -4,8 +4,8 @@ import { Button } from '../components/shadcn/button';
 
 function P404() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted px-4 py-12">
-      <div className="text-center">
+    <div className="gc-fade-up flex min-h-screen items-center justify-center bg-muted px-4 py-12">
+      <div className="gc-stagger text-center">
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-card shadow-lg border border-border">
           <Compass className="h-10 w-10 text-primary" />
         </div>

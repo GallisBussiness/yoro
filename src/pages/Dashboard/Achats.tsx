@@ -574,7 +574,7 @@ return (
      
      <WeeklyRevenue add={null}>
      <>
-     <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-4 mb-6">
+     <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-4 mb-6 gc-fade-up">
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
          <div className="w-full md:w-1/3 relative">
             <SearchInput
@@ -584,19 +584,19 @@ return (
             />
          </div>
          <div className="flex flex-wrap gap-2">
-           <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-lg">
+           <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-lg gc-lift">
              <FaRegCalendarAlt size={14} className="text-blue-500" />
              <Text size="xs" className="text-blue-600 dark:text-blue-300">
                {format(new Date(), 'dd MMMM yyyy')}
              </Text>
            </div>
-           <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 px-3 py-2 rounded-lg">
+           <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 px-3 py-2 rounded-lg gc-lift">
              <FaShoppingBag size={14} className="text-green-500" />
              <Text size="xs" className="text-green-600 dark:text-green-300">
                {achats?.length || 0} achats
              </Text>
            </div>
-           <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/30 px-3 py-2 rounded-lg">
+           <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/30 px-3 py-2 rounded-lg gc-lift">
              <FaMoneyBillWave size={14} className="text-orange-500" />
              <Text size="xs" className="text-orange-600 dark:text-orange-300">
                {formatN(achats?.reduce((acc: number, cur: { net_a_payer: number }) => acc + cur.net_a_payer, 0) || 0)} FCFA
@@ -693,7 +693,7 @@ return (
                     </Table.Thead>
                     <Table.Tbody>
                       {data.produits.map((el:any,i: number) => (
-                        <Table.Tr key={el.ref} className={i % 2 === 0 ? 'bg-gc-surface' : 'bg-slate-50 dark:bg-slate-700/50'}>
+                        <Table.Tr key={el.ref} className={`${i % 2 === 0 ? 'bg-gc-surface' : 'bg-slate-50 dark:bg-slate-700/50'} transition-colors`}>
                           <Table.Td className="text-gc-muted font-medium">{i+1}</Table.Td>
                           <Table.Td>
                             <div className="bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-md text-blue-600 dark:text-blue-300 text-xs font-medium">
@@ -810,7 +810,7 @@ return (
       highlightOnHover={true}
       paginationActiveBackgroundColor="var(--gc-primary)"
       paginationSize="sm"
-      className="border-none shadow-none"
+      className="border-none shadow-none gc-fade-up"
     />
      </>
      
@@ -819,7 +819,7 @@ return (
 
    <Modal opened={opened} onClose={close} title="Nouvel Achat" size="xl" overlayProps={{ blur: 3, opacity: 0.55 }} centered>
         <form onSubmit={form.onSubmit(onCreate)} className="space-y-4">
-       <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-2">
+       <div className="bg-gc-surface rounded-xl shadow-sm border border-gc p-2 gc-fade-up">
         <div className="flex flex-col md:flex-row items-start">
         <div className="bg-gc-muted/60 p-4 rounded-lg w-1/2">
          <div className="flex items-center justify-between mb-4">
@@ -1015,22 +1015,22 @@ return (
             </Text>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-1 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 gc-stagger">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-1 rounded-lg gc-lift">
               <Text size="xs" className="text-blue-600 dark:text-blue-300 mb-1">MONTANT TOTAL</Text>
               <Text fw={700} size="sm" className="text-blue-700 dark:text-blue-300">
                 {formatN(total)} FCFA
               </Text>
             </div>
             
-            <div className="bg-orange-50 dark:bg-orange-900/20 p-1 rounded-lg">
+            <div className="bg-orange-50 dark:bg-orange-900/20 p-1 rounded-lg gc-lift">
               <Text size="xs" className="text-orange-600 dark:text-orange-300 mb-1">REMISE</Text>
               <Text fw={700} size="sm" className="text-orange-700 dark:text-orange-300">
                 {formatN(remise)} FCFA
               </Text>
             </div>
             
-            <div className="bg-teal-50 dark:bg-teal-900/20 p-1 rounded-lg">
+            <div className="bg-teal-50 dark:bg-teal-900/20 p-1 rounded-lg gc-lift">
               <Text size="xs" className="text-teal-600 dark:text-teal-300 mb-1">NET À PAYER</Text>
               <Text fw={700} size="sm" className="text-teal-700 dark:text-teal-300">
                 {formatN(total - remise)} FCFA
@@ -1074,7 +1074,7 @@ return (
      className="quantity-modal"
    >
      {selectedProduct && (
-       <div className="space-y-4">
+       <div className="space-y-4 gc-fade-up">
          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
            <div className="flex items-center justify-between">
              <Text fw={600} size="sm" className="text-gc">
@@ -1181,7 +1181,7 @@ return (
       loaderProps={{ color: 'brand', type: 'dots' }}
     />
     <form onSubmit={formA.onSubmit(onCreateA)} className="space-y-4">
-      <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc">
+      <div className="bg-gc-surface p-6 rounded-lg shadow-sm border border-gc gc-fade-up">
         <Text fw={500} size="sm" className="text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
           <FaShoppingBag size={14} className="text-orange-500" />
           Informations de l'article

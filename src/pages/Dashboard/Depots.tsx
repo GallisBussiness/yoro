@@ -214,7 +214,7 @@ const Depots: React.FC = () => {
         <Paper
           p="xl"
           radius="lg"
-          className="bg-card shadow-xl border border-border relative"
+          className="gc-fade-up bg-card shadow-xl border border-border relative"
           style={{
             backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
             backdropFilter: "blur(10px)"
@@ -289,7 +289,7 @@ const Depots: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {pagedDepots.map((depot) => (
-                    <TableRow key={depot._id}>
+                    <TableRow key={depot._id} className="transition-colors">
                       <TableCell>
                         <div className="flex items-center">
                           <FaWarehouse className="text-primary mr-2" />

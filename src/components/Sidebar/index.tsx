@@ -78,7 +78,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-50 flex h-screen w-72.5 flex-col overflow-y-hidden border-r border-white/5 bg-gradient-to-b from-[#1E293B] to-[#0F172A] shadow-xl duration-300 ease-in-out lg:static lg:translate-x-0 ${
+      className={`absolute left-0 top-0 z-50 flex h-screen w-72.5 flex-col overflow-y-hidden border-r border-white/5 bg-gradient-to-b from-[#1E293B] to-[#0F172A] shadow-xl transition-all duration-300 ease-in-out lg:static lg:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
@@ -99,7 +99,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         </button>
       </div>
 
-      <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+      <div className="no-scrollbar flex flex-col overflow-y-auto transition-all duration-300 ease-linear">
         <nav className="mt-5 py-4 px-4 lg:mt-6 lg:px-6">
           <div>
             <h3 className="mb-6 ml-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
@@ -118,7 +118,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   >
                     <NavLink
                       to={item.to}
-                      className={`group relative flex cursor-pointer items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/90 duration-200 ease-in-out ${
+                      className={`group relative flex cursor-pointer items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/90 transition-all duration-200 ease-in-out ${
                         active
                           ? 'bg-emerald-500/15 text-white shadow-md ring-1 ring-emerald-500/30'
                           : 'hover:bg-white/10 hover:text-white'

@@ -20,7 +20,7 @@ const DropdownUser = () => {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors duration-200 hover:bg-muted"
+          className="group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors duration-200 hover:bg-muted"
         >
           <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-xs font-bold text-primary-foreground shadow-sm ring-2 ring-background">
             {initials}
@@ -30,11 +30,14 @@ const DropdownUser = () => {
             <span className="text-sm font-semibold text-foreground">{session?.user.name}</span>
             <span className="text-xs text-muted-foreground">Administrateur</span>
           </div>
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-64">
+      <DropdownMenuContent
+        align="end"
+        className="w-64 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2"
+      >
         <DropdownMenuLabel className="flex items-center gap-3 py-2.5">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-xs font-bold text-primary-foreground shadow-sm">
             {initials}

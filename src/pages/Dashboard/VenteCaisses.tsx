@@ -170,11 +170,11 @@ function VenteCaisses() {
               <Title order={2} className="text-gray-800 dark:text-gray-200 mb-1">Gestion des Ventes Caisse</Title>
               <Text className="text-muted-foreground">Gérez vos ventes en caisse</Text>
             </div>
-            <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 gc-lift">
               <FaCashRegister />
               <Text className="text-white">{filteredCount} ventes</Text>
             </div>
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 gc-lift">
               <FaMoneyBillWave />
               <Text className="text-white">Total: {calculateTotal(getFilteredData()).toLocaleString()} FCFA</Text>
             </div>
@@ -201,7 +201,7 @@ function VenteCaisses() {
             </Button>
           }>
             <>
-              <div className="flex flex-col md:flex-row gap-4 items-center w-full my-5">
+              <div className="flex flex-col md:flex-row gap-4 items-center w-full my-5 gc-fade-up">
                 <div className="flex-1 w-full">
                   <SearchInput
                     value={query}
@@ -285,6 +285,7 @@ function VenteCaisses() {
                             variant="light"
                             color="green"
                             onClick={() => printTicket(record)}
+                            className="transition-all duration-200"
                           >
                             <FaPrint />
                           </ActionIcon>
@@ -294,6 +295,7 @@ function VenteCaisses() {
                             variant="light"
                             color="blue"
                             onClick={() => downloadTicket(record)}
+                            className="transition-all duration-200"
                           >
                             <FaDownload />
                           </ActionIcon>
@@ -303,6 +305,7 @@ function VenteCaisses() {
                             variant="light"
                             color="grape"
                             onClick={() => openTicketInNewTab(record)}
+                            className="transition-all duration-200"
                           >
                             <FaEye />
                           </ActionIcon>
@@ -312,6 +315,7 @@ function VenteCaisses() {
                             variant="filled"
                             color="green"
                             onClick={() => handleUpdate(record)}
+                            className="transition-all duration-200"
                           >
                             <FaEdit />
                           </ActionIcon>
@@ -323,6 +327,7 @@ function VenteCaisses() {
                                 variant="light"
                                 color="red"
                                 onClick={() => setDeleteTarget(record)}
+                                className="transition-all duration-200"
                               >
                                 <FaTrash />
                               </ActionIcon>
@@ -384,7 +389,7 @@ function VenteCaisses() {
                     </Button>
                   </div>
                 }
-                className="overflow-hidden"
+                className="overflow-hidden gc-fade-up"
               />
             </>
           </WeeklyRevenue>
@@ -407,7 +412,7 @@ function VenteCaisses() {
         <div className="relative">
           <LoadingOverlay visible={loadingUpdate} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
           <form onSubmit={formU.onSubmit(onUpdate)}>
-            <Paper className="bg-blue-50 dark:bg-gray-800 border border-border shadow-sm mb-4" p="md">
+            <Paper className="bg-blue-50 dark:bg-gray-800 border border-border shadow-sm mb-4 gc-fade-up" p="md">
               <Text className="text-sm font-medium text-muted-foreground mb-3 block">
                 Informations de la vente
               </Text>

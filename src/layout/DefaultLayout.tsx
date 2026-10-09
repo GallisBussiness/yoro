@@ -1,9 +1,13 @@
 import React, { useState, ReactNode } from 'react';
+import { useLocation, useOutlet } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import Header from '../components/Header/index';
 import Sidebar from '../components/Sidebar/index';
 
 const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+  const outlet = useOutlet();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -22,7 +26,17 @@ const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
           {/* <!-- ===== Main Content Start ===== --> */}
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-8">
-              {children}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={location.pathname}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                >
+                  {outlet ?? children}
+                </motion.div>
+              </AnimatePresence>
             </div>
           </main>
           {/* <!-- ===== Main Content End ===== --> */}

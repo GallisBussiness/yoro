@@ -45,7 +45,7 @@ function VenteCaisse() {
           <Paper 
             p="xl" 
             radius="md" 
-            className="bg-card shadow-lg mb-6"
+            className="bg-card shadow-lg mb-6 gc-fade-up"
             style={{
               backgroundImage: "linear-gradient(to right bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8))",
               backdropFilter: "blur(10px)"
@@ -72,8 +72,8 @@ function VenteCaisse() {
 
             <Divider className="my-4" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              <Card p="md" radius="md" className="bg-emerald-50 dark:bg-emerald-500/10 border border-border shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 gc-stagger">
+              <Card p="md" radius="md" className="bg-emerald-50 dark:bg-emerald-500/10 border border-border shadow-sm gc-lift">
                 <div className="flex items-center gap-3 mb-2">
                   <FaMoneyBillWave className="text-green-500" />
                   <Text fw={600} className="text-foreground">Montant</Text>
@@ -83,7 +83,7 @@ function VenteCaisse() {
                 </Text>
               </Card>
               
-              <Card p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border shadow-sm">
+              <Card p="md" radius="md" className="bg-blue-50 dark:bg-blue-500/10 border border-border shadow-sm gc-lift">
                 <div className="flex items-center gap-3 mb-2">
                   <FaCalendarAlt className="text-blue-500" />
                   <Text fw={600} className="text-foreground">Date</Text>
@@ -97,8 +97,8 @@ function VenteCaisse() {
             {/* Informations supplémentaires */}
             <Divider className="my-6" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card p="md" radius="md" className="bg-violet-50 dark:bg-violet-500/10 border border-border shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 gc-stagger">
+              <Card p="md" radius="md" className="bg-violet-50 dark:bg-violet-500/10 border border-border shadow-sm gc-lift">
                 <div className="flex items-center gap-3 mb-2">
                   <FaCalendarAlt className="text-purple-500" />
                   <Text fw={600} className="text-foreground">Date de création</Text>
@@ -108,7 +108,7 @@ function VenteCaisse() {
                 </Text>
               </Card>
 
-              <Card p="md" radius="md" className="bg-indigo-50 dark:bg-gray-700 border border-indigo-100 dark:border-gray-600 shadow-sm">
+              <Card p="md" radius="md" className="bg-indigo-50 dark:bg-gray-700 border border-indigo-100 dark:border-gray-600 shadow-sm gc-lift">
                 <div className="flex items-center gap-3 mb-2">
                   <FaCalendarAlt className="text-indigo-500" />
                   <Text fw={600} className="text-foreground">Dernière modification</Text>
@@ -122,7 +122,7 @@ function VenteCaisse() {
             {/* Statistiques */}
             <Divider className="my-6" />
 
-            <Paper p="md" radius="md" className="bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md">
+            <Paper p="md" radius="md" className="bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md gc-fade-up">
               <div className="flex items-center justify-between">
                 <div>
                   <Text size="sm" className="opacity-90 mb-1">Montant total de cette vente</Text>

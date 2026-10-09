@@ -20,6 +20,7 @@ import {
   Kbd,
   ThemeIcon,
   Stack,
+  Loader,
   Select as SelectM
 } from "@mantine/core";
 import { 
@@ -387,7 +388,7 @@ function NouvelAchat() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
             {/* Colonne gauche - Informations fournisseur, dépôt et date */}
-            <div className="space-y-4">
+            <div className="space-y-4 gc-stagger">
               {/* Informations fournisseur */}
               <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface">
                 <div className="flex items-center justify-between mb-3">
@@ -417,7 +418,7 @@ function NouvelAchat() {
                     value: v._id
                   }))}
                   {...form.getInputProps('fournisseur')}
-                  loading={isLoadingFournisseur}
+                  rightSection={isLoadingFournisseur ? <Loader size="xs" /> : undefined}
                   searchable
                   nothingFoundMessage="Aucun résultat"
                   className="w-full"
@@ -529,7 +530,7 @@ function NouvelAchat() {
 
             {/* Colonne droite - Lignes de facture */}
             <div className="lg:col-span-3">
-              <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface">
+              <Paper shadow="sm" p="md" radius="md" className="bg-gc-surface gc-fade-up">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <ThemeIcon size="lg" radius="md" color="blue" variant="light">
@@ -564,7 +565,7 @@ function NouvelAchat() {
                     </Table.Thead>
                     <Table.Tbody>
                       {form.getValues().produits.map((item: any, index: number) => (
-                        <Table.Tr key={index}>
+                        <Table.Tr key={index} className="transition-colors">
                           <Table.Td className="text-center font-medium text-slate-500">
                             {index + 1}
                           </Table.Td>
@@ -581,7 +582,7 @@ function NouvelAchat() {
                               nothingFoundMessage="Aucun résultat"
                               className="w-full"
                               size="sm"
-                              loading={isLoadingA}
+                              rightSection={isLoadingA ? <Loader size="xs" /> : undefined}
                             />
                           </Table.Td>
                           <Table.Td>
@@ -650,7 +651,7 @@ function NouvelAchat() {
                     mt="md"
                     leftSection={<FaPlus />}
                     onClick={addEmptyLine}
-                    className="border-2 border-dashed border-blue-300 hover:border-blue-400"
+                    className="border-2 border-dashed border-blue-300 hover:border-blue-400 transition-colors duration-200"
                   >
                     Ajouter une ligne
                   </Button>
