@@ -129,25 +129,6 @@ export const generateVenteSimpleTicketPdf = (vente: VenteSimple, boutique: Ticke
         margin: [0, 0, 0, 6]
       },
 
-      // Ligne accent
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: CONTENT_WIDTH, y2: 0, lineWidth: 1.5, lineColor: COLOR.accent }] },
-
-      // ====== PIED DE PAGE ======
-      {
-        text: 'Merci de votre visite',
-        fontSize: 8,
-        bold: true,
-        color: COLOR.primary,
-        alignment: 'center',
-        margin: [0, 5, 0, 1]
-      },
-      {
-        text: 'A bientot',
-        fontSize: 7,
-        color: COLOR.muted,
-        alignment: 'center',
-        margin: [0, 0, 0, 3]
-      },
     ],
     defaultStyle: {
       font: 'Roboto'
