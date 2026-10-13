@@ -12,8 +12,11 @@ import {
   ScanLine,
   Zap,
   X,
+  Download,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { usePwaInstall } from '../../hooks/usePwaInstall';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -49,6 +52,7 @@ const NAV_ITEMS: NavItem[] = [
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const { canInstall, isInstalled, promptInstall } = usePwaInstall();
   const location = useLocation();
   const { pathname } = location;
   const trigger = useRef<any>(null);
@@ -74,6 +78,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     document.addEventListener('keydown', keyHandler);
     return () => document.removeEventListener('keydown', keyHandler);
   });
+
+  // iOS ne supporte pas `beforeinstallprompt` : on affiche des instructions
+  const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+  const showInstall = !isInstalled && (canInstall || isIos);
+
+  const handleInstall = async () => {
+    if (canInstall) {
+      const outcome = await promptInstall();
+      if (outcome === 'accepted') toast.success('Application installée');
+    } else {
+      toast.info("Sur iOS : touchez « Partager » puis « Sur l'écran d'accueil »");
+    }
+  };
 
   return (
     <aside
@@ -142,6 +159,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 );
               })}
             </ul>
+
+            {/* Bouton d'installation PWA */}
+            {showInstall && (
+              <div className="mt-2 border-t border-white/5 px-2 pt-4">
+                <button
+                  onClick={handleInstall}
+                  className="group flex w-full cursor-pointer items-center gap-3 rounded-xl bg-emerald-500/15 px-4 py-2.5 text-sm font-medium text-emerald-300 ring-1 ring-emerald-500/30 transition-all duration-200 hover:bg-emerald-500/25 hover:text-white"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-white">
+                    <Download className="h-[18px] w-[18px]" />
+                  </div>
+                  <span>Installer l'application</span>
+                </button>
+              </div>
+            )}
           </div>
         </nav>
       </div>

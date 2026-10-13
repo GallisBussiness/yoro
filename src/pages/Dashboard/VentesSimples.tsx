@@ -30,7 +30,7 @@ import { authclient } from "../../../lib/auth-client";
 import { PageHeader, SearchInput, EmptyState, Money } from "../../components/ui";
 import { Card, CardContent } from "../../components/shadcn/card";
 import { printVentesSimplesRecap } from "../../utils/venteSimpleRecapPdf";
-import { printVenteSimpleTicket } from "../../utils/venteSimpleTicketPdf";
+import { printVenteSimpleTicket, printVentesSimplesTotauxTicket } from "../../utils/venteSimpleTicketPdf";
 
 const PAGE_SIZE = 10;
 const service = new VenteSimpleService();
@@ -267,6 +267,22 @@ function VentesSimples() {
               className="mt-5"
             >
               Imprimer
+            </Button>
+            <Button
+              variant="outline"
+              color="teal"
+              leftSection={<FaReceipt size={14} />}
+              disabled={!totalJour || !totalSemaine || !totalMois}
+              onClick={() => {
+                printVentesSimplesTotauxTicket(
+                  { jour: totalJour, semaine: totalSemaine, mois: totalMois },
+                  param,
+                );
+                toast.success('Ticket de caisse généré');
+              }}
+              className="mt-5"
+            >
+              Ticket de caisse
             </Button>
             <Button
               color="brand"
