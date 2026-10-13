@@ -665,7 +665,7 @@ return (
           textAlign: 'center',
           render: (data:any) => (
             <Group justify="center">
-              <HoverCard width={450} shadow="md" position="bottom">
+              <HoverCard width="min(450px, 88vw)" shadow="md" position="bottom">
                 <HoverCard.Target>
                   <ActionIcon 
                     variant="light" 
@@ -681,6 +681,7 @@ return (
                       Détails des produits
                     </Text>
                   </div>
+                  <Table.ScrollContainer minWidth={380}>
                   <Table className="bg-gc-surface">
                     <Table.Thead className="bg-slate-100 dark:bg-slate-700">
                       <Table.Tr>
@@ -707,6 +708,7 @@ return (
                       ))}
                     </Table.Tbody>
                   </Table>
+                  </Table.ScrollContainer>
                 </HoverCard.Dropdown>
               </HoverCard>
             </Group>
@@ -967,7 +969,8 @@ return (
          </div>
          
          {fields.length > 0 ? (
-           <div>
+           <div className="overflow-x-auto">
+             <div className="min-w-[560px]">
              <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-2 rounded-md mb-2">
                <div className="grid grid-cols-4 gap-2">
                  <Text fw={600} size="sm" className="text-white">
@@ -986,6 +989,7 @@ return (
              </div>
              <div className="max-h-60 overflow-y-auto pr-1">
                {fields.reverse()}
+             </div>
              </div>
            </div>
          ) : (

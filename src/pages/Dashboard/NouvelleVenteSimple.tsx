@@ -22,11 +22,14 @@ import { printVenteSimpleTicket } from "../../utils/venteSimpleTicketPdf";
 const service = new VenteSimpleService();
 
 const schema = yup.object({
-  montant: yup.number().min(0.01, 'Montant invalide').required('Requis'),
+  montant: yup.number().typeError('Requis').min(0.01, 'Montant invalide').required('Requis'),
   note: yup.string().max(500, 'Maximum 500 caractères').optional(),
 });
 
-type FormValues = yup.InferType<typeof schema>;
+interface FormValues {
+  montant: number | string;
+  note: string;
+}
 
 function NouvelleVenteSimple() {
   const navigate = useNavigate();
@@ -34,7 +37,7 @@ function NouvelleVenteSimple() {
   const montantRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({
-    initialValues: { montant: 0, note: '' },
+    initialValues: { montant: '', note: '' },
     validate: yupResolver(schema),
   });
 
@@ -48,7 +51,7 @@ function NouvelleVenteSimple() {
       qc.invalidateQueries({ queryKey: ['vente-simple-total-mois'] });
       // Réinitialiser le formulaire et garder l'utilisateur sur la page
       form.reset();
-      form.setValues({ montant: 0, note: '' });
+      form.setValues({ montant: '', note: '' });
       // Mettre le focus sur le champ montant pour enchaîner les saisies
       setTimeout(() => {
         montantRef.current?.focus();
@@ -65,7 +68,7 @@ function NouvelleVenteSimple() {
   });
 
   const onSubmit = (values: FormValues) => {
-    createVente({ montant: values.montant, note: values.note || undefined });
+    createVente({ montant: Number(values.montant), note: values.note || undefined });
   };
 
   const { data: ventes, isLoading: loadingVentes } = useQuery<VenteSimple[]>({

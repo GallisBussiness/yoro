@@ -162,11 +162,11 @@ function Achat() {
                 <span className="text-gray-800 dark:text-gray-200">Liste des produits</span>
               </Title>
               
+              <Table.ScrollContainer minWidth={640} className="overflow-hidden rounded-md border border-border">
               <Table 
                 striped 
                 highlightOnHover 
                 withColumnBorders
-                className="overflow-hidden rounded-md border border-border"
               >
                 <Table.Thead className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
                   <Table.Tr>
@@ -230,6 +230,7 @@ function Achat() {
                   </Table.Tr>
                 </Table.Tfoot>
               </Table>
+              </Table.ScrollContainer>
             </Box>
           </Paper>
         </WeeklyRevenue>

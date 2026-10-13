@@ -947,7 +947,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
           textAlign: 'center',
           render: (data:any) => (
             <Group justify="center">
-              <HoverCard width={450} shadow="md" position="bottom" withArrow>
+              <HoverCard width="min(450px, 88vw)" shadow="md" position="bottom" withArrow>
                 <HoverCard.Target>
                   <Button 
                     variant="subtle" 
@@ -965,6 +965,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
                       Détails des produits
                     </Text>
                   </div>
+                  <Table.ScrollContainer minWidth={380}>
                   <Table highlightOnHover>
                     <Table.Thead className="bg-gradient-to-r from-primary to-primary/70 text-white">
                       <Table.Tr>
@@ -991,6 +992,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
                       ))}
                     </Table.Tbody>
                   </Table>
+                  </Table.ScrollContainer>
                 </HoverCard.Dropdown>
               </HoverCard>
             </Group>
@@ -1305,7 +1307,8 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
          </div>
          
          {fields.length > 0 ? (
-           <div>
+           <div className="overflow-x-auto">
+             <div className="min-w-[560px]">
              <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-2 rounded-md mb-2">
                <div className="grid grid-cols-4 gap-2">
                  <Text fw={600} size="sm" className="text-white">
@@ -1324,6 +1327,7 @@ const fields = form.getValues().produits.map((item: any, index: number) => {
              </div>
              <div className="max-h-60 overflow-y-auto pr-1">
                {fields.reverse()}
+             </div>
              </div>
            </div>
          ) : (

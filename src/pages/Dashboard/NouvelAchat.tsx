@@ -552,6 +552,7 @@ function NouvelAchat() {
 
                 {/* Table des lignes de facture */}
                 <div ref={bodyRef}>
+                  <Table.ScrollContainer minWidth={640}>
                   <Table striped highlightOnHover withTableBorder withColumnBorders>
                     <Table.Thead className="bg-gradient-to-r from-blue-500 to-blue-600">
                       <Table.Tr>
@@ -642,6 +643,7 @@ function NouvelAchat() {
                       )}
                     </Table.Tbody>
                   </Table>
+                  </Table.ScrollContainer>
 
                   {/* Bouton ajouter une ligne */}
                   <Button

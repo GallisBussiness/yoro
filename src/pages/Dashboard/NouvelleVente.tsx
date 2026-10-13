@@ -47,6 +47,9 @@ import { TbDiscount } from "react-icons/tb";
 import { InventoryService } from "../../services/Inventory.service";
 import { formatN, isValidUUID } from "../../lib/helpers";
 import { authclient } from '../../../lib/auth-client';
+import { FamilleService } from "../../services/famille.service";
+import { UniteService } from "../../services/unite.service";
+import { FaShoppingBag } from "react-icons/fa";
 
 const schemaC = yup.object().shape({
   nom: yup.string().required('Invalide Nom'),
@@ -65,6 +68,16 @@ const schema = yup.object().shape({
   userId: yup.string().required("user not valid!")
 });
 
+const schemaArticle = yup.object().shape({
+  ref: yup.string().required('Invalid Ref'),
+  nom: yup.string().required('Invalide Nom'),
+  stock_seuil: yup.number(),
+  famille: yup.string().required("famille is not valid !"),
+  unite: yup.string().required("unite is not valid !"),
+  prix: yup.number().required("prix not valid!"),
+  userId: yup.string().required('Invalid User'),
+});
+
 function NouvelleVente() {
   const { data: session } = authclient.useSession();
   const navigate = useNavigate();
@@ -74,12 +87,15 @@ function NouvelleVente() {
   // États
   const [remise, setRemise] = useState<number>(0);
   const [openedClientModal, { open: openClientModal, close: closeClientModal }] = useDisclosure(false);
-  
+  const [openedArticleModal, { open: openArticleModal, close: closeArticleModal }] = useDisclosure(false);
+
   // Services
   const venteService = new VenteService();
   const articleService = new ArticleService();
   const clientService = new ClientService();
   const inventoryService = new InventoryService();
+  const familleService = new FamilleService();
+  const uniteService = new UniteService();
 
   // Queries
   const keyClient = ['get_clients', session!.user.id];
@@ -100,6 +116,20 @@ function NouvelleVente() {
   const { data: articles, isLoading: isLoadingA } = useQuery({
     queryKey: keyar,
     queryFn: () => articleService.getByUser(session!.user.id),
+    enabled: !!session
+  });
+
+  const keyf = ['famille', session!.user.id];
+  const { data: familles } = useQuery({
+    queryKey: keyf,
+    queryFn: () => familleService.getByUser(session!.user.id),
+    enabled: !!session
+  });
+
+  const keyu = ['unite', session!.user.id];
+  const { data: unites } = useQuery({
+    queryKey: keyu,
+    queryFn: () => uniteService.getByUser(session!.user.id),
     enabled: !!session
   });
 
@@ -133,6 +163,19 @@ function NouvelleVente() {
     validate: yupResolver(schema),
   });
 
+  const formArticle = useForm({
+    initialValues: {
+      ref: '',
+      nom: '',
+      stock_seuil: 0,
+      famille: '',
+      unite: '',
+      prix: 0,
+      userId: session!.user.id
+    },
+    validate: yupResolver(schemaArticle),
+  });
+
   // Mutations
   const key = ['vente', session!.user.id];
   const { mutate: createVente, isPending: loadingCreate } = useMutation({
@@ -156,6 +199,20 @@ function NouvelleVente() {
       formC.reset();
       toast.success(`Client créé avec succès`, {
         icon: '👤',
+        duration: 3000,
+        position: 'top-center'
+      });
+    }
+  });
+
+  const { mutate: createArticle, isPending: loadingCreateArticle } = useMutation({
+    mutationFn: (data: any) => articleService.create(data),
+    onSuccess: () => {
+      closeArticleModal();
+      qc.invalidateQueries({ queryKey: keyar });
+      formArticle.reset();
+      toast.success(`Article créé avec succès`, {
+        icon: '📦',
         duration: 3000,
         position: 'top-center'
       });
@@ -205,6 +262,10 @@ function NouvelleVente() {
 
   const onCreateC = (values: any) => {
     createClient(values);
+  }
+
+  const onCreateArticle = (values: any) => {
+    createArticle(values);
   }
 
   // Ajouter une nouvelle ligne vide
@@ -334,7 +395,7 @@ function NouvelleVente() {
   return (
     <div className="bg-gc-muted min-h-screen">
       <LoadingOverlay
-        visible={loadingCreate || isPending || loadingCreateClient || isLoadingA || isLoadingI}
+        visible={loadingCreate || isPending || loadingCreateClient || loadingCreateArticle || isLoadingA || isLoadingI}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
         loaderProps={{ color: 'brand', type: 'dots' }}
@@ -516,13 +577,25 @@ function NouvelleVente() {
                       </Text>
                     </div>
                   </div>
-                  <Badge color="orange" size="lg">
-                    {form.getValues().produits.length} ligne(s)
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="light"
+                      color="orange"
+                      size="xs"
+                      leftSection={<FaPlus size={10} />}
+                      onClick={openArticleModal}
+                    >
+                      Nouvel article
+                    </Button>
+                    <Badge color="orange" size="lg">
+                      {form.getValues().produits.length} ligne(s)
+                    </Badge>
+                  </div>
                 </div>
 
                 {/* Table des lignes de facture */}
                 <div ref={bodyRef}>
+                  <Table.ScrollContainer minWidth={640}>
                   <Table striped highlightOnHover withTableBorder withColumnBorders>
                     <Table.Thead className="bg-gradient-to-r from-orange-500 to-orange-600">
                       <Table.Tr>
@@ -612,6 +685,7 @@ function NouvelleVente() {
                       )}
                     </Table.Tbody>
                   </Table>
+                  </Table.ScrollContainer>
 
                   {/* Bouton ajouter une ligne */}
                   <Button
@@ -668,6 +742,80 @@ function NouvelleVente() {
               </Button>
               <Button type="submit" color="orange" loading={loadingCreateClient}>
                 Créer le client
+              </Button>
+            </Group>
+          </Stack>
+        </form>
+      </Modal>
+
+      {/* Modal nouvel article */}
+      <Modal
+        opened={openedArticleModal}
+        onClose={closeArticleModal}
+        title={
+          <Text size="lg" fw={700} className="text-gc flex items-center gap-2">
+            <FaShoppingBag className="text-orange-500" />
+            Nouvel article
+          </Text>
+        }
+        centered
+        size="lg"
+      >
+        <form onSubmit={formArticle.onSubmit(onCreateArticle)}>
+          <Stack gap="md">
+            <TextInput
+              label="Référence"
+              placeholder="Référence de l'article"
+              required
+              {...formArticle.getInputProps('ref')}
+            />
+            <TextInput
+              label="Nom"
+              placeholder="Nom de l'article"
+              required
+              {...formArticle.getInputProps('nom')}
+            />
+            <NumberInput
+              label="Prix"
+              placeholder="Prix de l'article"
+              required
+              min={0}
+              rightSection={<Text size="xs" c="dimmed">FCFA</Text>}
+              {...formArticle.getInputProps('prix')}
+            />
+            <NumberInput
+              label="Stock seuil"
+              placeholder="Seuil d'alerte de stock"
+              required
+              min={0}
+              {...formArticle.getInputProps('stock_seuil')}
+            />
+            <Group grow>
+              <Select
+                label="Famille"
+                placeholder="Sélectionner une famille"
+                searchable
+                required
+                data={familles?.map((f: any) => ({ label: f.nom, value: f._id }))}
+                nothingFoundMessage="Aucun résultat"
+                {...formArticle.getInputProps('famille')}
+              />
+              <Select
+                label="Unité"
+                placeholder="Sélectionner une unité"
+                searchable
+                required
+                data={unites?.map((f: any) => ({ label: f.nom, value: f._id }))}
+                nothingFoundMessage="Aucun résultat"
+                {...formArticle.getInputProps('unite')}
+              />
+            </Group>
+            <Group justify="flex-end" mt="md">
+              <Button variant="subtle" onClick={closeArticleModal}>
+                Annuler
+              </Button>
+              <Button type="submit" color="orange" loading={loadingCreateArticle}>
+                Créer l'article
               </Button>
             </Group>
           </Stack>

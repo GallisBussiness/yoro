@@ -15,6 +15,15 @@ const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
       <div className="flex h-screen overflow-hidden">
         {/* <!-- ===== Sidebar Start ===== --> */}
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+        {/* Backdrop mobile : assombrit le contenu quand la sidebar est ouverte */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
         {/* <!-- ===== Sidebar End ===== --> */}
 
         {/* <!-- ===== Content Area Start ===== --> */}
